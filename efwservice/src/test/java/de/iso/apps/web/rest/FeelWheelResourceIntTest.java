@@ -1,20 +1,20 @@
 package de.iso.apps.web.rest;
 
 import de.iso.apps.EfwserviceApp;
-
 import de.iso.apps.domain.FeelWheel;
 import de.iso.apps.repository.FeelWheelRepository;
 import de.iso.apps.repository.search.FeelWheelSearchRepository;
+import de.iso.apps.repository.search.FeelWheelSearchRepositoryMockConfiguration;
 import de.iso.apps.service.FeelWheelService;
 import de.iso.apps.service.dto.FeelWheelDTO;
 import de.iso.apps.service.mapper.FeelWheelMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,14 +33,20 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 
-
 import static de.iso.apps.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Test class for the FeelWheelResource REST controller.
@@ -72,7 +78,7 @@ public class FeelWheelResourceIntTest {
     /**
      * This repository is mocked in the de.iso.apps.repository.search test package.
      *
-     * @see de.iso.apps.repository.search.FeelWheelSearchRepositoryMockConfiguration
+     * @see FeelWheelSearchRepositoryMockConfiguration
      */
     @Autowired
     private FeelWheelSearchRepository mockFeelWheelSearchRepository;
@@ -88,7 +94,8 @@ public class FeelWheelResourceIntTest {
 
     @Autowired
     private EntityManager em;
-
+    
+    @Qualifier("mvcValidator")
     @Autowired
     private Validator validator;
 
@@ -99,7 +106,7 @@ public class FeelWheelResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final FeelWheelResource feelWheelResource = new FeelWheelResource(feelWheelService);
+        FeelWheelResource feelWheelResource = new FeelWheelResource(feelWheelService);
         this.restFeelWheelMockMvc = MockMvcBuilders.standaloneSetup(feelWheelResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -115,11 +122,11 @@ public class FeelWheelResourceIntTest {
      * if they test an entity which requires the current entity.
      */
     public static FeelWheel createEntity(EntityManager em) {
-        FeelWheel feelWheel = new FeelWheel()
-            .subject(DEFAULT_SUBJECT)
-            .from(DEFAULT_FROM)
-            .to(DEFAULT_TO);
-        return feelWheel;
+        return FeelWheel.builder()
+                        .subject(DEFAULT_SUBJECT)
+                        .from(DEFAULT_FROM)
+                        .to(DEFAULT_TO)
+                        .build();
     }
 
     @Before
@@ -245,10 +252,14 @@ public class FeelWheelResourceIntTest {
         FeelWheel updatedFeelWheel = feelWheelRepository.findById(feelWheel.getId()).get();
         // Disconnect from session so that the updates on updatedFeelWheel are not directly saved in db
         em.detach(updatedFeelWheel);
-        updatedFeelWheel
-            .subject(UPDATED_SUBJECT)
-            .from(UPDATED_FROM)
-            .to(UPDATED_TO);
+        updatedFeelWheel = FeelWheel.builder()
+                                    .subject(UPDATED_SUBJECT)
+                                    .from(UPDATED_FROM)
+                                    .to(UPDATED_TO)
+                                    .employee(updatedFeelWheel.getEmployee())
+                                    .feelings(updatedFeelWheel.getFeelings())
+                                    .id(updatedFeelWheel.getId())
+                                    .build();
         FeelWheelDTO feelWheelDTO = feelWheelMapper.toDto(updatedFeelWheel);
 
         restFeelWheelMockMvc.perform(put("/api/feel-wheels")

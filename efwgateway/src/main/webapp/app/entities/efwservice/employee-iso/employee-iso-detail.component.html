@@ -1,0 +1,33 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="employee">
+            <h2><span jhiTranslate="efwgatewayApp.efwserviceEmployee.detail.title">Employee</span> {{employee.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceEmployee.email">Email</span></dt>
+                <dd>
+                    <span>{{employee.email}}</span>
+                </dd>
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceEmployee.employee">Employee</span></dt>
+                <dd>
+                    <div *ngIf="employee.employeeId">
+                        <a [routerLink]="['/employee-iso', employee.employeeId, 'view']">{{employee.employeeEmail}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/employee-iso', employee.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

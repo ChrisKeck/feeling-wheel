@@ -1,0 +1,46 @@
+{
+    "name": "FeelWheel",
+    "fields": [
+        {
+            "fieldName": "subject",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "from",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "to",
+            "fieldType": "Instant"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "feeling",
+            "otherEntityRelationshipName": "feelwheel",
+            "relationshipName": "feeling"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "employee",
+            "otherEntityRelationshipName": "feelWheel",
+            "relationshipName": "employee",
+            "otherEntityField": "email"
+        }
+    ],
+    "changelogDate": "20190324021121",
+    "entityTableName": "feel_wheel",
+    "dto": "mapstruct",
+    "pagination": "infinite-scroll",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "efwservice",
+    "applications": "*",
+    "angularJSSuffix": "iso",
+    "microserviceName": "efwservice"
+}

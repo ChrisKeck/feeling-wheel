@@ -1,111 +1,119 @@
 {
-    "generator-jhipster": {
-        "promptValues": {
-            "packageName": "de.iso.apps",
-            "nativeLanguage": "de"
-        },
-        "jhipsterVersion": "5.8.2",
-        "applicationType": "gateway",
-        "baseName": "efwgateway",
-        "packageName": "de.iso.apps",
-        "packageFolder": "de/iso/apps",
-        "serverPort": "8080",
-        "authenticationType": "jwt",
-        "cacheProvider": "hazelcast",
-        "enableHibernateCache": true,
-        "websocket": "spring-websocket",
-        "databaseType": "sql",
-        "devDatabaseType": "h2Disk",
-        "prodDatabaseType": "postgresql",
-        "searchEngine": "elasticsearch",
-        "messageBroker": "kafka",
-        "serviceDiscoveryType": "eureka",
-        "buildTool": "maven",
-        "enableSwaggerCodegen": true,
-        "jwtSecretKey": "MmJhYWRjZmE0MmZmMjc0MTA2YTc0NDBmMjg3NGFmZmM5NWQ1ZGFkN2FmMzRjZWI5ZmI2ODJjYjc1ZGQ4MWE1MDY1NWQ5YTlkZjliN2NmNDI4NThlNjczODU2NTMwYWVhZmJkYjMxY2RlZmJlOTdhNzQ5NDVjYjdjYWE3MDdlYTA=",
-        "clientFramework": "angularX",
-        "useSass": true,
-        "clientPackageManager": "npm",
-        "testFrameworks": ["gatling", "cucumber", "protractor"],
-        "jhiPrefix": "jhi",
-        "entitySuffix": "",
-        "dtoSuffix": "DTO",
-        "otherModules": [
-            {
-                "name": "generator-jhipster-nav-element",
-                "version": "2.1.4"
-            },
-            {
-                "name": "generator-jhipster-standalone-profile",
-                "version": "2.3.0"
-            },
-            {
-                "name": "generator-jhipster-docker",
-                "version": "2.5.0"
-            },
-            {
-                "name": "generator-jhipster-primeng",
-                "version": "2.3.0"
-            },
-            {
-                "name": "generator-jhipster-swagger-cli",
-                "version": "3.0.1"
-            },
-            {
-                "name": "generator-jhipster-spring-cloud-stream",
-                "version": "1.0.0"
-            },
-            {
-                "name": "generator-jhipster-primeng-charts",
-                "version": "1.2.0"
-            },
-            {
-                "name": "generator-jhipster-electron",
-                "version": "1.0.0"
-            },
-            {
-                "name": "generator-jhipster-leafletmap",
-                "version": "2.0.0"
-            },
-            {
-                "name": "generator-codegen",
-                "version": "0.2.1"
-            },
-            {
-                "name": "generator-jhipster-angular-material-integration",
-                "version": "1.0.17"
-            },
-            {
-                "name": "generator-jhipster-translation",
-                "version": "1.0.4"
-            },
-            {
-                "name": "generator-jhipster-database-backup",
-                "version": "1.0.7"
-            },
-            {
-                "name": "generator-jhipster-administration-database",
-                "version": "1.0.4"
-            },
-            {
-                "name": "generator-jhipster-jgitver",
-                "version": "0.1.0"
-            },
-            {
-                "name": "generator-jhipster-obfuscation-at-rest",
-                "version": "0.3.0"
-            },
-            {
-                "name": "generator-jhipster-aeropost",
-                "version": "1.10.0"
-            },
-            {
-                "name": "generator-jhipster-file2url",
-                "version": "0.0.0"
-            }
-        ],
-        "enableTranslation": true,
-        "nativeLanguage": "de",
-        "languages": ["de", "en"]
-    }
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "de.iso.apps",
+      "nativeLanguage": "de",
+      "microservicePath": "../efwservice"
+    },
+    "jhipsterVersion": "5.8.2",
+    "applicationType": "gateway",
+    "baseName": "efwgateway",
+    "packageName": "de.iso.apps",
+    "packageFolder": "de/iso/apps",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "hazelcast",
+    "enableHibernateCache": true,
+    "websocket": "spring-websocket",
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": "elasticsearch",
+    "messageBroker": "kafka",
+    "serviceDiscoveryType": "eureka",
+    "buildTool": "maven",
+    "enableSwaggerCodegen": true,
+    "jwtSecretKey": "MmJhYWRjZmE0MmZmMjc0MTA2YTc0NDBmMjg3NGFmZmM5NWQ1ZGFkN2FmMzRjZWI5ZmI2ODJjYjc1ZGQ4MWE1MDY1NWQ5YTlkZjliN2NmNDI4NThlNjczODU2NTMwYWVhZmJkYjMxY2RlZmJlOTdhNzQ5NDVjYjdjYWE3MDdlYTA=",
+    "clientFramework": "angularX",
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "testFrameworks": [
+      "gatling",
+      "cucumber",
+      "protractor"
+    ],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [
+      {
+        "name": "generator-jhipster-nav-element",
+        "version": "2.1.4"
+      },
+      {
+        "name": "generator-jhipster-standalone-profile",
+        "version": "2.3.0"
+      },
+      {
+        "name": "generator-jhipster-docker",
+        "version": "2.5.0"
+      },
+      {
+        "name": "generator-jhipster-primeng",
+        "version": "2.3.0"
+      },
+      {
+        "name": "generator-jhipster-swagger-cli",
+        "version": "3.0.1"
+      },
+      {
+        "name": "generator-jhipster-spring-cloud-stream",
+        "version": "1.0.0"
+      },
+      {
+        "name": "generator-jhipster-primeng-charts",
+        "version": "1.2.0"
+      },
+      {
+        "name": "generator-jhipster-electron",
+        "version": "1.0.0"
+      },
+      {
+        "name": "generator-jhipster-leafletmap",
+        "version": "2.0.0"
+      },
+      {
+        "name": "generator-codegen",
+        "version": "0.2.1"
+      },
+      {
+        "name": "generator-jhipster-angular-material-integration",
+        "version": "1.0.17"
+      },
+      {
+        "name": "generator-jhipster-translation",
+        "version": "1.0.4"
+      },
+      {
+        "name": "generator-jhipster-database-backup",
+        "version": "1.0.7"
+      },
+      {
+        "name": "generator-jhipster-administration-database",
+        "version": "1.0.4"
+      },
+      {
+        "name": "generator-jhipster-jgitver",
+        "version": "0.1.0"
+      },
+      {
+        "name": "generator-jhipster-obfuscation-at-rest",
+        "version": "0.3.0"
+      },
+      {
+        "name": "generator-jhipster-aeropost",
+        "version": "1.10.0"
+      },
+      {
+        "name": "generator-jhipster-file2url",
+        "version": "0.0.0"
+      }
+    ],
+    "enableTranslation": true,
+    "nativeLanguage": "de",
+    "languages": [
+      "de",
+      "en"
+    ]
+  }
 }

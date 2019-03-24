@@ -1,0 +1,41 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="feeling">
+            <h2><span jhiTranslate="efwgatewayApp.efwserviceFeeling.detail.title">Feeling</span> {{feeling.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeeling.feeltype">Feeltype</span></dt>
+                <dd>
+                    <span jhiTranslate="{{'efwgatewayApp.FeelType.' + feeling.feeltype}}">{{feeling.feeltype}}</span>
+                </dd>
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeeling.capacity">Capacity</span></dt>
+                <dd>
+                    <span>{{feeling.capacity}}</span>
+                </dd>
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeeling.isSpeechable">Is Speechable</span></dt>
+                <dd>
+                    <span>{{feeling.isSpeechable}}</span>
+                </dd>
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeeling.feelwheel">Feelwheel</span></dt>
+                <dd>
+                    <div *ngIf="feeling.feelwheelId">
+                        <a [routerLink]="['/feel-wheel-iso', feeling.feelwheelId, 'view']">{{feeling.feelwheelSubject}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/feeling-iso', feeling.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

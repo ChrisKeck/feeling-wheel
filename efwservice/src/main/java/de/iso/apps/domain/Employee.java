@@ -1,31 +1,47 @@
 package de.iso.apps.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Include;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-import javax.validation.constraints.*;
-
 import org.springframework.data.elasticsearch.annotations.Document;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Objects;
 
 /**
  * A Employee.
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "employee")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Document(indexName = "employee")
 public class Employee implements Serializable {
-
-    private static final long serialVersionUID = 1L;
     
+    private static final long serialVersionUID = -4055529959146231035L;
+    @Include
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
@@ -44,38 +60,8 @@ public class Employee implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties("employees")
     private Employee employee;
-
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Employee email(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Set<FeelWheel> getFeelWheels() {
-        return feelWheels;
-    }
-
-    public Employee feelWheels(Set<FeelWheel> feelWheels) {
-        this.feelWheels = feelWheels;
-        return this;
-    }
-
+    
+    
     public Employee addFeelWheel(FeelWheel feelWheel) {
         this.feelWheels.add(feelWheel);
         feelWheel.setEmployee(this);
@@ -87,20 +73,8 @@ public class Employee implements Serializable {
         feelWheel.setEmployee(null);
         return this;
     }
-
-    public void setFeelWheels(Set<FeelWheel> feelWheels) {
-        this.feelWheels = feelWheels;
-    }
-
-    public Set<Employee> getEmployees() {
-        return employees;
-    }
-
-    public Employee employees(Set<Employee> employees) {
-        this.employees = employees;
-        return this;
-    }
-
+    
+    
     public Employee addEmployee(Employee employee) {
         this.employees.add(employee);
         employee.setEmployee(this);
@@ -112,50 +86,10 @@ public class Employee implements Serializable {
         employee.setEmployee(null);
         return this;
     }
-
-    public void setEmployees(Set<Employee> employees) {
-        this.employees = employees;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public Employee employee(Employee employee) {
-        this.employee = employee;
-        return this;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Employee employee = (Employee) o;
-        if (employee.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), employee.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
-    }
-
-    @Override
-    public String toString() {
-        return "Employee{" +
-            "id=" + getId() +
-            ", email='" + getEmail() + "'" +
-            "}";
+    
+    protected boolean canEqual(Object other) {
+        return other != null &&
+               getClass() == other.getClass() &&
+               (this.getId() != null || ((Employee) other).getId() != null);
     }
 }

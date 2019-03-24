@@ -1,20 +1,20 @@
 package de.iso.apps.web.rest;
 
 import de.iso.apps.EfwserviceApp;
-
 import de.iso.apps.domain.Employee;
 import de.iso.apps.repository.EmployeeRepository;
 import de.iso.apps.repository.search.EmployeeSearchRepository;
+import de.iso.apps.repository.search.EmployeeSearchRepositoryMockConfiguration;
 import de.iso.apps.service.EmployeeService;
 import de.iso.apps.service.dto.EmployeeDTO;
 import de.iso.apps.service.mapper.EmployeeMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,14 +31,20 @@ import javax.persistence.EntityManager;
 import java.util.Collections;
 import java.util.List;
 
-
 import static de.iso.apps.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Test class for the EmployeeResource REST controller.
@@ -64,7 +70,7 @@ public class EmployeeResourceIntTest {
     /**
      * This repository is mocked in the de.iso.apps.repository.search test package.
      *
-     * @see de.iso.apps.repository.search.EmployeeSearchRepositoryMockConfiguration
+     * @see EmployeeSearchRepositoryMockConfiguration
      */
     @Autowired
     private EmployeeSearchRepository mockEmployeeSearchRepository;
@@ -80,7 +86,8 @@ public class EmployeeResourceIntTest {
 
     @Autowired
     private EntityManager em;
-
+    
+    @Qualifier("mvcValidator")
     @Autowired
     private Validator validator;
 
@@ -91,7 +98,7 @@ public class EmployeeResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final EmployeeResource employeeResource = new EmployeeResource(employeeService);
+        EmployeeResource employeeResource = new EmployeeResource(employeeService);
         this.restEmployeeMockMvc = MockMvcBuilders.standaloneSetup(employeeResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -107,8 +114,9 @@ public class EmployeeResourceIntTest {
      * if they test an entity which requires the current entity.
      */
     public static Employee createEntity(EntityManager em) {
-        Employee employee = new Employee()
-            .email(DEFAULT_EMAIL);
+        Employee employee = new Employee().builder()
+                                          .email(DEFAULT_EMAIL)
+                                          .build();
         return employee;
     }
 
@@ -229,8 +237,13 @@ public class EmployeeResourceIntTest {
         Employee updatedEmployee = employeeRepository.findById(employee.getId()).get();
         // Disconnect from session so that the updates on updatedEmployee are not directly saved in db
         em.detach(updatedEmployee);
-        updatedEmployee
-            .email(UPDATED_EMAIL);
+        updatedEmployee = Employee.builder()
+                                  .employee(updatedEmployee.getEmployee())
+                                  .feelWheels(updatedEmployee.getFeelWheels())
+                                  .employees(updatedEmployee.getEmployees())
+                                  .id(updatedEmployee.getId())
+                                  .email(UPDATED_EMAIL)
+                                  .build();
         EmployeeDTO employeeDTO = employeeMapper.toDto(updatedEmployee);
 
         restEmployeeMockMvc.perform(put("/api/employees")

@@ -1,20 +1,21 @@
 package de.iso.apps.web.rest;
 
 import de.iso.apps.EfwserviceApp;
-
 import de.iso.apps.domain.Feeling;
+import de.iso.apps.domain.enumeration.FeelType;
 import de.iso.apps.repository.FeelingRepository;
 import de.iso.apps.repository.search.FeelingSearchRepository;
+import de.iso.apps.repository.search.FeelingSearchRepositoryMockConfiguration;
 import de.iso.apps.service.FeelingService;
 import de.iso.apps.service.dto.FeelingDTO;
 import de.iso.apps.service.mapper.FeelingMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,16 +32,20 @@ import javax.persistence.EntityManager;
 import java.util.Collections;
 import java.util.List;
 
-
 import static de.iso.apps.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import de.iso.apps.domain.enumeration.FeelType;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 /**
  * Test class for the FeelingResource REST controller.
  *
@@ -71,7 +76,7 @@ public class FeelingResourceIntTest {
     /**
      * This repository is mocked in the de.iso.apps.repository.search test package.
      *
-     * @see de.iso.apps.repository.search.FeelingSearchRepositoryMockConfiguration
+     * @see FeelingSearchRepositoryMockConfiguration
      */
     @Autowired
     private FeelingSearchRepository mockFeelingSearchRepository;
@@ -87,7 +92,8 @@ public class FeelingResourceIntTest {
 
     @Autowired
     private EntityManager em;
-
+    
+    @Qualifier("mvcValidator")
     @Autowired
     private Validator validator;
 
@@ -98,7 +104,7 @@ public class FeelingResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final FeelingResource feelingResource = new FeelingResource(feelingService);
+        FeelingResource feelingResource = new FeelingResource(feelingService);
         this.restFeelingMockMvc = MockMvcBuilders.standaloneSetup(feelingResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -114,10 +120,11 @@ public class FeelingResourceIntTest {
      * if they test an entity which requires the current entity.
      */
     public static Feeling createEntity(EntityManager em) {
-        Feeling feeling = new Feeling()
-            .feeltype(DEFAULT_FEELTYPE)
-            .capacity(DEFAULT_CAPACITY)
-            .isSpeechable(DEFAULT_IS_SPEECHABLE);
+        Feeling feeling = new Feeling().builder()
+                                       .feeltype(DEFAULT_FEELTYPE)
+                                       .capacity(DEFAULT_CAPACITY)
+                                       .isSpeechable(DEFAULT_IS_SPEECHABLE)
+                                       .build();
         return feeling;
     }
 
@@ -144,7 +151,7 @@ public class FeelingResourceIntTest {
         Feeling testFeeling = feelingList.get(feelingList.size() - 1);
         assertThat(testFeeling.getFeeltype()).isEqualTo(DEFAULT_FEELTYPE);
         assertThat(testFeeling.getCapacity()).isEqualTo(DEFAULT_CAPACITY);
-        assertThat(testFeeling.isIsSpeechable()).isEqualTo(DEFAULT_IS_SPEECHABLE);
+        assertThat(testFeeling.getIsSpeechable()).isEqualTo(DEFAULT_IS_SPEECHABLE);
 
         // Validate the Feeling in Elasticsearch
         verify(mockFeelingSearchRepository, times(1)).save(testFeeling);
@@ -263,10 +270,13 @@ public class FeelingResourceIntTest {
         Feeling updatedFeeling = feelingRepository.findById(feeling.getId()).get();
         // Disconnect from session so that the updates on updatedFeeling are not directly saved in db
         em.detach(updatedFeeling);
-        updatedFeeling
-            .feeltype(UPDATED_FEELTYPE)
-            .capacity(UPDATED_CAPACITY)
-            .isSpeechable(UPDATED_IS_SPEECHABLE);
+        updatedFeeling = Feeling.builder()
+                                .feelwheel(updatedFeeling.getFeelwheel())
+                                .id(updatedFeeling.getId())
+                                .feeltype(UPDATED_FEELTYPE)
+                                .capacity(UPDATED_CAPACITY)
+                                .isSpeechable(UPDATED_IS_SPEECHABLE)
+                                .build();
         FeelingDTO feelingDTO = feelingMapper.toDto(updatedFeeling);
 
         restFeelingMockMvc.perform(put("/api/feelings")
@@ -280,7 +290,7 @@ public class FeelingResourceIntTest {
         Feeling testFeeling = feelingList.get(feelingList.size() - 1);
         assertThat(testFeeling.getFeeltype()).isEqualTo(UPDATED_FEELTYPE);
         assertThat(testFeeling.getCapacity()).isEqualTo(UPDATED_CAPACITY);
-        assertThat(testFeeling.isIsSpeechable()).isEqualTo(UPDATED_IS_SPEECHABLE);
+        assertThat(testFeeling.getIsSpeechable()).isEqualTo(UPDATED_IS_SPEECHABLE);
 
         // Validate the Feeling in Elasticsearch
         verify(mockFeelingSearchRepository, times(1)).save(testFeeling);

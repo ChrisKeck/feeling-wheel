@@ -1,0 +1,30 @@
+{
+    "efwgatewayApp": {
+        "efwserviceFeelWheel": {
+            "home": {
+                "title": "Feel Wheels",
+                "createLabel": "Feel Wheel erstellen",
+                "createOrEditLabel": "Feel Wheel erstellen oder bearbeiten",
+                "search": "Suche nach Feel Wheel"
+            },
+            "delete": {
+                "question": "Soll Feel Wheel {{ id }} wirklich dauerhaft gelöscht werden?"
+            },
+            "detail": {
+                "title": "Feel Wheel"
+            },
+            "subject": "Subject",
+            "from": "From",
+            "to": "To",
+            "feeling": "Feeling",
+            "employee": "Employee"
+        }
+    },
+    "efwserviceApp": {
+        "efwserviceFeelWheel": {
+            "created": "Feel Wheel erstellt mit ID {{ param }}",
+            "updated": "Feel Wheel aktualisiert mit ID {{ param }}",
+            "deleted": "Feel Wheel gelöscht mit ID {{ param }}"
+        }
+    }
+}

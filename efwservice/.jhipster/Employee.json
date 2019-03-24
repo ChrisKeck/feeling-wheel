@@ -1,0 +1,44 @@
+{
+    "name": "Employee",
+    "fields": [
+        {
+            "fieldName": "email",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "feelWheel",
+            "otherEntityRelationshipName": "employee",
+            "relationshipName": "feelWheel"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "employee",
+            "otherEntityRelationshipName": "employee",
+            "relationshipName": "employee"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "employee",
+            "otherEntityRelationshipName": "employee",
+            "relationshipName": "employee",
+            "otherEntityField": "email"
+        }
+    ],
+    "changelogDate": "20190324021122",
+    "entityTableName": "employee",
+    "dto": "mapstruct",
+    "pagination": "infinite-scroll",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "efwservice",
+    "applications": "*",
+    "angularJSSuffix": "iso",
+    "microserviceName": "efwservice"
+}

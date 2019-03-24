@@ -1,0 +1,30 @@
+{
+    "efwgatewayApp": {
+        "efwserviceFeelWheel": {
+            "home": {
+                "title": "Feel Wheels",
+                "createLabel": "Create a new Feel Wheel",
+                "createOrEditLabel": "Create or edit a Feel Wheel",
+                "search": "Search for Feel Wheel"
+            },
+            "delete": {
+                "question": "Are you sure you want to delete Feel Wheel {{ id }}?"
+            },
+            "detail": {
+                "title": "Feel Wheel"
+            },
+            "subject": "Subject",
+            "from": "From",
+            "to": "To",
+            "feeling": "Feeling",
+            "employee": "Employee"
+        }
+    },
+    "efwserviceApp": {
+        "efwserviceFeelWheel": {
+            "created": "A new Feel Wheel is created with identifier {{ param }}",
+            "updated": "A Feel Wheel is updated with identifier {{ param }}",
+            "deleted": "A Feel Wheel is deleted with identifier {{ param }}"
+        }
+    }
+}

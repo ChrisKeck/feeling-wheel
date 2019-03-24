@@ -1,7 +1,7 @@
 <div>
     <h2 id="page-heading">
         <span jhiTranslate="efwgatewayApp.efwserviceEmployee.home.title">Employees</span>
-        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-employee-iso" [routerLink]="['/employee-iso/new']">
+        <button *jhiHasAnyAuthority="['ROLE_ADMIN']" id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-employee-iso" [routerLink]="['/employee-iso/new']">
             <fa-icon [icon]="'plus'"></fa-icon>
             <span class="hidden-sm-down"  jhiTranslate="efwgatewayApp.efwserviceEmployee.home.createLabel">
             Create new Employee
@@ -29,7 +29,7 @@
         <table class="table table-striped">
             <thead>
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="reset.bind(this)">
-            <th jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th *jhiHasAnyAuthority="['ROLE_ADMIN']" jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="email"><span jhiTranslate="efwgatewayApp.efwserviceEmployee.email">Email</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="employeeEmail"><span jhiTranslate="efwgatewayApp.efwserviceEmployee.employee">Employee</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
@@ -58,7 +58,7 @@
                             <fa-icon [icon]="'pencil-alt'"></fa-icon>
                             <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
                         </button>
-                        <button type="submit"
+                        <button *jhiHasAnyAuthority="['ROLE_ADMIN']" type="submit"
                                 [routerLink]="['/', 'employee-iso', { outlets: { popup: employee.id + '/delete'} }]"
                                 replaceUrl="true"
                                 queryParamsHandling="merge"

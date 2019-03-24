@@ -4,7 +4,7 @@
             <h2 id="jhi-employee-iso-heading" jhiTranslate="efwgatewayApp.efwserviceEmployee.home.createOrEditLabel">Create or edit a Employee</h2>
             <div>
                 <jhi-alert-error></jhi-alert-error>
-                <div class="form-group" [hidden]="!employee.id">
+                <div *jhiHasAnyAuthority="['ROLE_ADMIN']" class="form-group" [hidden]="!employee.id">
                     <label for="id" jhiTranslate="global.field.id">ID</label>
                     <input type="text" class="form-control" id="id" name="id"
                         [(ngModel)]="employee.id" readonly />

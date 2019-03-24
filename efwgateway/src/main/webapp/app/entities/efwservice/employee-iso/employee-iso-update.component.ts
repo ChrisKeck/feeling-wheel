@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { JhiAlertService } from 'ng-jhipster';
-import { IEmployeeIso } from 'app/shared/model/efwservice/employee-iso.model';
-import { EmployeeIsoService } from './employee-iso.service';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
+import {JhiAlertService} from 'ng-jhipster';
+import {IEmployeeIso} from 'app/shared/model/efwservice/employee-iso.model';
+import {EmployeeIsoService} from './employee-iso.service';
 
 @Component({
     selector: 'jhi-employee-iso-update',
@@ -34,7 +34,10 @@ export class EmployeeIsoUpdateComponent implements OnInit {
                 filter((mayBeOk: HttpResponse<IEmployeeIso[]>) => mayBeOk.ok),
                 map((response: HttpResponse<IEmployeeIso[]>) => response.body)
             )
-            .subscribe((res: IEmployeeIso[]) => (this.employees = res), (res: HttpErrorResponse) => this.onError(res.message));
+            .subscribe((res: IEmployeeIso[]) => (this.employees = res
+                    .filter(tpl => tpl.id !== this.employee.id &&
+                        tpl.employeeId !== this.employee.id)),
+                (res: HttpErrorResponse) => this.onError(res.message));
     }
 
     previousState() {

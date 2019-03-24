@@ -29,7 +29,7 @@
         <table class="table table-striped">
             <thead>
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="reset.bind(this)">
-            <th jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th *jhiHasAnyAuthority="['ROLE_ADMIN']" jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="feeltype"><span jhiTranslate="efwgatewayApp.efwserviceFeeling.feeltype">Feeltype</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="capacity"><span jhiTranslate="efwgatewayApp.efwserviceFeeling.capacity">Capacity</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="isSpeechable"><span jhiTranslate="efwgatewayApp.efwserviceFeeling.isSpeechable">Is Speechable</span> <fa-icon [icon]="'sort'"></fa-icon></th>

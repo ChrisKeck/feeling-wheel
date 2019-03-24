@@ -1,16 +1,15 @@
-import { Injectable } from '@angular/core';
-import { HttpResponse } from '@angular/common/http';
-import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Routes } from '@angular/router';
-import { UserRouteAccessService } from 'app/core';
-import { Observable, of } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { EmployeeIso } from 'app/shared/model/efwservice/employee-iso.model';
-import { EmployeeIsoService } from './employee-iso.service';
-import { EmployeeIsoComponent } from './employee-iso.component';
-import { EmployeeIsoDetailComponent } from './employee-iso-detail.component';
-import { EmployeeIsoUpdateComponent } from './employee-iso-update.component';
-import { EmployeeIsoDeletePopupComponent } from './employee-iso-delete-dialog.component';
-import { IEmployeeIso } from 'app/shared/model/efwservice/employee-iso.model';
+import {Injectable} from '@angular/core';
+import {HttpResponse} from '@angular/common/http';
+import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot, Routes} from '@angular/router';
+import {UserRouteAccessService} from 'app/core';
+import {Observable, of} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
+import {EmployeeIso, IEmployeeIso} from 'app/shared/model/efwservice/employee-iso.model';
+import {EmployeeIsoService} from './employee-iso.service';
+import {EmployeeIsoComponent} from './employee-iso.component';
+import {EmployeeIsoDetailComponent} from 'app/entities/efwservice/employee-iso/employee-iso-detail.component';
+import {EmployeeIsoUpdateComponent} from 'app/entities/efwservice/employee-iso/employee-iso-update.component';
+import {EmployeeIsoDeletePopupComponent} from 'app/entities/efwservice/employee-iso/employee-iso-delete-dialog.component';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeIsoResolve implements Resolve<IEmployeeIso> {
@@ -33,7 +32,7 @@ export const employeeRoute: Routes = [
         path: '',
         component: EmployeeIsoComponent,
         data: {
-            authorities: ['ROLE_USER'],
+            authorities: ['ROLE_TPL', 'ROLE_ADMIN'],
             pageTitle: 'efwgatewayApp.efwserviceEmployee.home.title'
         },
         canActivate: [UserRouteAccessService]
@@ -45,7 +44,7 @@ export const employeeRoute: Routes = [
             employee: EmployeeIsoResolve
         },
         data: {
-            authorities: ['ROLE_USER'],
+            authorities: ['ROLE_TPL', 'ROLE_ADMIN'],
             pageTitle: 'efwgatewayApp.efwserviceEmployee.home.title'
         },
         canActivate: [UserRouteAccessService]
@@ -57,7 +56,7 @@ export const employeeRoute: Routes = [
             employee: EmployeeIsoResolve
         },
         data: {
-            authorities: ['ROLE_USER'],
+            authorities: ['ROLE_ADMIN'],
             pageTitle: 'efwgatewayApp.efwserviceEmployee.home.title'
         },
         canActivate: [UserRouteAccessService]
@@ -69,7 +68,7 @@ export const employeeRoute: Routes = [
             employee: EmployeeIsoResolve
         },
         data: {
-            authorities: ['ROLE_USER'],
+            authorities: ['ROLE_TPL', 'ROLE_ADMIN'],
             pageTitle: 'efwgatewayApp.efwserviceEmployee.home.title'
         },
         canActivate: [UserRouteAccessService]
@@ -84,7 +83,7 @@ export const employeePopupRoute: Routes = [
             employee: EmployeeIsoResolve
         },
         data: {
-            authorities: ['ROLE_USER'],
+            authorities: ['ROLE_ADMIN'],
             pageTitle: 'efwgatewayApp.efwserviceEmployee.home.title'
         },
         canActivate: [UserRouteAccessService],

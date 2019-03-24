@@ -1,0 +1,29 @@
+{
+    "name": "efwservice",
+    "version": "0.0.0",
+    "description": "Description for efwservice",
+    "private": true,
+    "license": "UNLICENSED",
+    "cacheDirectories": [
+        "node_modules"
+    ],
+    "devDependencies": {
+        "generator-jhipster-standalone-profile": "2.3.0",
+        "generator-jhipster-docker": "2.5.0",
+        "generator-jhipster-swagger-cli": "3.0.1",
+        "generator-jhipster-spring-cloud-stream": "1.0.0",
+        "generator-jhipster-electron": "1.0.0",
+        "generator-codegen": "0.2.1",
+        "generator-jhipster-translation": "1.0.4",
+        "generator-jhipster-database-backup": "1.0.7",
+        "generator-jhipster-administration-database": "1.0.4",
+        "generator-jhipster-jgitver": "0.1.0",
+        "generator-jhipster-obfuscation-at-rest": "0.3.0",
+        "generator-jhipster-aeropost": "1.10.0",
+        "generator-jhipster-file2url": "0.0.0",
+        "generator-jhipster": "5.8.2"
+    },
+    "engines": {
+        "node": ">=8.9.0"
+    }
+}

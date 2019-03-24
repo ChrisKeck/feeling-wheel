@@ -1,0 +1,18 @@
+{
+  "generator-jhipster": {
+    "appsFolders": [
+      "efwgateway",
+      "efwservice"
+    ],
+    "directoryPath": "../",
+    "serviceDiscoveryType": "eureka",
+    "jwtSecretKey": "NDVhYWM5YTY3YmUwYTFhZWUxNmY5ZjBiNzA5N2EzNjgwZjNkYjIxYjhlODcyYTkyMmE5ZGNjMjMzN2NlNjg5ZDA3ZWFmNjNjMmY4MjVhMTIyNmJlNTA0MGMxYjk1Njg1ZWFkZQ==",
+    "dockerRepositoryName": "standard",
+    "dockerPushCommand": "docker push",
+    "kubernetesNamespace": "default",
+    "kubernetesServiceType": "LoadBalancer",
+    "monitoring": "elk",
+    "istio": "autoInjection",
+    "istioRoute": true
+  }
+}

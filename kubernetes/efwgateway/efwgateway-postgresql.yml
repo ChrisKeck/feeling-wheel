@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: efwgateway-postgresql
+  namespace: default
+  labels:
+    app: efwgateway-postgresql
+type: Opaque
+data:
+  postgres-password: ZzM5MTZ1eWw=
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: efwgateway-postgresql
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: efwgateway-postgresql
+    spec:
+      volumes:
+      - name: data
+        emptyDir: {}
+      containers:
+      - name: postgres
+        image: postgres:10.4
+        env:
+        - name: POSTGRES_USER
+          value: efwgateway
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: efwgateway-postgresql
+              key: postgres-password
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: efwgateway-postgresql
+  namespace: default
+spec:
+  selector:
+    app: efwgateway-postgresql
+  ports:
+  - port: 5432

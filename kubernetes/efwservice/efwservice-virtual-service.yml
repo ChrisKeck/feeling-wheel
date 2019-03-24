@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: efwservice-virtualservice
+  namespace: default
+spec:
+  hosts:
+  - efwservice
+  http:
+  - route:
+    - destination:
+        host: efwservice
+        subset: "v1"
+      weight: 100
+    retries:
+      attempts: 3
+      perTryTimeout: 2s

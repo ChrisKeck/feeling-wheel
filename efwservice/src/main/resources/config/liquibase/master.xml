@@ -3,8 +3,13 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190324021120_added_entity_Feeling.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190324021121_added_entity_FeelWheel.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190324021122_added_entity_Employee.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+    <include file="config/liquibase/changelog/20190324021120_added_entity_constraints_Feeling.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190324021121_added_entity_constraints_FeelWheel.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190324021122_added_entity_constraints_Employee.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

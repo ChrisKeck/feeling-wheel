@@ -1,0 +1,29 @@
+{
+    "efwgatewayApp": {
+        "efwserviceFeeling": {
+            "home": {
+                "title": "Feelings",
+                "createLabel": "Feeling erstellen",
+                "createOrEditLabel": "Feeling erstellen oder bearbeiten",
+                "search": "Suche nach Feeling"
+            },
+            "delete": {
+                "question": "Soll Feeling {{ id }} wirklich dauerhaft gelöscht werden?"
+            },
+            "detail": {
+                "title": "Feeling"
+            },
+            "feeltype": "Feeltype",
+            "capacity": "Capacity",
+            "isSpeechable": "Is Speechable",
+            "feelwheel": "Feelwheel"
+        }
+    },
+    "efwserviceApp": {
+        "efwserviceFeeling": {
+            "created": "Feeling erstellt mit ID {{ param }}",
+            "updated": "Feeling aktualisiert mit ID {{ param }}",
+            "deleted": "Feeling gelöscht mit ID {{ param }}"
+        }
+    }
+}

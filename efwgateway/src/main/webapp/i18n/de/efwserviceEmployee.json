@@ -1,0 +1,29 @@
+{
+    "efwgatewayApp": {
+        "efwserviceEmployee": {
+            "home": {
+                "title": "Employees",
+                "createLabel": "Employee erstellen",
+                "createOrEditLabel": "Employee erstellen oder bearbeiten",
+                "search": "Suche nach Employee"
+            },
+            "delete": {
+                "question": "Soll Employee {{ id }} wirklich dauerhaft gelöscht werden?"
+            },
+            "detail": {
+                "title": "Employee"
+            },
+            "email": "Email",
+            "feelWheel": "Feel Wheel",
+            "employee": "Employee",
+            "employee": "Employee"
+        }
+    },
+    "efwserviceApp": {
+        "efwserviceEmployee": {
+            "created": "Employee erstellt mit ID {{ param }}",
+            "updated": "Employee aktualisiert mit ID {{ param }}",
+            "deleted": "Employee gelöscht mit ID {{ param }}"
+        }
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "name": "Feeling",
+    "fields": [
+        {
+            "fieldName": "feeltype",
+            "fieldType": "FeelType",
+            "fieldValues": "ANGRY,SAD,HAPPY",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "capacity",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "isSpeechable",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "feelWheel",
+            "otherEntityRelationshipName": "feeling",
+            "relationshipName": "feelwheel",
+            "otherEntityField": "subject"
+        }
+    ],
+    "changelogDate": "20190324021120",
+    "entityTableName": "feeling",
+    "dto": "mapstruct",
+    "pagination": "infinite-scroll",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "efwservice",
+    "applications": "*",
+    "angularJSSuffix": "iso",
+    "microserviceName": "efwservice"
+}

@@ -39,6 +39,8 @@ services:
             - SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=kafka
             - SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=zookeeper
             - JHIPSTER_REGISTRY_PASSWORD=admin
+        ports:
+            - '8081:8081'
     efwservice-postgresql:
         image: 'postgres:10.4'
         environment:

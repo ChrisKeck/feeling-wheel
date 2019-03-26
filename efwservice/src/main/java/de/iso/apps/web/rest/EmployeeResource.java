@@ -6,12 +6,16 @@ import de.iso.apps.web.rest.errors.BadRequestAlertException;
 import de.iso.apps.web.rest.util.HeaderUtil;
 import de.iso.apps.web.rest.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.header.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +31,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.stream.StreamSupport;
 
 /**
  * REST controller for managing Employee.
@@ -40,7 +46,8 @@ public class EmployeeResource {
     private static final String ENTITY_NAME = "efwserviceEmployee";
 
     private final EmployeeService employeeService;
-
+    private CountDownLatch latch;
+    
     public EmployeeResource(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
@@ -139,5 +146,40 @@ public class EmployeeResource {
         HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/employees");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
-
+    
+    @KafkaListener(topics = "advice-topic", clientIdPrefix = "json",
+                   containerFactory = "kafkaListenerContainerFactory")
+    public void listenAsObject(ConsumerRecord<String, PracticalAdvice> cr,
+                               @Payload PracticalAdvice payload) {
+        log.info("Logger 1 [JSON] received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(),
+                 typeIdHeader(cr.headers()), payload, cr.toString());
+        latch.countDown();
+    }
+    
+    @KafkaListener(topics = "advice-topic", clientIdPrefix = "string",
+                   containerFactory = "kafkaListenerStringContainerFactory")
+    public void listenasString(ConsumerRecord<String, String> cr,
+                               @Payload String payload) {
+        log.info("Logger 2 [String] received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(),
+                 typeIdHeader(cr.headers()), payload, cr.toString());
+        latch.countDown();
+    }
+    
+    @KafkaListener(topics = "advice-topic", clientIdPrefix = "bytearray",
+                   containerFactory = "kafkaListenerByteArrayContainerFactory")
+    public void listenAsByteArray(ConsumerRecord<String, byte[]> cr,
+                                  @Payload byte[] payload) {
+        log.info("Logger 3 [ByteArray] received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(),
+                 typeIdHeader(cr.headers()), payload, cr.toString());
+        latch.countDown();
+    }
+    
+    private static String typeIdHeader(Headers headers) {
+        return StreamSupport.stream(headers.spliterator(), false)
+                            .filter(header -> header.key()
+                                                    .equals("__TypeId__"))
+                            .findFirst()
+                            .map(header -> new String(header.value()))
+                            .orElse("N/A");
+    }
 }

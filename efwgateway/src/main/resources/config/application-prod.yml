@@ -86,7 +86,7 @@ spring:
 
 tpd:
     topic-name: advice-topic
-    messages-per-request: 10
+    messages-per-request: 1
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
 # keytool -genkey -alias efwgateway -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
@@ -154,11 +154,11 @@ jhipster:
         base-url: http://my-server-url-to-change # Modify according to your server's URL
     metrics:
         logs: # Reports metrics in the logs
-            enabled: false
+            enabled: true
             report-frequency: 60 # in seconds
     logging:
         logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
-            enabled: false
+            enabled: true
             host: localhost
             port: 5000
             queue-size: 512

@@ -103,7 +103,7 @@ spring:
 
 tpd:
     topic-name: advice-topic
-    messages-per-request: 10
+    messages-per-request: 1
 server:
     port: 8080
 

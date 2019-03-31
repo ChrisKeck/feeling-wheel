@@ -5,25 +5,25 @@ import de.iso.apps.domain.User;
 import de.iso.apps.repository.UserRepository;
 import de.iso.apps.repository.search.UserSearchRepository;
 import de.iso.apps.security.AuthoritiesConstants;
+import de.iso.apps.service.MailChangingService;
 import de.iso.apps.service.MailService;
 import de.iso.apps.service.UserService;
-import de.iso.apps.service.dto.PracticalAdvice;
 import de.iso.apps.service.dto.UserDTO;
+import de.iso.apps.service.mapper.UserMapper;
 import de.iso.apps.web.rest.errors.BadRequestAlertException;
 import de.iso.apps.web.rest.errors.EmailAlreadyUsedException;
 import de.iso.apps.web.rest.errors.LoginAlreadyUsedException;
 import de.iso.apps.web.rest.util.HeaderUtil;
 import de.iso.apps.web.rest.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,10 +39,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
@@ -84,43 +81,23 @@ public class UserResource {
     private final MailService mailService;
 
     private final UserSearchRepository userSearchRepository;
-    private final KafkaTemplate<String, Object> template;
-    private final String topicName;
-    private final int messagesPerRequest;
-    private CountDownLatch latch;
+    private final MailChangingService mailChangingService;
+    private final UserMapper userMapper;
     
     public UserResource(UserService userService,
                         UserRepository userRepository,
                         MailService mailService,
                         UserSearchRepository userSearchRepository,
-                        KafkaTemplate<String, Object> template,
-                        @Value("${tpd.topic-name}") String topicName,
-                        @Value("${tpd.messages-per-request}") int messagesPerRequest) {
+                        MailChangingService mailChangingService, UserMapper userMapper) {
 
         this.userService = userService;
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userSearchRepository = userSearchRepository;
-        this.template = template;
-        this.topicName = topicName;
-        this.messagesPerRequest = messagesPerRequest;
+        this.mailChangingService = mailChangingService;
+        this.userMapper = userMapper;
     }
     
-    public String hello() {
-        try {
-            latch = new CountDownLatch(messagesPerRequest);
-            IntStream.range(0, messagesPerRequest)
-                     .forEach(i -> this.template.send(topicName, String.valueOf(i),
-                                                      new PracticalAdvice("A Practical Advice", i))
-                             );
-            latch.await(60, TimeUnit.SECONDS);
-            log.info("All messages received");
-            return "Hello Kafka!";
-        } catch (Exception ex) {
-            log.error("Error", ex);
-        }
-        return null;
-    }
     /**
      * POST  /users  : Creates a new user.
      * <p>
@@ -147,8 +124,10 @@ public class UserResource {
             throw new EmailAlreadyUsedException();
         } else {
             User newUser = userService.createUser(userDTO);
+            var newUserDTO = userMapper.userToUserDTO(newUser);
+            var mailChangingDTO = userMapper.userDTOToMailChangingDTO(newUserDTO, null);
+            mailChangingService.propagate(mailChangingDTO);
             mailService.sendCreationEmail(newUser);
-            hello();
             return ResponseEntity.created(new URI("/api/users/" + newUser.getLogin()))
                 .headers(HeaderUtil.createAlert( "userManagement.created", newUser.getLogin()))
                 .body(newUser);
@@ -171,13 +150,22 @@ public class UserResource {
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
             throw new EmailAlreadyUsedException();
         }
-        existingUser = userRepository.findOneByLogin(userDTO.getLogin().toLowerCase());
-        if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
+        var logInUser = userRepository.findOneByLogin(userDTO.getLogin()
+                                                             .toLowerCase());
+        if (logInUser.isPresent() && (!logInUser.get()
+                                                .getId()
+                                                .equals(userDTO.getId()))) {
             throw new LoginAlreadyUsedException();
         }
         Optional<UserDTO> updatedUser = userService.updateUser(userDTO);
-        hello();
-
+        if (logInUser.isPresent() && updatedUser.isPresent() && logInUser.get()
+                                                                         .getEmail() != updatedUser.get()
+                                                                                                   .getEmail()) {
+            var mappedDTO = userMapper.userToUserDTO(logInUser.get());
+            var mailingChanging = userMapper.userDTOToMailChangingDTO(updatedUser.get(), mappedDTO);
+        
+            mailChangingService.propagate(mailingChanging);
+        }
         return ResponseUtil.wrapOrNotFound(updatedUser,
             HeaderUtil.createAlert("userManagement.updated", userDTO.getLogin()));
     }
@@ -192,7 +180,6 @@ public class UserResource {
     public ResponseEntity<List<UserDTO>> getAllUsers(Pageable pageable) {
         Page<UserDTO> page = userService.getAllManagedUsers(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users");
-        hello();
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
@@ -202,7 +189,6 @@ public class UserResource {
     @GetMapping("/users/authorities")
     @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public List<String> getAuthorities() {
-        hello();
         return userService.getAuthorities();
     }
 

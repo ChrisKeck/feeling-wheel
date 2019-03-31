@@ -2,6 +2,7 @@ package de.iso.apps;
 
 import de.iso.apps.config.ApplicationProperties;
 import de.iso.apps.config.DefaultProfileUtil;
+import de.iso.apps.service.dto.MailChangingDTO;
 import io.github.jhipster.config.JHipsterConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -142,8 +143,8 @@ public class EfwserviceApp {
 //    }
     
     @Bean
-    public ConsumerFactory<String, Object> consumerFactory() {
-        JsonDeserializer<Object> jsonDeserializer = new JsonDeserializer<>();
+    public ConsumerFactory<String, MailChangingDTO> consumerFactory() {
+        JsonDeserializer<MailChangingDTO> jsonDeserializer = new JsonDeserializer<>();
         jsonDeserializer.addTrustedPackages("*");
         return new DefaultKafkaConsumerFactory<>(
             kafkaProperties.buildConsumerProperties(), new StringDeserializer(), jsonDeserializer
@@ -151,8 +152,8 @@ public class EfwserviceApp {
     }
     
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, MailChangingDTO> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, MailChangingDTO> factory =
             new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         

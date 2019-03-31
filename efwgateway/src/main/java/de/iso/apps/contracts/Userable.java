@@ -2,7 +2,7 @@ package de.iso.apps.contracts;
 
 import java.io.Serializable;
 
-public interface IUser extends Serializable {
+public interface Userable extends Serializable {
     Long getId();
     
     String getLogin();

@@ -2,6 +2,8 @@ package de.iso.apps;
 
 import de.iso.apps.config.ApplicationProperties;
 import de.iso.apps.config.DefaultProfileUtil;
+import de.iso.apps.contracts.Topicable;
+import de.iso.apps.service.dto.MailChangingDTO;
 import io.github.jhipster.config.JHipsterConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -123,6 +125,8 @@ public class EfwgatewayApp {
     
     @Value("${tpd.topic-name}")
     private String topicName;
+    @Value("${tpd.messages-per-request}")
+    private int numberofRequests;
     
     // Producer configuration
     
@@ -134,16 +138,17 @@ public class EfwgatewayApp {
                   StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                   JsonSerializer.class);
+    
         return props;
     }
     
     @Bean
-    public ProducerFactory<String, Object> producerFactory() {
+    public ProducerFactory<String, MailChangingDTO> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
     
     @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate() {
+    public KafkaTemplate<String, MailChangingDTO> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
     
@@ -151,4 +156,29 @@ public class EfwgatewayApp {
     public NewTopic adviceTopic() {
         return new NewTopic(topicName, 3, (short) 1);
     }
+    
+    @Bean
+    public Topicable topicableMailChanging() {
+        return new TopicableMailChangingImpl();
+    }
+    
+    public class TopicableMailChangingImpl implements Topicable<MailChangingDTO> {
+        
+        
+        @Override
+        public String getTopic() {
+            return topicName;
+        }
+        
+        @Override
+        public int getRequestsPerMessage() {
+            return numberofRequests;
+        }
+        
+        @Override
+        public KafkaTemplate<String, MailChangingDTO> getKafkaTemplate() {
+            return kafkaTemplate();
+        }
+    }
+    
 }

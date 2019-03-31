@@ -1,13 +1,16 @@
 package de.iso.apps.web.rest;
 
 import de.iso.apps.EfwgatewayApp;
+import de.iso.apps.contracts.Topicable;
 import de.iso.apps.domain.Authority;
 import de.iso.apps.domain.User;
 import de.iso.apps.repository.UserRepository;
 import de.iso.apps.repository.search.UserSearchRepository;
 import de.iso.apps.security.AuthoritiesConstants;
+import de.iso.apps.service.MailChangingService;
 import de.iso.apps.service.MailService;
 import de.iso.apps.service.UserService;
+import de.iso.apps.service.dto.MailChangingDTO;
 import de.iso.apps.service.dto.UserDTO;
 import de.iso.apps.service.mapper.UserMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
@@ -115,8 +118,13 @@ public class UserResourceIntTest {
     private CacheManager cacheManager;
 
     private MockMvc restUserMockMvc;
+    
     @Mock
     private KafkaTemplate<String, Object> mockkafka;
+    
+    @Mock
+    private Topicable<MailChangingDTO> topicable;
+    
     private User user;
 
     @Before
@@ -127,9 +135,12 @@ public class UserResourceIntTest {
                                                      userRepository,
                                                      mailService,
                                                      mockUserSearchRepository,
-                                                     mockkafka,
-                                                     "",
-                                                     0);
+                                                     new MailChangingService(topicable) {
+                                                         @Override
+                                                         public void propagate(MailChangingDTO userDTO) {
+        
+                                                         }
+                                                     }, new UserMapper());
 
         this.restUserMockMvc = MockMvcBuilders.standaloneSetup(userResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)

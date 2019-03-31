@@ -1,7 +1,7 @@
 package de.iso.apps.service.dto;
 
 import de.iso.apps.config.Constants;
-import de.iso.apps.contracts.IUser;
+import de.iso.apps.contracts.Userable;
 import de.iso.apps.domain.Authority;
 import de.iso.apps.domain.User;
 import lombok.AllArgsConstructor;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
-public class UserDTO implements IUser {
+public class UserDTO implements Userable {
     private static final long serialVersionUID = 5129857733638000361L;
     @Include
     private Long id;

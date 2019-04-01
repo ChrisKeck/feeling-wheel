@@ -1,20 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { JhiEventManager, JhiParseLinks, JhiAlertService } from 'ng-jhipster';
+import {HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {AccountService} from 'app/core';
 
-import { IFeelWheelIso } from 'app/shared/model/efwservice/feel-wheel-iso.model';
-import { AccountService } from 'app/core';
+import {ITEMS_PER_PAGE} from 'app/shared';
 
-import { ITEMS_PER_PAGE } from 'app/shared';
-import { FeelWheelIsoService } from './feel-wheel-iso.service';
+import {IFeelWheelIso} from 'app/shared/model/efwservice/feel-wheel-iso.model';
+import {JhiAlertService, JhiEventManager, JhiParseLinks} from 'ng-jhipster';
+import {Subscription} from 'rxjs';
+import {FeelWheelIsoService} from './feel-wheel-iso.service';
 
 @Component({
-    selector: 'jhi-feel-wheel-iso',
-    templateUrl: './feel-wheel-iso.component.html'
-})
+               selector: 'jhi-feel-wheel-iso', templateUrl: './feel-wheel-iso.component.html'
+           })
 export class FeelWheelIsoComponent implements OnInit, OnDestroy {
     feelWheels: IFeelWheelIso[];
     currentAccount: any;
@@ -27,14 +25,12 @@ export class FeelWheelIsoComponent implements OnInit, OnDestroy {
     totalItems: number;
     currentSearch: string;
 
-    constructor(
-        protected feelWheelService: FeelWheelIsoService,
-        protected jhiAlertService: JhiAlertService,
-        protected eventManager: JhiEventManager,
-        protected parseLinks: JhiParseLinks,
-        protected activatedRoute: ActivatedRoute,
-        protected accountService: AccountService
-    ) {
+    constructor(protected feelWheelService: FeelWheelIsoService,
+                protected jhiAlertService: JhiAlertService,
+                protected eventManager: JhiEventManager,
+                protected parseLinks: JhiParseLinks,
+                protected activatedRoute: ActivatedRoute,
+                protected accountService: AccountService) {
         this.feelWheels = [];
         this.itemsPerPage = ITEMS_PER_PAGE;
         this.page = 0;
@@ -43,37 +39,27 @@ export class FeelWheelIsoComponent implements OnInit, OnDestroy {
         };
         this.predicate = 'id';
         this.reverse = true;
-        this.currentSearch =
-            this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search']
-                ? this.activatedRoute.snapshot.params['search']
-                : '';
+        this.currentSearch = this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search'] ?
+                             this.activatedRoute.snapshot.params['search'] :
+                             '';
     }
 
     loadAll() {
         if (this.currentSearch) {
             this.feelWheelService
                 .search({
-                    query: this.currentSearch,
-                    page: this.page,
-                    size: this.itemsPerPage,
-                    sort: this.sort()
-                })
-                .subscribe(
-                    (res: HttpResponse<IFeelWheelIso[]>) => this.paginateFeelWheels(res.body, res.headers),
-                    (res: HttpErrorResponse) => this.onError(res.message)
-                );
+                            query: this.currentSearch, page: this.page, size: this.itemsPerPage, sort: this.sort()
+                        })
+                .subscribe((res: HttpResponse<IFeelWheelIso[]>) => this.paginateFeelWheels(res.body, res.headers),
+                           (res: HttpErrorResponse) => this.onError(res.message));
             return;
         }
         this.feelWheelService
             .query({
-                page: this.page,
-                size: this.itemsPerPage,
-                sort: this.sort()
-            })
-            .subscribe(
-                (res: HttpResponse<IFeelWheelIso[]>) => this.paginateFeelWheels(res.body, res.headers),
-                (res: HttpErrorResponse) => this.onError(res.message)
-            );
+                       page: this.page, size: this.itemsPerPage, sort: this.sort()
+                   })
+            .subscribe((res: HttpResponse<IFeelWheelIso[]>) => this.paginateFeelWheels(res.body, res.headers),
+                       (res: HttpErrorResponse) => this.onError(res.message));
     }
 
     reset() {

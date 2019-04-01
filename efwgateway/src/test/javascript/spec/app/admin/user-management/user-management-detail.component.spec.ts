@@ -1,32 +1,27 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ActivatedRoute} from '@angular/router';
+import {UserMgmtDetailComponent} from 'app/admin/user-management/user-management-detail.component';
+import {User} from 'app/core';
+import {of} from 'rxjs';
 
-import { EfwgatewayTestModule } from '../../../test.module';
-import { UserMgmtDetailComponent } from 'app/admin/user-management/user-management-detail.component';
-import { User } from 'app/core';
+import {EfwgatewayTestModule} from '../../../test.module';
 
 describe('Component Tests', () => {
     describe('User Management Detail Component', () => {
         let comp: UserMgmtDetailComponent;
         let fixture: ComponentFixture<UserMgmtDetailComponent>;
         const route = ({
-            data: of({ user: new User(1, 'user', 'first', 'last', 'first@last.com', true, 'en', ['ROLE_USER'], 'admin', null, null, null) })
+            data: of({user: new User(1, 'user', 'first', 'last', 'first@last.com', true, 'en', ['ROLE_USER'], 'admin', null, null, null)})
         } as any) as ActivatedRoute;
 
         beforeEach(async(() => {
             TestBed.configureTestingModule({
-                imports: [EfwgatewayTestModule],
-                declarations: [UserMgmtDetailComponent],
-                providers: [
-                    {
-                        provide: ActivatedRoute,
-                        useValue: route
-                    }
-                ]
-            })
-                .overrideTemplate(UserMgmtDetailComponent, '')
-                .compileComponents();
+                                               imports: [EfwgatewayTestModule], declarations: [UserMgmtDetailComponent], providers: [{
+                           provide: ActivatedRoute, useValue: route
+                       }]
+                                           })
+                   .overrideTemplate(UserMgmtDetailComponent, '')
+                   .compileComponents();
         }));
 
         beforeEach(() => {
@@ -42,23 +37,21 @@ describe('Component Tests', () => {
                 comp.ngOnInit();
 
                 // THEN
-                expect(comp.user).toEqual(
-                    jasmine.objectContaining({
-                        id: 1,
-                        login: 'user',
-                        firstName: 'first',
-                        lastName: 'last',
-                        email: 'first@last.com',
-                        activated: true,
-                        langKey: 'en',
-                        authorities: ['ROLE_USER'],
-                        createdBy: 'admin',
-                        createdDate: null,
-                        lastModifiedBy: null,
-                        lastModifiedDate: null,
-                        password: null
-                    })
-                );
+                expect(comp.user).toEqual(jasmine.objectContaining({
+                                                                       id: 1,
+                                                                       login: 'user',
+                                                                       firstName: 'first',
+                                                                       lastName: 'last',
+                                                                       email: 'first@last.com',
+                                                                       activated: true,
+                                                                       langKey: 'en',
+                                                                       authorities: ['ROLE_USER'],
+                                                                       createdBy: 'admin',
+                                                                       createdDate: null,
+                                                                       lastModifiedBy: null,
+                                                                       lastModifiedDate: null,
+                                                                       password: null
+                                                                   }));
             });
         });
     });

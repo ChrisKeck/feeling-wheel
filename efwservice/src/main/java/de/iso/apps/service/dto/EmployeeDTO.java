@@ -13,23 +13,17 @@ import java.io.Serializable;
 /**
  * A DTO for the Employee entity.
  */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Data @Builder @AllArgsConstructor @NoArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EmployeeDTO implements Serializable {
     
     private static final long serialVersionUID = -3647582173605257917L;
-    @Include
-    private Long id;
-
-    @NotNull
-    private String email;
-
-
+    @Include private Long id;
+    
+    @NotNull private String email;
+    
+    
     private Long employeeId;
-
+    
     private String employeeEmail;
     
     protected boolean canEqual(Object other) {

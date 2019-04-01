@@ -49,37 +49,35 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
  * <p>
  * This class accesses the User entity, and needs to fetch its collection of authorities.
  * <p>
- * For a normal use-case, it would be better to have an eager relationship between User and Authority,
- * and send everything to the client side: there would be no View Model and DTO, a lot less code, and an outer-join
- * which would be good for performance.
+ * For a normal use-case, it would be better to have an eager relationship between User and Authority, and send
+ * everything to the client side: there would be no View Model and DTO, a lot less code, and an outer-join which would
+ * be good for performance.
  * <p>
  * We use a View Model and a DTO for 3 reasons:
  * <ul>
  * <li>We want to keep a lazy association between the user and the authorities, because people will
- * quite often do relationships with the user, and we don't want them to get the authorities all
- * the time for nothing (for performance reasons). This is the #1 goal: we should not impact our users'
- * application because of this use-case.</li>
+ * quite often do relationships with the user, and we don't want them to get the authorities all the time for nothing
+ * (for performance reasons). This is the #1 goal: we should not impact our users' application because of this
+ * use-case.</li>
  * <li> Not having an outer join causes n+1 requests to the database. This is not a real issue as
- * we have by default a second-level cache. This means on the first HTTP call we do the n+1 requests,
- * but then all authorities come from the cache, so in fact it's much better than doing an outer join
- * (which will get lots of data from the database, for each HTTP call).</li>
+ * we have by default a second-level cache. This means on the first HTTP call we do the n+1 requests, but then all
+ * authorities come from the cache, so in fact it's much better than doing an outer join (which will get lots of data
+ * from the database, for each HTTP call).</li>
  * <li> As this manages users, for security reasons, we'd rather have a DTO layer.</li>
  * </ul>
  * <p>
  * Another option would be to have a specific JPA entity graph to handle this case.
  */
-@RestController
-@RequestMapping("/api")
-public class UserResource {
-
+@RestController @RequestMapping("/api") public class UserResource {
+    
     private final Logger log = LoggerFactory.getLogger(UserResource.class);
-
+    
     private final UserService userService;
-
+    
     private final UserRepository userRepository;
-
+    
     private final MailService mailService;
-
+    
     private final UserSearchRepository userSearchRepository;
     private final MailChangingService mailChangingService;
     private final UserMapper userMapper;
@@ -88,8 +86,9 @@ public class UserResource {
                         UserRepository userRepository,
                         MailService mailService,
                         UserSearchRepository userSearchRepository,
-                        MailChangingService mailChangingService, UserMapper userMapper) {
-
+                        MailChangingService mailChangingService,
+                        UserMapper userMapper) {
+        
         this.userService = userService;
         this.userRepository = userRepository;
         this.mailService = mailService;
@@ -101,12 +100,12 @@ public class UserResource {
     /**
      * POST  /users  : Creates a new user.
      * <p>
-     * Creates a new user if the login and email are not already used, and sends an
-     * mail with an activation link.
-     * The user needs to be activated on creation.
+     * Creates a new user if the login and email are not already used, and sends an mail with an activation link. The
+     * user needs to be activated on creation.
      *
      * @param userDTO the user to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new user, or with status 400 (Bad Request) if the login or email is already in use
+     * @return the ResponseEntity with status 201 (Created) and with body the new user, or with status 400 (Bad Request)
+     * if the login or email is already in use
      * @throws URISyntaxException if the Location URI syntax is incorrect
      * @throws BadRequestAlertException 400 (Bad Request) if the login or email is already in use
      */
@@ -114,7 +113,7 @@ public class UserResource {
     @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<User> createUser(@Valid @RequestBody UserDTO userDTO) throws URISyntaxException {
         log.debug("REST request to save User : {}", userDTO);
-
+        
         if (userDTO.getId() != null) {
             throw new BadRequestAlertException("A new user cannot already have an ID", "userManagement", "idexists");
             // Lowercase the user login before comparing with database
@@ -128,12 +127,12 @@ public class UserResource {
             var mailChangingDTO = userMapper.userDTOToMailChangingDTO(newUserDTO, null);
             mailChangingService.propagate(mailChangingDTO);
             mailService.sendCreationEmail(newUser);
-            return ResponseEntity.created(new URI("/api/users/" + newUser.getLogin()))
-                .headers(HeaderUtil.createAlert( "userManagement.created", newUser.getLogin()))
-                .body(newUser);
+            return ResponseEntity.created(new URI("/api/users/" + newUser.getLogin())).headers(HeaderUtil.createAlert(
+                "userManagement.created",
+                newUser.getLogin())).body(newUser);
         }
     }
-
+    
     /**
      * PUT /users : Updates an existing User.
      *
@@ -150,26 +149,23 @@ public class UserResource {
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
             throw new EmailAlreadyUsedException();
         }
-        var logInUser = userRepository.findOneByLogin(userDTO.getLogin()
-                                                             .toLowerCase());
-        if (logInUser.isPresent() && (!logInUser.get()
-                                                .getId()
-                                                .equals(userDTO.getId()))) {
+        var logInUser = userRepository.findOneByLogin(userDTO.getLogin().toLowerCase());
+        if (logInUser.isPresent() && (!logInUser.get().getId().equals(userDTO.getId()))) {
             throw new LoginAlreadyUsedException();
         }
         Optional<UserDTO> updatedUser = userService.updateUser(userDTO);
-        if (logInUser.isPresent() && updatedUser.isPresent() && logInUser.get()
-                                                                         .getEmail() != updatedUser.get()
-                                                                                                   .getEmail()) {
+        if (logInUser.isPresent() &&
+            updatedUser.isPresent() &&
+            logInUser.get().getEmail() != updatedUser.get().getEmail()) {
             var mappedDTO = userMapper.userToUserDTO(logInUser.get());
             var mailingChanging = userMapper.userDTOToMailChangingDTO(updatedUser.get(), mappedDTO);
-        
+            
             mailChangingService.propagate(mailingChanging);
         }
         return ResponseUtil.wrapOrNotFound(updatedUser,
-            HeaderUtil.createAlert("userManagement.updated", userDTO.getLogin()));
+                                           HeaderUtil.createAlert("userManagement.updated", userDTO.getLogin()));
     }
-
+    
     /**
      * GET /users : get all users.
      *
@@ -182,7 +178,7 @@ public class UserResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-
+    
     /**
      * @return a string list of the all of the roles
      */
@@ -191,7 +187,7 @@ public class UserResource {
     public List<String> getAuthorities() {
         return userService.getAuthorities();
     }
-
+    
     /**
      * GET /users/:login : get the "login" user.
      *
@@ -201,11 +197,9 @@ public class UserResource {
     @GetMapping("/users/{login:" + Constants.LOGIN_REGEX + "}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String login) {
         log.debug("REST request to get User : {}", login);
-        return ResponseUtil.wrapOrNotFound(
-            userService.getUserWithAuthoritiesByLogin(login)
-                .map(UserDTO::new));
+        return ResponseUtil.wrapOrNotFound(userService.getUserWithAuthoritiesByLogin(login).map(UserDTO::new));
     }
-
+    
     /**
      * DELETE /users/:login : delete the "login" User.
      *
@@ -222,20 +216,18 @@ public class UserResource {
             mailChangingService.propagate(mailChanging);
         });
         userService.deleteUser(login);
-        return ResponseEntity.ok().headers(HeaderUtil.createAlert( "userManagement.deleted", login)).build();
+        return ResponseEntity.ok().headers(HeaderUtil.createAlert("userManagement.deleted", login)).build();
     }
-
+    
     /**
-     * SEARCH /_search/users/:query : search for the User corresponding
-     * to the query.
+     * SEARCH /_search/users/:query : search for the User corresponding to the query.
      *
      * @param query the query to search
      * @return the result of the search
      */
     @GetMapping("/_search/users/{query}")
     public List<User> search(@PathVariable String query) {
-        return StreamSupport
-            .stream(userSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .collect(Collectors.toList());
+        return StreamSupport.stream(userSearchRepository.search(queryStringQuery(query)).spliterator(), false).collect(
+            Collectors.toList());
     }
 }

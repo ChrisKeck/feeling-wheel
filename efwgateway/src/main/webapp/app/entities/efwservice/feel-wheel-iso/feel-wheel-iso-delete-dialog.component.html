@@ -1,18 +1,22 @@
-<form name="deleteForm" (ngSubmit)="confirmDelete(feelWheel.id)">
+<form (ngSubmit)="confirmDelete(feelWheel.id)" name="deleteForm">
     <div class="modal-header">
         <h4 class="modal-title" jhiTranslate="entity.delete.title">Confirm delete operation</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
-                (click)="clear()">&times;</button>
+        <button (click)="clear()" aria-hidden="true" class="close" data-dismiss="modal"
+                type="button">&times;
+        </button>
     </div>
     <div class="modal-body">
         <jhi-alert-error></jhi-alert-error>
-        <p id="jhi-delete-feelWheel-heading" jhiTranslate="efwgatewayApp.efwserviceFeelWheel.delete.question" [translateValues]="{id: feelWheel.id}">Are you sure you want to delete this Feel Wheel?</p>
+        <p [translateValues]="{id: feelWheel.id}"
+           id="jhi-delete-feelWheel-heading"
+           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.delete.question">Are you sure you want to delete this Feel
+                                                                            Wheel?</p>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="clear()">
+        <button (click)="clear()" class="btn btn-secondary" data-dismiss="modal" type="button">
             <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
-        <button id="jhi-confirm-delete-feelWheel" type="submit" class="btn btn-danger">
+        <button class="btn btn-danger" id="jhi-confirm-delete-feelWheel" type="submit">
             <fa-icon [icon]="'times'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.delete">Delete</span>
         </button>
     </div>

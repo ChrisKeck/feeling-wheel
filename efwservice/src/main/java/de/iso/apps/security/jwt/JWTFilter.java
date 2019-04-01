@@ -17,18 +17,18 @@ import java.io.IOException;
  * found.
  */
 public class JWTFilter extends GenericFilterBean {
-
+    
     public static final String AUTHORIZATION_HEADER = "Authorization";
-
+    
     private TokenProvider tokenProvider;
-
+    
     public JWTFilter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
-
+    
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-        throws IOException, ServletException {
+    throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String jwt = resolveToken(httpServletRequest);
         if (StringUtils.hasText(jwt) && this.tokenProvider.validateToken(jwt)) {
@@ -37,8 +37,8 @@ public class JWTFilter extends GenericFilterBean {
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
-
-    private String resolveToken(HttpServletRequest request){
+    
+    private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);

@@ -35,40 +35,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@SpringBootApplication
-@EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
-@EnableDiscoveryClient
-@EnableZuulProxy
-public class EfwgatewayApp {
-
+@SpringBootApplication @EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
+@EnableDiscoveryClient @EnableZuulProxy public class EfwgatewayApp {
+    
     private static final Logger log = LoggerFactory.getLogger(EfwgatewayApp.class);
-
+    
     private final Environment env;
-
+    @Autowired private KafkaProperties kafkaProperties;
+    @Value("${tpd.topic-name}") private String topicName;
+    @Value("${tpd.messages-per-request}") private int numberofRequests;
+    
     public EfwgatewayApp(Environment env) {
         this.env = env;
     }
-
-    /**
-     * Initializes efwgateway.
-     * <p>
-     * Spring profiles can be configured with a program argument --spring.profiles.active=your-active-profile
-     * <p>
-     * You can find more information on how profiles work with JHipster on <a href="https://www.jhipster.tech/profiles/">https://www.jhipster.tech/profiles/</a>.
-     */
-    @PostConstruct
-    public void initApplication() {
-        Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
-        if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
-            log.error("You have misconfigured your application! It should not run " +
-                "with both the 'dev' and 'prod' profiles at the same time.");
-        }
-        if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_CLOUD)) {
-            log.error("You have misconfigured your application! It should not " +
-                "run with both the 'dev' and 'cloud' profiles at the same time.");
-        }
-    }
-
+    
     /**
      * Main method, used to run the application.
      *
@@ -80,7 +60,7 @@ public class EfwgatewayApp {
         Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);
     }
-
+    
     private static void logApplicationStartup(Environment env) {
         String protocol = "http";
         if (env.getProperty("server.ssl.key-store") != null) {
@@ -98,48 +78,55 @@ public class EfwgatewayApp {
             log.warn("The host name could not be determined, using `localhost` as fallback");
         }
         log.info("\n----------------------------------------------------------\n\t" +
-                "Application '{}' is running! Access URLs:\n\t" +
-                "Local: \t\t{}://localhost:{}{}\n\t" +
-                "External: \t{}://{}:{}{}\n\t" +
-                "Profile(s): \t{}\n----------------------------------------------------------",
-            env.getProperty("spring.application.name"),
-            protocol,
-            serverPort,
-            contextPath,
-            protocol,
-            hostAddress,
-            serverPort,
-            contextPath,
-            env.getActiveProfiles());
-
+                 "Application '{}' is running! Access URLs:\n\t" +
+                 "Local: \t\t{}://localhost:{}{}\n\t" +
+                 "External: \t{}://{}:{}{}\n\t" +
+                 "Profile(s): \t{}\n----------------------------------------------------------",
+                 env.getProperty("spring.application.name"),
+                 protocol,
+                 serverPort,
+                 contextPath,
+                 protocol,
+                 hostAddress,
+                 serverPort,
+                 contextPath,
+                 env.getActiveProfiles());
+        
         String configServerStatus = env.getProperty("configserver.status");
         if (configServerStatus == null) {
             configServerStatus = "Not found or not setup for this application";
         }
         log.info("\n----------------------------------------------------------\n\t" +
-                "Config Server: \t{}\n----------------------------------------------------------", configServerStatus);
+                 "Config Server: \t{}\n----------------------------------------------------------", configServerStatus);
     }
     
-    @Autowired
-    private KafkaProperties kafkaProperties;
-    
-    @Value("${tpd.topic-name}")
-    private String topicName;
-    @Value("${tpd.messages-per-request}")
-    private int numberofRequests;
+    /**
+     * Initializes efwgateway.
+     * <p>
+     * Spring profiles can be configured with a program argument --spring.profiles.active=your-active-profile
+     * <p>
+     * You can find more information on how profiles work with JHipster on <a href="https://www.jhipster.tech/profiles/">https://www.jhipster.tech/profiles/</a>.
+     */
+    @PostConstruct
+    public void initApplication() {
+        Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
+        if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(
+            JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
+            log.error("You have misconfigured your application! It should not run " +
+                      "with both the 'dev' and 'prod' profiles at the same time.");
+        }
+        if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(
+            JHipsterConstants.SPRING_PROFILE_CLOUD)) {
+            log.error("You have misconfigured your application! It should not " +
+                      "run with both the 'dev' and 'cloud' profiles at the same time.");
+        }
+    }
     
     // Producer configuration
     
     @Bean
-    public Map<String, Object> producerConfigs() {
-        Map<String, Object> props =
-            new HashMap<>(kafkaProperties.buildProducerProperties());
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                  StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                  JsonSerializer.class);
-    
-        return props;
+    public KafkaTemplate<String, MailChangingDTO> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
     }
     
     @Bean
@@ -148,8 +135,12 @@ public class EfwgatewayApp {
     }
     
     @Bean
-    public KafkaTemplate<String, MailChangingDTO> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    public Map<String, Object> producerConfigs() {
+        Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties());
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        
+        return props;
     }
     
     @Bean

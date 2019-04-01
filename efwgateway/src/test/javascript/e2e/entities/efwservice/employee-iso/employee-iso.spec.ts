@@ -1,8 +1,8 @@
 /* tslint:disable no-unused-expression */
-import { browser, ExpectedConditions as ec, promise } from 'protractor';
-import { NavBarPage, SignInPage } from '../../../page-objects/jhi-page-objects';
+import {browser, ExpectedConditions as ec, promise} from 'protractor';
+import {NavBarPage, SignInPage} from '../../../page-objects/jhi-page-objects';
 
-import { EmployeeComponentsPage, EmployeeDeleteDialog, EmployeeUpdatePage } from './employee-iso.page-object';
+import {EmployeeComponentsPage, EmployeeDeleteDialog, EmployeeUpdatePage} from './employee-iso.page-object';
 
 const expect = chai.expect;
 

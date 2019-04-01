@@ -9,9 +9,9 @@
                 <dd>
                     <span>{{user.login}}</span>
                     <jhi-boolean
-                        [value]="user.activated"
+                        [textFalse]="'userManagement.deactivated' | translate"
                         [textTrue]="'userManagement.activated' | translate"
-                        [textFalse]="'userManagement.deactivated' | translate">
+                        [value]="user.activated">
                     </jhi-boolean>
                 </dd>
                 <dt><span jhiTranslate="userManagement.firstName">First Name</span></dt>
@@ -39,9 +39,9 @@
                     </ul>
                 </dd>
             </dl>
-            <button type="submit"
+            <button class="btn btn-info"
                     routerLink="../../"
-                    class="btn btn-info">
+                    type="submit">
                 <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
             </button>
         </div>

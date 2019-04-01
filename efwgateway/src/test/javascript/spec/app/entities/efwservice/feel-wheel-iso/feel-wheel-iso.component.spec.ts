@@ -1,13 +1,13 @@
 /* tslint:disable max-line-length */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
-import { ActivatedRoute, Data } from '@angular/router';
+import {HttpHeaders, HttpResponse} from '@angular/common/http';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ActivatedRoute, Data} from '@angular/router';
+import {FeelWheelIsoComponent} from 'app/entities/efwservice/feel-wheel-iso/feel-wheel-iso.component';
+import {FeelWheelIsoService} from 'app/entities/efwservice/feel-wheel-iso/feel-wheel-iso.service';
+import {FeelWheelIso} from 'app/shared/model/efwservice/feel-wheel-iso.model';
+import {of} from 'rxjs';
 
-import { EfwgatewayTestModule } from '../../../../test.module';
-import { FeelWheelIsoComponent } from 'app/entities/efwservice/feel-wheel-iso/feel-wheel-iso.component';
-import { FeelWheelIsoService } from 'app/entities/efwservice/feel-wheel-iso/feel-wheel-iso.service';
-import { FeelWheelIso } from 'app/shared/model/efwservice/feel-wheel-iso.model';
+import {EfwgatewayTestModule} from '../../../../test.module';
 
 describe('Component Tests', () => {
     describe('FeelWheelIso Management Component', () => {
@@ -17,28 +17,20 @@ describe('Component Tests', () => {
 
         beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [EfwgatewayTestModule],
-                declarations: [FeelWheelIsoComponent],
-                providers: [
-                    {
-                        provide: ActivatedRoute,
-                        useValue: {
-                            data: {
-                                subscribe: (fn: (value: Data) => void) =>
-                                    fn({
-                                        pagingParams: {
-                                            predicate: 'id',
-                                            reverse: false,
-                                            page: 0
-                                        }
-                                    })
-                            }
-                        }
-                    }
-                ]
-            })
-                .overrideTemplate(FeelWheelIsoComponent, '')
-                .compileComponents();
+                                               imports: [EfwgatewayTestModule], declarations: [FeelWheelIsoComponent], providers: [{
+                           provide: ActivatedRoute, useValue: {
+                               data: {
+                                   subscribe: (fn: (value: Data) => void) => fn({
+                                                                                    pagingParams: {
+                                                                                        predicate: 'id', reverse: false, page: 0
+                                                                                    }
+                                                                                })
+                               }
+                           }
+                       }]
+                                           })
+                   .overrideTemplate(FeelWheelIsoComponent, '')
+                   .compileComponents();
 
             fixture = TestBed.createComponent(FeelWheelIsoComponent);
             comp = fixture.componentInstance;
@@ -48,54 +40,39 @@ describe('Component Tests', () => {
         it('Should call load all on init', () => {
             // GIVEN
             const headers = new HttpHeaders().append('link', 'link;link');
-            spyOn(service, 'query').and.returnValue(
-                of(
-                    new HttpResponse({
-                        body: [new FeelWheelIso(123)],
-                        headers
-                    })
-                )
-            );
+            spyOn(service, 'query').and.returnValue(of(new HttpResponse({
+                                                                            body: [new FeelWheelIso(123)], headers
+                                                                        })));
 
             // WHEN
             comp.ngOnInit();
 
             // THEN
             expect(service.query).toHaveBeenCalled();
-            expect(comp.feelWheels[0]).toEqual(jasmine.objectContaining({ id: 123 }));
+            expect(comp.feelWheels[0]).toEqual(jasmine.objectContaining({id: 123}));
         });
 
         it('should load a page', () => {
             // GIVEN
             const headers = new HttpHeaders().append('link', 'link;link');
-            spyOn(service, 'query').and.returnValue(
-                of(
-                    new HttpResponse({
-                        body: [new FeelWheelIso(123)],
-                        headers
-                    })
-                )
-            );
+            spyOn(service, 'query').and.returnValue(of(new HttpResponse({
+                                                                            body: [new FeelWheelIso(123)], headers
+                                                                        })));
 
             // WHEN
             comp.loadPage(1);
 
             // THEN
             expect(service.query).toHaveBeenCalled();
-            expect(comp.feelWheels[0]).toEqual(jasmine.objectContaining({ id: 123 }));
+            expect(comp.feelWheels[0]).toEqual(jasmine.objectContaining({id: 123}));
         });
 
         it('should re-initialize the page', () => {
             // GIVEN
             const headers = new HttpHeaders().append('link', 'link;link');
-            spyOn(service, 'query').and.returnValue(
-                of(
-                    new HttpResponse({
-                        body: [new FeelWheelIso(123)],
-                        headers
-                    })
-                )
-            );
+            spyOn(service, 'query').and.returnValue(of(new HttpResponse({
+                                                                            body: [new FeelWheelIso(123)], headers
+                                                                        })));
 
             // WHEN
             comp.loadPage(1);
@@ -104,7 +81,7 @@ describe('Component Tests', () => {
             // THEN
             expect(comp.page).toEqual(0);
             expect(service.query).toHaveBeenCalledTimes(2);
-            expect(comp.feelWheels[0]).toEqual(jasmine.objectContaining({ id: 123 }));
+            expect(comp.feelWheels[0]).toEqual(jasmine.objectContaining({id: 123}));
         });
         it('should calculate the sort attribute for an id', () => {
             // WHEN

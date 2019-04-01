@@ -1,53 +1,77 @@
 <div class="row justify-content-center">
     <div class="col-8">
-        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
-            <h2 id="jhi-feel-wheel-iso-heading" jhiTranslate="efwgatewayApp.efwserviceFeelWheel.home.createOrEditLabel">Create or edit a Feel Wheel</h2>
+        <form #editForm="ngForm" (ngSubmit)="save()" name="editForm" novalidate role="form">
+            <h2 id="jhi-feel-wheel-iso-heading" jhiTranslate="efwgatewayApp.efwserviceFeelWheel.home.createOrEditLabel">
+                Create or edit a Feel Wheel</h2>
             <div>
                 <jhi-alert-error></jhi-alert-error>
-                <div *jhiHasAnyAuthority="['ROLE_ADMIN']" class="form-group" [hidden]="!feelWheel.id">
+                <div *jhiHasAnyAuthority="['ROLE_ADMIN']" [hidden]="!feelWheel.id" class="form-group">
                     <label for="id" jhiTranslate="global.field.id">ID</label>
-                    <input type="text" class="form-control" id="id" name="id"
-                        [(ngModel)]="feelWheel.id" readonly />
+                    <input [(ngModel)]="feelWheel.id" class="form-control" id="id" name="id"
+                           readonly type="text"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="efwgatewayApp.efwserviceFeelWheel.subject" for="field_subject">Subject</label>
-                    <input type="text" class="form-control" name="subject" id="field_subject"
-                        [(ngModel)]="feelWheel.subject" required/>
+                    <label class="form-control-label"
+                           for="field_subject"
+                           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.subject">Subject</label>
+                    <input [(ngModel)]="feelWheel.subject" class="form-control" id="field_subject" name="subject"
+                           required type="text"/>
                     <div [hidden]="!(editForm.controls.subject?.dirty && editForm.controls.subject?.invalid)">
-                        <small class="form-text text-danger"
-                        [hidden]="!editForm.controls.subject?.errors?.required" jhiTranslate="entity.validation.required">
-                        This field is required.
+                        <small [hidden]="!editForm.controls.subject?.errors?.required"
+                               class="form-text text-danger"
+                               jhiTranslate="entity.validation.required">
+                            This field is required.
                         </small>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="efwgatewayApp.efwserviceFeelWheel.from" for="field_from">From</label>
+                    <label class="form-control-label"
+                           for="field_from"
+                           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.from">From</label>
                     <div class="d-flex">
-                        <input id="field_from" type="datetime-local" class="form-control" name="from" [(ngModel)]="from" placeholder="YYYY-MM-DD HH:mm"
+                        <input [(ngModel)]="from"
+                               class="form-control"
+                               id="field_from"
+                               name="from"
+                               placeholder="YYYY-MM-DD HH:mm"
+                               type="datetime-local"
                         />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="efwgatewayApp.efwserviceFeelWheel.to" for="field_to">To</label>
+                    <label class="form-control-label"
+                           for="field_to"
+                           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.to">To</label>
                     <div class="d-flex">
-                        <input id="field_to" type="datetime-local" class="form-control" name="to" [(ngModel)]="to" placeholder="YYYY-MM-DD HH:mm"
+                        <input [(ngModel)]="to"
+                               class="form-control"
+                               id="field_to"
+                               name="to"
+                               placeholder="YYYY-MM-DD HH:mm"
+                               type="datetime-local"
                         />
                     </div>
                 </div>
-
+                
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="efwgatewayApp.efwserviceFeelWheel.employee" for="field_employee">Employee</label>
-                    <select class="form-control" id="field_employee" name="employee" [(ngModel)]="feelWheel.employeeId" >
+                    <label class="form-control-label"
+                           for="field_employee"
+                           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.employee">Employee</label>
+                    <select [(ngModel)]="feelWheel.employeeId" class="form-control" id="field_employee" name="employee">
                         <option [ngValue]="null"></option>
-                        <option [ngValue]="employeeOption.id" *ngFor="let employeeOption of employees; trackBy: trackEmployeeById">{{employeeOption.email}}</option>
+                        <option *ngFor="let employeeOption of employees; trackBy: trackEmployeeById"
+                                [ngValue]="employeeOption.id">{{employeeOption.email}}</option>
                     </select>
                 </div>
             </div>
             <div>
-                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                <button (click)="previousState()" class="btn btn-secondary" id="cancel-save" type="button">
                     <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
                 </button>
-                <button type="submit" id="save-entity" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+                <button [disabled]="editForm.form.invalid || isSaving"
+                        class="btn btn-primary"
+                        id="save-entity"
+                        type="submit">
                     <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
                 </button>
             </div>

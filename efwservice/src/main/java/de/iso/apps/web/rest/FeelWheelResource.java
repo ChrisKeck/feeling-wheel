@@ -31,46 +31,44 @@ import java.util.Optional;
 /**
  * REST controller for managing FeelWheel.
  */
-@RestController
-@RequestMapping("/api")
-public class FeelWheelResource {
-
-    private final Logger log = LoggerFactory.getLogger(FeelWheelResource.class);
-
+@RestController @RequestMapping("/api") public class FeelWheelResource {
+    
     private static final String ENTITY_NAME = "efwserviceFeelWheel";
-
+    private final Logger log = LoggerFactory.getLogger(FeelWheelResource.class);
     private final FeelWheelService feelWheelService;
-
+    
     public FeelWheelResource(FeelWheelService feelWheelService) {
         this.feelWheelService = feelWheelService;
     }
-
+    
     /**
      * POST  /feel-wheels : Create a new feelWheel.
      *
      * @param feelWheelDTO the feelWheelDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new feelWheelDTO, or with status 400 (Bad Request) if the feelWheel has already an ID
+     * @return the ResponseEntity with status 201 (Created) and with body the new feelWheelDTO, or with status 400 (Bad
+     * Request) if the feelWheel has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/feel-wheels")
-    public ResponseEntity<FeelWheelDTO> createFeelWheel(@Valid @RequestBody FeelWheelDTO feelWheelDTO) throws URISyntaxException {
+    public ResponseEntity<FeelWheelDTO> createFeelWheel(@Valid @RequestBody FeelWheelDTO feelWheelDTO)
+    throws URISyntaxException {
         log.debug("REST request to save FeelWheel : {}", feelWheelDTO);
         if (feelWheelDTO.getId() != null) {
             throw new BadRequestAlertException("A new feelWheel cannot already have an ID", ENTITY_NAME, "idexists");
         }
         FeelWheelDTO result = feelWheelService.save(feelWheelDTO);
         return ResponseEntity.created(new URI("/api/feel-wheels/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                             .body(result);
     }
-
+    
     /**
      * PUT  /feel-wheels : Updates an existing feelWheel.
      *
      * @param feelWheelDTO the feelWheelDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated feelWheelDTO,
-     * or with status 400 (Bad Request) if the feelWheelDTO is not valid,
-     * or with status 500 (Internal Server Error) if the feelWheelDTO couldn't be updated
+     * @return the ResponseEntity with status 200 (OK) and with body the updated feelWheelDTO, or with status 400 (Bad
+     * Request) if the feelWheelDTO is not valid, or with status 500 (Internal Server Error) if the feelWheelDTO
+     * couldn't be updated
      */
     @PutMapping("/feel-wheels")
     public ResponseEntity<FeelWheelDTO> updateFeelWheel(@Valid @RequestBody FeelWheelDTO feelWheelDTO) {
@@ -79,11 +77,11 @@ public class FeelWheelResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         FeelWheelDTO result = feelWheelService.save(feelWheelDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, feelWheelDTO.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME,
+                                                                              feelWheelDTO.getId().toString())).body(
+            result);
     }
-
+    
     /**
      * GET  /feel-wheels : get all the feelWheels.
      *
@@ -97,7 +95,7 @@ public class FeelWheelResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/feel-wheels");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
-
+    
     /**
      * GET  /feel-wheels/:id : get the "id" feelWheel.
      *
@@ -110,7 +108,7 @@ public class FeelWheelResource {
         Optional<FeelWheelDTO> feelWheelDTO = feelWheelService.findOne(id);
         return ResponseUtil.wrapOrNotFound(feelWheelDTO);
     }
-
+    
     /**
      * DELETE  /feel-wheels/:id : delete the "id" feelWheel.
      *
@@ -123,10 +121,9 @@ public class FeelWheelResource {
         feelWheelService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
-
+    
     /**
-     * SEARCH  /_search/feel-wheels?query=:query : search for the feelWheel corresponding
-     * to the query.
+     * SEARCH  /_search/feel-wheels?query=:query : search for the feelWheel corresponding to the query.
      *
      * @param query the query of the feelWheel search
      * @param pageable the pagination information
@@ -136,8 +133,10 @@ public class FeelWheelResource {
     public ResponseEntity<List<FeelWheelDTO>> searchFeelWheels(@RequestParam String query, Pageable pageable) {
         log.debug("REST request to search for a page of FeelWheels for query {}", query);
         Page<FeelWheelDTO> page = feelWheelService.search(query, pageable);
-        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/feel-wheels");
+        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query,
+                                                                                 page,
+                                                                                 "/api/_search/feel-wheels");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
-
+    
 }

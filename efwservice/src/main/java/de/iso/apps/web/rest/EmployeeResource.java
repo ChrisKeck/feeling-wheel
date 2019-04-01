@@ -32,47 +32,45 @@ import java.util.concurrent.CountDownLatch;
 /**
  * REST controller for managing Employee.
  */
-@RestController
-@RequestMapping("/api")
-public class EmployeeResource {
-
-    private final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
-
+@RestController @RequestMapping("/api") public class EmployeeResource {
+    
     private static final String ENTITY_NAME = "efwserviceEmployee";
-
+    private final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
     private final EmployeeService employeeService;
     private CountDownLatch latch;
     
     public EmployeeResource(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
-
+    
     /**
      * POST  /employees : Create a new employee.
      *
      * @param employeeDTO the employeeDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new employeeDTO, or with status 400 (Bad Request) if the employee has already an ID
+     * @return the ResponseEntity with status 201 (Created) and with body the new employeeDTO, or with status 400 (Bad
+     * Request) if the employee has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/employees")
-    public ResponseEntity<EmployeeDTO> createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) throws URISyntaxException {
+    public ResponseEntity<EmployeeDTO> createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO)
+    throws URISyntaxException {
         log.debug("REST request to save Employee : {}", employeeDTO);
         if (employeeDTO.getId() != null) {
             throw new BadRequestAlertException("A new employee cannot already have an ID", ENTITY_NAME, "idexists");
         }
         EmployeeDTO result = employeeService.save(employeeDTO);
         return ResponseEntity.created(new URI("/api/employees/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                             .body(result);
     }
-
+    
     /**
      * PUT  /employees : Updates an existing employee.
      *
      * @param employeeDTO the employeeDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated employeeDTO,
-     * or with status 400 (Bad Request) if the employeeDTO is not valid,
-     * or with status 500 (Internal Server Error) if the employeeDTO couldn't be updated
+     * @return the ResponseEntity with status 200 (OK) and with body the updated employeeDTO, or with status 400 (Bad
+     * Request) if the employeeDTO is not valid, or with status 500 (Internal Server Error) if the employeeDTO couldn't
+     * be updated
      */
     @PutMapping("/employees")
     public ResponseEntity<EmployeeDTO> updateEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
@@ -81,11 +79,11 @@ public class EmployeeResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         EmployeeDTO result = employeeService.save(employeeDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, employeeDTO.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME,
+                                                                              employeeDTO.getId().toString())).body(
+            result);
     }
-
+    
     /**
      * GET  /employees : get all the employees.
      *
@@ -99,7 +97,7 @@ public class EmployeeResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/employees");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
-
+    
     /**
      * GET  /employees/:id : get the "id" employee.
      *
@@ -112,7 +110,7 @@ public class EmployeeResource {
         Optional<EmployeeDTO> employeeDTO = employeeService.findOne(id);
         return ResponseUtil.wrapOrNotFound(employeeDTO);
     }
-
+    
     /**
      * DELETE  /employees/:id : delete the "id" employee.
      *
@@ -125,10 +123,9 @@ public class EmployeeResource {
         employeeService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
-
+    
     /**
-     * SEARCH  /_search/employees?query=:query : search for the employee corresponding
-     * to the query.
+     * SEARCH  /_search/employees?query=:query : search for the employee corresponding to the query.
      *
      * @param query the query of the employee search
      * @param pageable the pagination information

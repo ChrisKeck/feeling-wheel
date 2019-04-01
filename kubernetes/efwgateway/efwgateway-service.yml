@@ -10,5 +10,5 @@ spec:
     app: efwgateway
   type: LoadBalancer
   ports:
-  - name: http
-    port: 8080
+    - name: http
+      port: 8080

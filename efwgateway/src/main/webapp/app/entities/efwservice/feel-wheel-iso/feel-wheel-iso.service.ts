@@ -1,60 +1,60 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import * as moment from 'moment';
-import { DATE_FORMAT } from 'app/shared/constants/input.constants';
-import { map } from 'rxjs/operators';
+import {HttpClient, HttpResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 
-import { SERVER_API_URL } from 'app/app.constants';
-import { createRequestOption } from 'app/shared';
-import { IFeelWheelIso } from 'app/shared/model/efwservice/feel-wheel-iso.model';
+import {SERVER_API_URL} from 'app/app.constants';
+import {createRequestOption} from 'app/shared';
+import {IFeelWheelIso} from 'app/shared/model/efwservice/feel-wheel-iso.model';
+import * as moment from 'moment';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 type EntityResponseType = HttpResponse<IFeelWheelIso>;
 type EntityArrayResponseType = HttpResponse<IFeelWheelIso[]>;
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class FeelWheelIsoService {
     public resourceUrl = SERVER_API_URL + 'efwservice/api/feel-wheels';
     public resourceSearchUrl = SERVER_API_URL + 'efwservice/api/_search/feel-wheels';
 
-    constructor(protected http: HttpClient) {}
+    constructor(protected http: HttpClient) {
+    }
 
     create(feelWheel: IFeelWheelIso): Observable<EntityResponseType> {
         const copy = this.convertDateFromClient(feelWheel);
         return this.http
-            .post<IFeelWheelIso>(this.resourceUrl, copy, { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+                   .post<IFeelWheelIso>(this.resourceUrl, copy, {observe: 'response'})
+                   .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
     }
 
     update(feelWheel: IFeelWheelIso): Observable<EntityResponseType> {
         const copy = this.convertDateFromClient(feelWheel);
         return this.http
-            .put<IFeelWheelIso>(this.resourceUrl, copy, { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+                   .put<IFeelWheelIso>(this.resourceUrl, copy, {observe: 'response'})
+                   .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
     }
 
     find(id: number): Observable<EntityResponseType> {
         return this.http
-            .get<IFeelWheelIso>(`${this.resourceUrl}/${id}`, { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+                   .get<IFeelWheelIso>(`${this.resourceUrl}/${id}`, {observe: 'response'})
+                   .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
     }
 
     query(req?: any): Observable<EntityArrayResponseType> {
         const options = createRequestOption(req);
         return this.http
-            .get<IFeelWheelIso[]>(this.resourceUrl, { params: options, observe: 'response' })
-            .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
+                   .get<IFeelWheelIso[]>(this.resourceUrl, {params: options, observe: 'response'})
+                   .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
     }
 
     delete(id: number): Observable<HttpResponse<any>> {
-        return this.http.delete<any>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+        return this.http.delete<any>(`${this.resourceUrl}/${id}`, {observe: 'response'});
     }
 
     search(req?: any): Observable<EntityArrayResponseType> {
         const options = createRequestOption(req);
         return this.http
-            .get<IFeelWheelIso[]>(this.resourceSearchUrl, { params: options, observe: 'response' })
-            .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
+                   .get<IFeelWheelIso[]>(this.resourceSearchUrl, {params: options, observe: 'response'})
+                   .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
     }
 
     protected convertDateFromClient(feelWheel: IFeelWheelIso): IFeelWheelIso {

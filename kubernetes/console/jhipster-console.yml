@@ -11,10 +11,10 @@ spec:
         app: jhipster-console
     spec:
       containers:
-      - image: jhipster/jhipster-console:v4.0.0
-        name: jhipster-console
-        ports:
-        - containerPort: 5601
+        - image: jhipster/jhipster-console:v4.0.0
+          name: jhipster-console
+          ports:
+            - containerPort: 5601
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -26,9 +26,9 @@ metadata:
     app: jhipster-console
 spec:
   ports:
-  - name: http
-    port: 5601
-    targetPort: 5601
+    - name: http
+      port: 5601
+      targetPort: 5601
   type: LoadBalancer
   selector:
     app: jhipster-console

@@ -1,7 +1,6 @@
 package de.iso.apps.repository;
 
 import de.iso.apps.domain.Authority;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

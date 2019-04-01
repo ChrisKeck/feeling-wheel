@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
-    selector: 'jhi-error',
-    templateUrl: './error.component.html'
-})
+               selector: 'jhi-error', templateUrl: './error.component.html'
+           })
 export class ErrorComponent implements OnInit {
     errorMessage: string;
     error403: boolean;
     error404: boolean;
 
-    constructor(private route: ActivatedRoute) {}
+    constructor(private route: ActivatedRoute) {
+    }
 
     ngOnInit() {
         this.route.data.subscribe(routeData => {

@@ -22,47 +22,33 @@ import java.util.stream.Collectors;
 /**
  * A DTO representing a user, with his authorities.
  */
-@Data
-@Builder
-@NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@AllArgsConstructor
+@Data @Builder @NoArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true) @AllArgsConstructor
 public class UserDTO implements Userable {
     private static final long serialVersionUID = 5129857733638000361L;
-    @Include
-    private Long id;
-
-    @NotBlank
-    @Pattern(regexp = Constants.LOGIN_REGEX)
-    @Size(min = 1, max = 50)
-    private String login;
-
-    @Size(max = 50)
-    private String firstName;
-
-    @Size(max = 50)
-    private String lastName;
-
-    @Email
-    @Size(min = 5, max = 254)
-    private String email;
-
-    @Size(max = 256)
-    private String imageUrl;
-
+    @Include private Long id;
+    
+    @NotBlank @Pattern(regexp = Constants.LOGIN_REGEX) @Size(min = 1, max = 50) private String login;
+    
+    @Size(max = 50) private String firstName;
+    
+    @Size(max = 50) private String lastName;
+    
+    @Email @Size(min = 5, max = 254) private String email;
+    
+    @Size(max = 256) private String imageUrl;
+    
     private boolean activated = false;
-
-    @Size(min = 2, max = 6)
-    private String langKey;
-
+    
+    @Size(min = 2, max = 6) private String langKey;
+    
     private String createdBy;
-
+    
     private Instant createdDate;
-
+    
     private String lastModifiedBy;
-
+    
     private Instant lastModifiedDate;
-
+    
     private Set<String> authorities;
     
     
@@ -79,9 +65,7 @@ public class UserDTO implements Userable {
         this.createdDate = user.getCreatedDate();
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
-        this.authorities = user.getAuthorities().stream()
-            .map(Authority::getName)
-            .collect(Collectors.toSet());
+        this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
     }
     
     protected boolean canEqual(Object other) {

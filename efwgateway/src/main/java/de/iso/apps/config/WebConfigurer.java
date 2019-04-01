@@ -7,9 +7,10 @@ import io.github.jhipster.web.filter.CachingHttpHeadersFilter;
 import io.undertow.UndertowOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
-import org.springframework.boot.web.server.*;
+import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.WebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -20,39 +21,44 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import javax.servlet.*;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.EnumSet;
 
 import static java.net.URLDecoder.decode;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
  */
-@Configuration
-public class WebConfigurer implements ServletContextInitializer, WebServerFactoryCustomizer<WebServerFactory> {
-
+@Configuration public class WebConfigurer
+    implements ServletContextInitializer, WebServerFactoryCustomizer<WebServerFactory> {
+    
     private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
-
+    
     private final Environment env;
-
+    
     private final JHipsterProperties jHipsterProperties;
-
+    
     public WebConfigurer(Environment env, JHipsterProperties jHipsterProperties) {
-
+        
         this.env = env;
         this.jHipsterProperties = jHipsterProperties;
     }
-
+    
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         if (env.getActiveProfiles().length != 0) {
             log.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
         }
-        EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
+        EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST,
+                                                   DispatcherType.FORWARD,
+                                                   DispatcherType.ASYNC);
         if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
             initCachingHttpHeadersFilter(servletContext, disps);
         }
@@ -61,7 +67,30 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         }
         log.info("Web application fully configured");
     }
-
+    
+    /**
+     * Initializes the caching HTTP Headers Filter.
+     */
+    private void initCachingHttpHeadersFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
+        log.debug("Registering Caching HTTP Headers Filter");
+        FilterRegistration.Dynamic cachingHttpHeadersFilter = servletContext.addFilter("cachingHttpHeadersFilter",
+                                                                                       new CachingHttpHeadersFilter(
+                                                                                           jHipsterProperties));
+        
+        cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/i18n/*");
+        cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/content/*");
+        cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/app/*");
+        cachingHttpHeadersFilter.setAsyncSupported(true);
+    }
+    
+    /**
+     * Initializes H2 console.
+     */
+    private void initH2Console(ServletContext servletContext) {
+        log.debug("Initialize H2 console");
+        H2ConfigurationHelper.initH2Console(servletContext);
+    }
+    
     /**
      * Customize the Servlet engine: Mime types, the document root, the cache.
      */
@@ -70,7 +99,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         setMimeMappings(server);
         // When running in an IDE or with ./mvnw spring-boot:run, set location of the static web assets.
         setLocationForStaticAssets(server);
-
+        
         /*
          * Enable HTTP/2 for Undertow - https://twitter.com/ankinson/status/829256167700492288
          * HTTP/2 requires HTTPS, so HTTP requests will fallback to HTTP/1.1.
@@ -79,13 +108,13 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
          */
         if (jHipsterProperties.getHttp().getVersion().equals(JHipsterProperties.Http.Version.V_2_0) &&
             server instanceof UndertowServletWebServerFactory) {
-
-            ((UndertowServletWebServerFactory) server)
-                .addBuilderCustomizers(builder ->
-                    builder.setServerOption(UndertowOptions.ENABLE_HTTP2, true));
+            
+            ((UndertowServletWebServerFactory) server).addBuilderCustomizers(builder -> builder.setServerOption(
+                UndertowOptions.ENABLE_HTTP2,
+                true));
         }
     }
-
+    
     private void setMimeMappings(WebServerFactory server) {
         if (server instanceof ConfigurableServletWebServerFactory) {
             MimeMappings mappings = new MimeMappings(MimeMappings.DEFAULT);
@@ -97,7 +126,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
             servletWebServer.setMimeMappings(mappings);
         }
     }
-
+    
     private void setLocationForStaticAssets(WebServerFactory server) {
         if (server instanceof ConfigurableServletWebServerFactory) {
             ConfigurableServletWebServerFactory servletWebServer = (ConfigurableServletWebServerFactory) server;
@@ -109,7 +138,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
             }
         }
     }
-
+    
     /**
      * Resolve path prefix to static resources.
      */
@@ -129,23 +158,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         }
         return extractedPath.substring(0, extractionEndIndex);
     }
-
-    /**
-     * Initializes the caching HTTP Headers Filter.
-     */
-    private void initCachingHttpHeadersFilter(ServletContext servletContext,
-                                              EnumSet<DispatcherType> disps) {
-        log.debug("Registering Caching HTTP Headers Filter");
-        FilterRegistration.Dynamic cachingHttpHeadersFilter =
-            servletContext.addFilter("cachingHttpHeadersFilter",
-                new CachingHttpHeadersFilter(jHipsterProperties));
-
-        cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/i18n/*");
-        cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/content/*");
-        cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/app/*");
-        cachingHttpHeadersFilter.setAsyncSupported(true);
-    }
-
+    
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -160,13 +173,5 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         }
         return new CorsFilter(source);
     }
-
-    /**
-     * Initializes H2 console.
-     */
-    private void initH2Console(ServletContext servletContext) {
-        log.debug("Initialize H2 console");
-        H2ConfigurationHelper.initH2Console(servletContext);
-    }
-
+    
 }

@@ -1,4 +1,4 @@
-import { element, by, ElementFinder } from 'protractor';
+import {by, element, ElementFinder} from 'protractor';
 
 export class EmployeeComponentsPage {
     createButton = element(by.id('jh-create-entity'));
@@ -43,9 +43,9 @@ export class EmployeeUpdatePage {
 
     async employeeSelectLastOption() {
         await this.employeeSelect
-            .all(by.tagName('option'))
-            .last()
-            .click();
+                  .all(by.tagName('option'))
+                  .last()
+                  .click();
     }
 
     async employeeSelectOption(option) {

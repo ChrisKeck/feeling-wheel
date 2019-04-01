@@ -24,20 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @see UserMapper
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = EfwgatewayApp.class)
-public class UserMapperTest {
-
+@RunWith(SpringRunner.class) @SpringBootTest(classes = EfwgatewayApp.class) public class UserMapperTest {
+    
     private static final String DEFAULT_LOGIN = "johndoe";
-
-    @Autowired
-    private UserMapper userMapper;
-
+    private static final Long DEFAULT_ID = 1L;
+    @Autowired private UserMapper userMapper;
     private User user;
     private UserDTO userDto;
-
-    private static final Long DEFAULT_ID = 1L;
-
+    
     @Before
     public void init() {
         user = new User();
@@ -49,99 +43,99 @@ public class UserMapperTest {
         user.setLastName("doe");
         user.setImageUrl("image_url");
         user.setLangKey("en");
-
+        
         userDto = new UserDTO(user);
     }
-
+    
     @Test
-    public void usersToUserDTOsShouldMapOnlyNonNullUsers(){
+    public void usersToUserDTOsShouldMapOnlyNonNullUsers() {
         List<User> users = new ArrayList<>();
         users.add(user);
         users.add(null);
-
+        
         List<UserDTO> userDTOS = userMapper.usersToUserDTOs(users);
-
+        
         assertThat(userDTOS).isNotEmpty();
         assertThat(userDTOS).size().isEqualTo(1);
     }
-
+    
     @Test
-    public void userDTOsToUsersShouldMapOnlyNonNullUsers(){
+    public void userDTOsToUsersShouldMapOnlyNonNullUsers() {
         List<UserDTO> usersDto = new ArrayList<>();
         usersDto.add(userDto);
         usersDto.add(null);
-
+        
         List<User> users = userMapper.userDTOsToUsers(usersDto);
-
+        
         assertThat(users).isNotEmpty();
         assertThat(users).size().isEqualTo(1);
     }
-
+    
     @Test
-    public void userDTOsToUsersWithAuthoritiesStringShouldMapToUsersWithAuthoritiesDomain(){
+    public void userDTOsToUsersWithAuthoritiesStringShouldMapToUsersWithAuthoritiesDomain() {
         Set<String> authoritiesAsString = new HashSet<>();
         authoritiesAsString.add("ADMIN");
         userDto.setAuthorities(authoritiesAsString);
-
+        
         List<UserDTO> usersDto = new ArrayList<>();
         usersDto.add(userDto);
-
+        
         List<User> users = userMapper.userDTOsToUsers(usersDto);
-
+        
         assertThat(users).isNotEmpty();
         assertThat(users).size().isEqualTo(1);
         assertThat(users.get(0).getAuthorities()).isNotNull();
         assertThat(users.get(0).getAuthorities()).isNotEmpty();
         assertThat(users.get(0).getAuthorities().iterator().next().getName()).isEqualTo("ADMIN");
     }
-
+    
     @Test
-    public void userDTOsToUsersMapWithNullAuthoritiesStringShouldReturnUserWithEmptyAuthorities(){
+    public void userDTOsToUsersMapWithNullAuthoritiesStringShouldReturnUserWithEmptyAuthorities() {
         userDto.setAuthorities(null);
-
+        
         List<UserDTO> usersDto = new ArrayList<>();
         usersDto.add(userDto);
-
+        
         List<User> users = userMapper.userDTOsToUsers(usersDto);
-
+        
         assertThat(users).isNotEmpty();
         assertThat(users).size().isEqualTo(1);
         assertThat(users.get(0).getAuthorities()).isNotNull();
         assertThat(users.get(0).getAuthorities()).isEmpty();
     }
-
+    
     @Test
-    public void userDTOToUserMapWithAuthoritiesStringShouldReturnUserWithAuthorities(){
+    public void userDTOToUserMapWithAuthoritiesStringShouldReturnUserWithAuthorities() {
         Set<String> authoritiesAsString = new HashSet<>();
         authoritiesAsString.add("ADMIN");
         userDto.setAuthorities(authoritiesAsString);
-
+        
         userDto.setAuthorities(authoritiesAsString);
-
+        
         User user = userMapper.userDTOToUser(userDto);
-
+        
         assertThat(user).isNotNull();
         assertThat(user.getAuthorities()).isNotNull();
         assertThat(user.getAuthorities()).isNotEmpty();
         assertThat(user.getAuthorities().iterator().next().getName()).isEqualTo("ADMIN");
     }
-
+    
     @Test
-    public void userDTOToUserMapWithNullAuthoritiesStringShouldReturnUserWithEmptyAuthorities(){
+    public void userDTOToUserMapWithNullAuthoritiesStringShouldReturnUserWithEmptyAuthorities() {
         userDto.setAuthorities(null);
-
+        
         User user = userMapper.userDTOToUser(userDto);
-
+        
         assertThat(user).isNotNull();
         assertThat(user.getAuthorities()).isNotNull();
         assertThat(user.getAuthorities()).isEmpty();
     }
-
+    
     @Test
-    public void userDTOToUserMapWithNullUserShouldReturnNull(){
+    public void userDTOToUserMapWithNullUserShouldReturnNull() {
         assertThat(userMapper.userDTOToUser(null)).isNull();
     }
-
+    
     @Test
     public void testUserFromId() {
         assertThat(userMapper.userFromId(DEFAULT_ID).getId()).isEqualTo(DEFAULT_ID);

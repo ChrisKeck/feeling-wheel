@@ -9,14 +9,12 @@ import java.util.List;
 /**
  * View Model that stores a route managed by the Gateway.
  */
-@Getter
-@Setter
-public class RouteVM {
-
+@Getter @Setter public class RouteVM {
+    
     private String path;
-
+    
     private String serviceId;
-
+    
     private List<ServiceInstance> serviceInstances;
-
+    
 }

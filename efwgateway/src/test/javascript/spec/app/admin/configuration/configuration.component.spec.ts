@@ -1,12 +1,9 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {JhiConfigurationComponent} from 'app/admin/configuration/configuration.component';
+import {JhiConfigurationService} from 'app/admin/configuration/configuration.service';
+import {of} from 'rxjs';
 
-import { EfwgatewayTestModule } from '../../../test.module';
-import { JhiConfigurationComponent } from 'app/admin/configuration/configuration.component';
-import { JhiConfigurationService } from 'app/admin/configuration/configuration.service';
-import { ITEMS_PER_PAGE } from 'app/shared';
-import { Log } from 'app/admin';
+import {EfwgatewayTestModule} from '../../../test.module';
 
 describe('Component Tests', () => {
     describe('JhiConfigurationComponent', () => {
@@ -16,12 +13,12 @@ describe('Component Tests', () => {
 
         beforeEach(async(() => {
             TestBed.configureTestingModule({
-                imports: [EfwgatewayTestModule],
-                declarations: [JhiConfigurationComponent],
-                providers: [JhiConfigurationService]
-            })
-                .overrideTemplate(JhiConfigurationComponent, '')
-                .compileComponents();
+                                               imports: [EfwgatewayTestModule],
+                                               declarations: [JhiConfigurationComponent],
+                                               providers: [JhiConfigurationService]
+                                           })
+                   .overrideTemplate(JhiConfigurationComponent, '')
+                   .compileComponents();
         }));
 
         beforeEach(() => {
@@ -39,8 +36,8 @@ describe('Component Tests', () => {
             });
             it('Should call load all on init', () => {
                 // GIVEN
-                const body = [{ config: 'test', properties: 'test' }, { config: 'test2' }];
-                const envConfig = { envConfig: 'test' };
+                const body = [{config: 'test', properties: 'test'}, {config: 'test2'}];
+                const envConfig = {envConfig: 'test'};
                 spyOn(service, 'get').and.returnValue(of(body));
                 spyOn(service, 'getEnv').and.returnValue(of(envConfig));
 
@@ -58,8 +55,7 @@ describe('Component Tests', () => {
             it('should return the keys of an Object', () => {
                 // GIVEN
                 const data = {
-                    key1: 'test',
-                    key2: 'test2'
+                    key1: 'test', key2: 'test2'
                 };
 
                 // THEN

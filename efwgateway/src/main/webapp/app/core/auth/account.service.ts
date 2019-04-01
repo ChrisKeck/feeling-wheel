@@ -1,32 +1,31 @@
-import { Injectable } from '@angular/core';
-import { JhiLanguageService } from 'ng-jhipster';
-import { SessionStorageService } from 'ngx-webstorage';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
+import {HttpClient, HttpResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 
-import { SERVER_API_URL } from 'app/app.constants';
-import { Account } from 'app/core/user/account.model';
-import { JhiTrackerService } from '../tracker/tracker.service';
+import {SERVER_API_URL} from 'app/app.constants';
+import {Account} from 'app/core/user/account.model';
+import {JhiLanguageService} from 'ng-jhipster';
+import {SessionStorageService} from 'ngx-webstorage';
+import {Observable, Subject} from 'rxjs';
+import {JhiTrackerService} from '../tracker/tracker.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AccountService {
     private userIdentity: any;
     private authenticated = false;
     private authenticationState = new Subject<any>();
 
-    constructor(
-        private languageService: JhiLanguageService,
-        private sessionStorage: SessionStorageService,
-        private http: HttpClient,
-        private trackerService: JhiTrackerService
-    ) {}
+    constructor(private languageService: JhiLanguageService,
+                private sessionStorage: SessionStorageService,
+                private http: HttpClient,
+                private trackerService: JhiTrackerService) {
+    }
 
     fetch(): Observable<HttpResponse<Account>> {
-        return this.http.get<Account>(SERVER_API_URL + 'api/account', { observe: 'response' });
+        return this.http.get<Account>(SERVER_API_URL + 'api/account', {observe: 'response'});
     }
 
     save(account: any): Observable<HttpResponse<any>> {
-        return this.http.post(SERVER_API_URL + 'api/account', account, { observe: 'response' });
+        return this.http.post(SERVER_API_URL + 'api/account', account, {observe: 'response'});
     }
 
     authenticate(identity) {
@@ -54,14 +53,11 @@ export class AccountService {
             return Promise.resolve(false);
         }
 
-        return this.identity().then(
-            id => {
-                return Promise.resolve(id.authorities && id.authorities.includes(authority));
-            },
-            () => {
-                return Promise.resolve(false);
-            }
-        );
+        return this.identity().then(id => {
+            return Promise.resolve(id.authorities && id.authorities.includes(authority));
+        }, () => {
+            return Promise.resolve(false);
+        });
     }
 
     identity(force?: boolean): Promise<any> {
@@ -77,33 +73,33 @@ export class AccountService {
 
         // retrieve the userIdentity data from the server, update the identity object, and then resolve.
         return this.fetch()
-            .toPromise()
-            .then(response => {
-                const account = response.body;
-                if (account) {
-                    this.userIdentity = account;
-                    this.authenticated = true;
-                    this.trackerService.connect();
-                    // After retrieve the account info, the language will be changed to
-                    // the user's preferred language configured in the account setting
-                    const langKey = this.sessionStorage.retrieve('locale') || this.userIdentity.langKey;
-                    this.languageService.changeLanguage(langKey);
-                } else {
-                    this.userIdentity = null;
-                    this.authenticated = false;
-                }
-                this.authenticationState.next(this.userIdentity);
-                return this.userIdentity;
-            })
-            .catch(err => {
-                if (this.trackerService.stompClient && this.trackerService.stompClient.connected) {
-                    this.trackerService.disconnect();
-                }
-                this.userIdentity = null;
-                this.authenticated = false;
-                this.authenticationState.next(this.userIdentity);
-                return null;
-            });
+                   .toPromise()
+                   .then(response => {
+                       const account = response.body;
+                       if (account) {
+                           this.userIdentity = account;
+                           this.authenticated = true;
+                           this.trackerService.connect();
+                           // After retrieve the account info, the language will be changed to
+                           // the user's preferred language configured in the account setting
+                           const langKey = this.sessionStorage.retrieve('locale') || this.userIdentity.langKey;
+                           this.languageService.changeLanguage(langKey);
+                       } else {
+                           this.userIdentity = null;
+                           this.authenticated = false;
+                       }
+                       this.authenticationState.next(this.userIdentity);
+                       return this.userIdentity;
+                   })
+                   .catch(err => {
+                       if (this.trackerService.stompClient && this.trackerService.stompClient.connected) {
+                           this.trackerService.disconnect();
+                       }
+                       this.userIdentity = null;
+                       this.authenticated = false;
+                       this.authenticationState.next(this.userIdentity);
+                       return null;
+                   });
     }
 
     isAuthenticated(): boolean {

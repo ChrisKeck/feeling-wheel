@@ -1,14 +1,9 @@
-import _root_.io.gatling.core.scenario.Simulation
-import ch.qos.logback.classic.{Level, LoggerContext}
-import io.gatling.core.Predef._
-import io.gatling.http.Predef._
+import ch.qos.logback.classic.LoggerContext
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.duration._
-
 /**
- * Performance test for the Feeling entity.
- */
+  * Performance test for the Feeling entity.
+  */
 class FeelingGatlingTest extends Simulation {
 
     val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
@@ -45,50 +40,51 @@ class FeelingGatlingTest extends Simulation {
 
     val scn = scenario("Test the Feeling entity")
         .exec(http("First unauthenticated request")
-        .get("/api/account")
-        .headers(headers_http)
-        .check(status.is(401))
+            .get("/api/account")
+            .headers(headers_http)
+            .check(status.is(401))
         ).exitHereIfFailed
         .pause(10)
         .exec(http("Authentication")
-        .post("/api/authenticate")
-        .headers(headers_http_authentication)
-        .body(StringBody("""{"username":"admin", "password":"admin"}""")).asJSON
-        .check(header.get("Authorization").saveAs("access_token"))).exitHereIfFailed
+            .post("/api/authenticate")
+            .headers(headers_http_authentication)
+            .body(StringBody("""{"username":"admin", "password":"admin"}""")).asJSON
+            .check(header.get("Authorization").saveAs("access_token"))).exitHereIfFailed
         .pause(2)
         .exec(http("Authenticated request")
-        .get("/api/account")
-        .headers(headers_http_authenticated)
-        .check(status.is(200)))
+            .get("/api/account")
+            .headers(headers_http_authenticated)
+            .check(status.is(200)))
         .pause(10)
         .repeat(2) {
             exec(http("Get all feelings")
-            .get("/efwservice/api/feelings")
-            .headers(headers_http_authenticated)
-            .check(status.is(200)))
-            .pause(10 seconds, 20 seconds)
-            .exec(http("Create new feeling")
-            .post("/efwservice/api/feelings")
-            .headers(headers_http_authenticated)
-            .body(StringBody("""{
+                .get("/efwservice/api/feelings")
+                .headers(headers_http_authenticated)
+                .check(status.is(200)))
+                .pause(10 seconds, 20 seconds)
+                .exec(http("Create new feeling")
+                    .post("/efwservice/api/feelings")
+                    .headers(headers_http_authenticated)
+                    .body(StringBody(
+                        """{
                 "id":null
                 , "feeltype":"ANGRY"
                 , "capacity":"0"
                 , "isSpeechable":null
                 }""")).asJSON
-            .check(status.is(201))
-            .check(headerRegex("Location", "(.*)").saveAs("new_feeling_url"))).exitHereIfFailed
-            .pause(10)
-            .repeat(5) {
-                exec(http("Get created feeling")
-                .get("/efwservice${new_feeling_url}")
-                .headers(headers_http_authenticated))
+                    .check(status.is(201))
+                    .check(headerRegex("Location", "(.*)").saveAs("new_feeling_url"))).exitHereIfFailed
                 .pause(10)
-            }
-            .exec(http("Delete created feeling")
-            .delete("/efwservice${new_feeling_url}")
-            .headers(headers_http_authenticated))
-            .pause(10)
+                .repeat(5) {
+                    exec(http("Get created feeling")
+                        .get("/efwservice${new_feeling_url}")
+                        .headers(headers_http_authenticated))
+                        .pause(10)
+                }
+                .exec(http("Delete created feeling")
+                    .delete("/efwservice${new_feeling_url}")
+                    .headers(headers_http_authenticated))
+                .pause(10)
         }
 
     val users = scenario("Users").exec(scn)

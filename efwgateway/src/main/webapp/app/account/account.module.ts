@@ -1,30 +1,29 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 
-import { EfwgatewaySharedModule } from 'app/shared';
+import {EfwgatewaySharedModule} from 'app/shared';
 
 import {
-    PasswordStrengthBarComponent,
-    RegisterComponent,
+    accountState,
     ActivateComponent,
     PasswordComponent,
-    PasswordResetInitComponent,
     PasswordResetFinishComponent,
-    SettingsComponent,
-    accountState
+    PasswordResetInitComponent,
+    PasswordStrengthBarComponent,
+    RegisterComponent,
+    SettingsComponent
 } from './';
 
 @NgModule({
-    imports: [EfwgatewaySharedModule, RouterModule.forChild(accountState)],
-    declarations: [
-        ActivateComponent,
-        RegisterComponent,
-        PasswordComponent,
-        PasswordStrengthBarComponent,
-        PasswordResetInitComponent,
-        PasswordResetFinishComponent,
-        SettingsComponent
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
-export class EfwgatewayAccountModule {}
+              imports: [EfwgatewaySharedModule, RouterModule.forChild(accountState)],
+              declarations: [ActivateComponent,
+                             RegisterComponent,
+                             PasswordComponent,
+                             PasswordStrengthBarComponent,
+                             PasswordResetInitComponent,
+                             PasswordResetFinishComponent,
+                             SettingsComponent],
+              schemas: [CUSTOM_ELEMENTS_SCHEMA]
+          })
+export class EfwgatewayAccountModule {
+}

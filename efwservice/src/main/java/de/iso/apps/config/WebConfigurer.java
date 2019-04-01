@@ -6,9 +6,10 @@ import io.github.jhipster.config.h2.H2ConfigurationHelper;
 import io.undertow.UndertowOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
-import org.springframework.boot.web.server.*;
+import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.WebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -19,48 +20,60 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import javax.servlet.*;
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.EnumSet;
 
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
  */
-@Configuration
-public class WebConfigurer implements ServletContextInitializer, WebServerFactoryCustomizer<WebServerFactory> {
-
+@Configuration public class WebConfigurer
+    implements ServletContextInitializer, WebServerFactoryCustomizer<WebServerFactory> {
+    
     private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
-
+    
     private final Environment env;
-
+    
     private final JHipsterProperties jHipsterProperties;
-
+    
     public WebConfigurer(Environment env, JHipsterProperties jHipsterProperties) {
-
+        
         this.env = env;
         this.jHipsterProperties = jHipsterProperties;
     }
-
+    
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         if (env.getActiveProfiles().length != 0) {
             log.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
         }
-        EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
+        EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST,
+                                                   DispatcherType.FORWARD,
+                                                   DispatcherType.ASYNC);
         if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
             initH2Console(servletContext);
         }
         log.info("Web application fully configured");
     }
-
+    
+    /**
+     * Initializes H2 console.
+     */
+    private void initH2Console(ServletContext servletContext) {
+        log.debug("Initialize H2 console");
+        H2ConfigurationHelper.initH2Console(servletContext);
+    }
+    
     /**
      * Customize the Servlet engine: Mime types, the document root, the cache.
      */
     @Override
     public void customize(WebServerFactory server) {
         setMimeMappings(server);
-
+        
         /*
          * Enable HTTP/2 for Undertow - https://twitter.com/ankinson/status/829256167700492288
          * HTTP/2 requires HTTPS, so HTTP requests will fallback to HTTP/1.1.
@@ -69,13 +82,13 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
          */
         if (jHipsterProperties.getHttp().getVersion().equals(JHipsterProperties.Http.Version.V_2_0) &&
             server instanceof UndertowServletWebServerFactory) {
-
-            ((UndertowServletWebServerFactory) server)
-                .addBuilderCustomizers(builder ->
-                    builder.setServerOption(UndertowOptions.ENABLE_HTTP2, true));
+            
+            ((UndertowServletWebServerFactory) server).addBuilderCustomizers(builder -> builder.setServerOption(
+                UndertowOptions.ENABLE_HTTP2,
+                true));
         }
     }
-
+    
     private void setMimeMappings(WebServerFactory server) {
         if (server instanceof ConfigurableServletWebServerFactory) {
             MimeMappings mappings = new MimeMappings(MimeMappings.DEFAULT);
@@ -87,7 +100,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
             servletWebServer.setMimeMappings(mappings);
         }
     }
-
+    
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -100,13 +113,5 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         }
         return new CorsFilter(source);
     }
-
-    /**
-     * Initializes H2 console.
-     */
-    private void initH2Console(ServletContext servletContext) {
-        log.debug("Initialize H2 console");
-        H2ConfigurationHelper.initH2Console(servletContext);
-    }
-
+    
 }

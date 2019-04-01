@@ -1,21 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRouteSnapshot, NavigationEnd, NavigationError } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRouteSnapshot, NavigationEnd, NavigationError, Router} from '@angular/router';
 
-import { JhiLanguageHelper } from 'app/core';
+import {JhiLanguageHelper} from 'app/core';
 
 @Component({
-    selector: 'jhi-main',
-    templateUrl: './main.component.html'
-})
+               selector: 'jhi-main', templateUrl: './main.component.html'
+           })
 export class JhiMainComponent implements OnInit {
-    constructor(private jhiLanguageHelper: JhiLanguageHelper, private router: Router) {}
-
-    private getPageTitle(routeSnapshot: ActivatedRouteSnapshot) {
-        let title: string = routeSnapshot.data && routeSnapshot.data['pageTitle'] ? routeSnapshot.data['pageTitle'] : 'efwgatewayApp';
-        if (routeSnapshot.firstChild) {
-            title = this.getPageTitle(routeSnapshot.firstChild) || title;
-        }
-        return title;
+    constructor(private jhiLanguageHelper: JhiLanguageHelper, private router: Router) {
     }
 
     ngOnInit() {
@@ -27,5 +19,13 @@ export class JhiMainComponent implements OnInit {
                 this.router.navigate(['/404']);
             }
         });
+    }
+
+    private getPageTitle(routeSnapshot: ActivatedRouteSnapshot) {
+        let title: string = routeSnapshot.data && routeSnapshot.data['pageTitle'] ? routeSnapshot.data['pageTitle'] : 'efwgatewayApp';
+        if (routeSnapshot.firstChild) {
+            title = this.getPageTitle(routeSnapshot.firstChild) || title;
+        }
+        return title;
     }
 }

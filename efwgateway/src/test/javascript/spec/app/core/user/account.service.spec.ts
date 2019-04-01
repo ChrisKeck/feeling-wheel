@@ -1,11 +1,11 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
-import { SERVER_API_URL } from 'app/app.constants';
-import { AccountService, JhiTrackerService } from 'app/core';
-import { JhiDateUtils, JhiLanguageService } from 'ng-jhipster';
-import { SessionStorageService } from 'ngx-webstorage';
-import { MockLanguageService } from '../../../helpers/mock-language.service';
-import { MockTrackerService } from '../../../helpers/mock-tracker.service';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {TestBed} from '@angular/core/testing';
+import {SERVER_API_URL} from 'app/app.constants';
+import {AccountService, JhiTrackerService} from 'app/core';
+import {JhiDateUtils, JhiLanguageService} from 'ng-jhipster';
+import {SessionStorageService} from 'ngx-webstorage';
+import {MockLanguageService} from '../../../helpers/mock-language.service';
+import {MockTrackerService} from '../../../helpers/mock-tracker.service';
 
 describe('Service Tests', () => {
     describe('Account Service', () => {
@@ -14,20 +14,12 @@ describe('Service Tests', () => {
 
         beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [HttpClientTestingModule],
-                providers: [
-                    JhiDateUtils,
-                    SessionStorageService,
-                    {
-                        provide: JhiLanguageService,
-                        useClass: MockLanguageService
-                    },
-                    {
-                        provide: JhiTrackerService,
-                        useClass: MockTrackerService
-                    }
-                ]
-            });
+                                               imports: [HttpClientTestingModule], providers: [JhiDateUtils, SessionStorageService, {
+                    provide: JhiLanguageService, useClass: MockLanguageService
+                }, {
+                    provide: JhiTrackerService, useClass: MockTrackerService
+                }]
+                                           });
 
             service = TestBed.get(AccountService);
             httpMock = TestBed.get(HttpTestingController);
@@ -39,22 +31,24 @@ describe('Service Tests', () => {
 
         describe('Service methods', () => {
             it('should call /account if user is undefined', () => {
-                service.identity().then(() => {});
-                const req = httpMock.expectOne({ method: 'GET' });
+                service.identity().then(() => {
+                });
+                const req = httpMock.expectOne({method: 'GET'});
                 const resourceUrl = SERVER_API_URL + 'api/account';
 
                 expect(req.request.url).toEqual(`${resourceUrl}`);
             });
 
             it('should call /account only once', () => {
-                service.identity().then(() => service.identity().then(() => {}));
-                const req = httpMock.expectOne({ method: 'GET' });
+                service.identity().then(() => service.identity().then(() => {
+                }));
+                const req = httpMock.expectOne({method: 'GET'});
                 const resourceUrl = SERVER_API_URL + 'api/account';
 
                 expect(req.request.url).toEqual(`${resourceUrl}`);
                 req.flush({
-                    firstName: 'John'
-                });
+                              firstName: 'John'
+                          });
             });
 
             describe('hasAuthority', () => {
@@ -65,8 +59,8 @@ describe('Service Tests', () => {
 
                 it('should return false if user is logged and has not authority', async () => {
                     service.authenticate({
-                        authorities: ['ROLE_USER']
-                    });
+                                             authorities: ['ROLE_USER']
+                                         });
 
                     const hasAuthority = await service.hasAuthority('ROLE_ADMIN');
 
@@ -75,8 +69,8 @@ describe('Service Tests', () => {
 
                 it('should return true if user is logged and has authority', async () => {
                     service.authenticate({
-                        authorities: ['ROLE_USER']
-                    });
+                                             authorities: ['ROLE_USER']
+                                         });
 
                     const hasAuthority = await service.hasAuthority('ROLE_USER');
 
@@ -92,8 +86,8 @@ describe('Service Tests', () => {
 
                 it('should return false if user is logged and has not authority', async () => {
                     service.authenticate({
-                        authorities: ['ROLE_USER']
-                    });
+                                             authorities: ['ROLE_USER']
+                                         });
 
                     const hasAuthority = await service.hasAnyAuthority(['ROLE_ADMIN']);
 
@@ -102,8 +96,8 @@ describe('Service Tests', () => {
 
                 it('should return true if user is logged and has authority', async () => {
                     service.authenticate({
-                        authorities: ['ROLE_USER']
-                    });
+                                             authorities: ['ROLE_USER']
+                                         });
 
                     const hasAuthority = await service.hasAnyAuthority(['ROLE_USER', 'ROLE_ADMIN']);
 

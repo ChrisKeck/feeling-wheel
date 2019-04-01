@@ -1,62 +1,88 @@
 <div class="row justify-content-center">
     <div class="col-8">
-        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
-            <h2 id="jhi-feeling-iso-heading" jhiTranslate="efwgatewayApp.efwserviceFeeling.home.createOrEditLabel">Create or edit a Feeling</h2>
+        <form #editForm="ngForm" (ngSubmit)="save()" name="editForm" novalidate role="form">
+            <h2 id="jhi-feeling-iso-heading" jhiTranslate="efwgatewayApp.efwserviceFeeling.home.createOrEditLabel">
+                Create or edit a Feeling</h2>
             <div>
                 <jhi-alert-error></jhi-alert-error>
-                <div *jhiHasAnyAuthority="['ROLE_ADMIN']" class="form-group" [hidden]="!feeling.id">
+                <div *jhiHasAnyAuthority="['ROLE_ADMIN']" [hidden]="!feeling.id" class="form-group">
                     <label for="id" jhiTranslate="global.field.id">ID</label>
-                    <input type="text" class="form-control" id="id" name="id"
-                        [(ngModel)]="feeling.id" readonly />
+                    <input [(ngModel)]="feeling.id" class="form-control" id="id" name="id"
+                           readonly type="text"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="efwgatewayApp.efwserviceFeeling.feeltype" for="field_feeltype">Feeltype</label>
-                    <select class="form-control" name="feeltype" [(ngModel)]="feeling.feeltype" id="field_feeltype"  required>
+                    <label class="form-control-label"
+                           for="field_feeltype"
+                           jhiTranslate="efwgatewayApp.efwserviceFeeling.feeltype">Feeltype</label>
+                    <select [(ngModel)]="feeling.feeltype"
+                            class="form-control"
+                            id="field_feeltype"
+                            name="feeltype"
+                            required>
                         <option value="ANGRY">{{'efwgatewayApp.FeelType.ANGRY' | translate}}</option>
                         <option value="SAD">{{'efwgatewayApp.FeelType.SAD' | translate}}</option>
                         <option value="HAPPY">{{'efwgatewayApp.FeelType.HAPPY' | translate}}</option>
                     </select>
                     <div [hidden]="!(editForm.controls.feeltype?.dirty && editForm.controls.feeltype?.invalid)">
-                        <small class="form-text text-danger"
-                        [hidden]="!editForm.controls.feeltype?.errors?.required" jhiTranslate="entity.validation.required">
-                        This field is required.
+                        <small [hidden]="!editForm.controls.feeltype?.errors?.required"
+                               class="form-text text-danger"
+                               jhiTranslate="entity.validation.required">
+                            This field is required.
                         </small>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="efwgatewayApp.efwserviceFeeling.capacity" for="field_capacity">Capacity</label>
-                    <input type="number" class="form-control" name="capacity" id="field_capacity"
-                        [(ngModel)]="feeling.capacity" required/>
+                    <label class="form-control-label"
+                           for="field_capacity"
+                           jhiTranslate="efwgatewayApp.efwserviceFeeling.capacity">Capacity</label>
+                    <input [(ngModel)]="feeling.capacity" class="form-control" id="field_capacity" name="capacity"
+                           required type="number"/>
                     <div [hidden]="!(editForm.controls.capacity?.dirty && editForm.controls.capacity?.invalid)">
-                        <small class="form-text text-danger"
-                        [hidden]="!editForm.controls.capacity?.errors?.required" jhiTranslate="entity.validation.required">
-                        This field is required.
+                        <small [hidden]="!editForm.controls.capacity?.errors?.required"
+                               class="form-text text-danger"
+                               jhiTranslate="entity.validation.required">
+                            This field is required.
                         </small>
-                        <small class="form-text text-danger"
-                            [hidden]="!editForm.controls.capacity?.errors?.number" jhiTranslate="entity.validation.number">
+                        <small [hidden]="!editForm.controls.capacity?.errors?.number"
+                               class="form-text text-danger"
+                               jhiTranslate="entity.validation.number">
                             This field should be a number.
                         </small>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="efwgatewayApp.efwserviceFeeling.isSpeechable" for="field_isSpeechable">Is Speechable</label>
-                    <input type="checkbox" class="form-control" name="isSpeechable" id="field_isSpeechable"
-                        [(ngModel)]="feeling.isSpeechable" />
+                    <label class="form-control-label"
+                           for="field_isSpeechable"
+                           jhiTranslate="efwgatewayApp.efwserviceFeeling.isSpeechable">Is Speechable</label>
+                    <input [(ngModel)]="feeling.isSpeechable"
+                           class="form-control"
+                           id="field_isSpeechable"
+                           name="isSpeechable"
+                           type="checkbox"/>
                 </div>
-
+                
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="efwgatewayApp.efwserviceFeeling.feelwheel" for="field_feelwheel">Feelwheel</label>
-                    <select class="form-control" id="field_feelwheel" name="feelwheel" [(ngModel)]="feeling.feelwheelId" >
+                    <label class="form-control-label"
+                           for="field_feelwheel"
+                           jhiTranslate="efwgatewayApp.efwserviceFeeling.feelwheel">Feelwheel</label>
+                    <select [(ngModel)]="feeling.feelwheelId"
+                            class="form-control"
+                            id="field_feelwheel"
+                            name="feelwheel">
                         <option [ngValue]="null"></option>
-                        <option [ngValue]="feelWheelOption.id" *ngFor="let feelWheelOption of feelwheels; trackBy: trackFeelWheelById">{{feelWheelOption.subject}}</option>
+                        <option *ngFor="let feelWheelOption of feelwheels; trackBy: trackFeelWheelById"
+                                [ngValue]="feelWheelOption.id">{{feelWheelOption.subject}}</option>
                     </select>
                 </div>
             </div>
             <div>
-                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                <button (click)="previousState()" class="btn btn-secondary" id="cancel-save" type="button">
                     <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
                 </button>
-                <button type="submit" id="save-entity" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+                <button [disabled]="editForm.form.invalid || isSaving"
+                        class="btn btn-primary"
+                        id="save-entity"
+                        type="submit">
                     <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
                 </button>
             </div>

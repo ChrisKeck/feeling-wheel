@@ -1,16 +1,19 @@
 package de.iso.apps.config.audit;
 
 import de.iso.apps.domain.PersistentAuditEvent;
-
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-@Component
-public class AuditEventConverter {
-
+@Component public class AuditEventConverter {
+    
     /**
      * Convert a list of PersistentAuditEvent to a list of AuditEvent
      *
@@ -27,7 +30,7 @@ public class AuditEventConverter {
         }
         return auditEvents;
     }
-
+    
     /**
      * Convert a PersistentAuditEvent to an AuditEvent
      *
@@ -38,10 +41,12 @@ public class AuditEventConverter {
         if (persistentAuditEvent == null) {
             return null;
         }
-        return new AuditEvent(persistentAuditEvent.getAuditEventDate(), persistentAuditEvent.getPrincipal(),
-            persistentAuditEvent.getAuditEventType(), convertDataToObjects(persistentAuditEvent.getData()));
+        return new AuditEvent(persistentAuditEvent.getAuditEventDate(),
+                              persistentAuditEvent.getPrincipal(),
+                              persistentAuditEvent.getAuditEventType(),
+                              convertDataToObjects(persistentAuditEvent.getData()));
     }
-
+    
     /**
      * Internal conversion. This is needed to support the current SpringBoot actuator AuditEventRepository interface
      *
@@ -50,7 +55,7 @@ public class AuditEventConverter {
      */
     public Map<String, Object> convertDataToObjects(Map<String, String> data) {
         Map<String, Object> results = new HashMap<>();
-
+        
         if (data != null) {
             for (Map.Entry<String, String> entry : data.entrySet()) {
                 results.put(entry.getKey(), entry.getValue());
@@ -58,17 +63,17 @@ public class AuditEventConverter {
         }
         return results;
     }
-
+    
     /**
-     * Internal conversion. This method will allow to save additional data.
-     * By default, it will save the object as string
+     * Internal conversion. This method will allow to save additional data. By default, it will save the object as
+     * string
      *
      * @param data the data to convert
      * @return a map of String, String
      */
     public Map<String, String> convertDataToStrings(Map<String, Object> data) {
         Map<String, String> results = new HashMap<>();
-
+        
         if (data != null) {
             for (Map.Entry<String, Object> entry : data.entrySet()) {
                 // Extract the data that will be saved.

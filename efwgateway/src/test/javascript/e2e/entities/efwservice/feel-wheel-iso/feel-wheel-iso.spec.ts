@@ -1,8 +1,8 @@
 /* tslint:disable no-unused-expression */
-import { browser, ExpectedConditions as ec, protractor, promise } from 'protractor';
-import { NavBarPage, SignInPage } from '../../../page-objects/jhi-page-objects';
+import {browser, ExpectedConditions as ec, promise, protractor} from 'protractor';
+import {NavBarPage, SignInPage} from '../../../page-objects/jhi-page-objects';
 
-import { FeelWheelComponentsPage, FeelWheelDeleteDialog, FeelWheelUpdatePage } from './feel-wheel-iso.page-object';
+import {FeelWheelComponentsPage, FeelWheelDeleteDialog, FeelWheelUpdatePage} from './feel-wheel-iso.page-object';
 
 const expect = chai.expect;
 
@@ -39,12 +39,10 @@ describe('FeelWheel e2e test', () => {
         const nbButtonsBeforeCreate = await feelWheelComponentsPage.countDeleteButtons();
 
         await feelWheelComponentsPage.clickOnCreateButton();
-        await promise.all([
-            feelWheelUpdatePage.setSubjectInput('subject'),
-            feelWheelUpdatePage.setFromInput('01/01/2001' + protractor.Key.TAB + '02:30AM'),
-            feelWheelUpdatePage.setToInput('01/01/2001' + protractor.Key.TAB + '02:30AM'),
-            feelWheelUpdatePage.employeeSelectLastOption()
-        ]);
+        await promise.all([feelWheelUpdatePage.setSubjectInput('subject'),
+                           feelWheelUpdatePage.setFromInput('01/01/2001' + protractor.Key.TAB + '02:30AM'),
+                           feelWheelUpdatePage.setToInput('01/01/2001' + protractor.Key.TAB + '02:30AM'),
+                           feelWheelUpdatePage.employeeSelectLastOption()]);
         expect(await feelWheelUpdatePage.getSubjectInput()).to.eq('subject');
         expect(await feelWheelUpdatePage.getFromInput()).to.contain('2001-01-01T02:30');
         expect(await feelWheelUpdatePage.getToInput()).to.contain('2001-01-01T02:30');

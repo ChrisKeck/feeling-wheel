@@ -99,7 +99,6 @@ spring:
             auto-offset-reset: earliest
             bootstrap-servers: kafka:9092
             enable-auto-commit: true
-
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
         bootstrap-servers: kafka:9092
@@ -127,9 +126,9 @@ jhipster:
                 enabled: false
                 update-interval: 3
                 url: http://localhost:8180/mancenter
-    # CORS is disabled by default on microservices, as you should access them through a gateway.
-    # If you want to enable it, please uncomment the configuration below.
-    # cors:
+        # CORS is disabled by default on microservices, as you should access them through a gateway.
+        # If you want to enable it, please uncomment the configuration below.
+        # cors:
         # allowed-origins: "*"
         # allowed-methods: "*"
         # allowed-headers: "*"

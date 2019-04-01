@@ -3,7 +3,6 @@ package de.iso.apps.security;
 import de.iso.apps.EfwgatewayApp;
 import de.iso.apps.domain.User;
 import de.iso.apps.repository.UserRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,28 +24,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @see DomainUserDetailsService
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = EfwgatewayApp.class)
-@Transactional
+@RunWith(SpringRunner.class) @SpringBootTest(classes = EfwgatewayApp.class) @Transactional
 public class DomainUserDetailsServiceIntTest {
-
+    
     private static final String USER_ONE_LOGIN = "test-user-one";
     private static final String USER_ONE_EMAIL = "test-user-one@localhost";
     private static final String USER_TWO_LOGIN = "test-user-two";
     private static final String USER_TWO_EMAIL = "test-user-two@localhost";
     private static final String USER_THREE_LOGIN = "test-user-three";
     private static final String USER_THREE_EMAIL = "test-user-three@localhost";
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserDetailsService domainUserDetailsService;
-
+    
+    @Autowired private UserRepository userRepository;
+    
+    @Autowired private UserDetailsService domainUserDetailsService;
+    
     private User userOne;
     private User userTwo;
     private User userThree;
-
+    
     @Before
     public void init() {
         userOne = new User();
@@ -58,7 +53,7 @@ public class DomainUserDetailsServiceIntTest {
         userOne.setLastName("doe");
         userOne.setLangKey("en");
         userRepository.save(userOne);
-
+        
         userTwo = new User();
         userTwo.setLogin(USER_TWO_LOGIN);
         userTwo.setPassword(RandomStringUtils.random(60));
@@ -68,7 +63,7 @@ public class DomainUserDetailsServiceIntTest {
         userTwo.setLastName("doe");
         userTwo.setLangKey("en");
         userRepository.save(userTwo);
-
+        
         userThree = new User();
         userThree.setLogin(USER_THREE_LOGIN);
         userThree.setPassword(RandomStringUtils.random(60));
@@ -79,7 +74,7 @@ public class DomainUserDetailsServiceIntTest {
         userThree.setLangKey("en");
         userRepository.save(userThree);
     }
-
+    
     @Test
     @Transactional
     public void assertThatUserCanBeFoundByLogin() {
@@ -87,7 +82,7 @@ public class DomainUserDetailsServiceIntTest {
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_LOGIN);
     }
-
+    
     @Test
     @Transactional
     public void assertThatUserCanBeFoundByLoginIgnoreCase() {
@@ -95,7 +90,7 @@ public class DomainUserDetailsServiceIntTest {
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_LOGIN);
     }
-
+    
     @Test
     @Transactional
     public void assertThatUserCanBeFoundByEmail() {
@@ -103,13 +98,13 @@ public class DomainUserDetailsServiceIntTest {
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(USER_TWO_LOGIN);
     }
-
+    
     @Test(expected = UsernameNotFoundException.class)
     @Transactional
     public void assertThatUserCanNotBeFoundByEmailIgnoreCase() {
-    domainUserDetailsService.loadUserByUsername(USER_TWO_EMAIL.toUpperCase(Locale.ENGLISH));
+        domainUserDetailsService.loadUserByUsername(USER_TWO_EMAIL.toUpperCase(Locale.ENGLISH));
     }
-
+    
     @Test
     @Transactional
     public void assertThatEmailIsPrioritizedOverLogin() {
@@ -117,11 +112,11 @@ public class DomainUserDetailsServiceIntTest {
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_LOGIN);
     }
-
+    
     @Test(expected = UserNotActivatedException.class)
     @Transactional
     public void assertThatUserNotActivatedExceptionIsThrownForNotActivatedUsers() {
         domainUserDetailsService.loadUserByUsername(USER_THREE_LOGIN);
     }
-
+    
 }

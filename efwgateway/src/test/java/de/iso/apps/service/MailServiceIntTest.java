@@ -1,7 +1,7 @@
 package de.iso.apps.service;
-import de.iso.apps.config.Constants;
 
 import de.iso.apps.EfwgatewayApp;
+import de.iso.apps.config.Constants;
 import de.iso.apps.domain.User;
 import io.github.jhipster.config.JHipsterProperties;
 import org.junit.Before;
@@ -27,36 +27,31 @@ import java.io.ByteArrayOutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = EfwgatewayApp.class)
-public class MailServiceIntTest {
-
-    @Autowired
-    private JHipsterProperties jHipsterProperties;
-
-    @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
-    private SpringTemplateEngine templateEngine;
-
-    @Spy
-    private JavaMailSenderImpl javaMailSender;
-
-    @Captor
-    private ArgumentCaptor<MimeMessage> messageCaptor;
-
+@RunWith(SpringRunner.class) @SpringBootTest(classes = EfwgatewayApp.class) public class MailServiceIntTest {
+    
+    @Autowired private JHipsterProperties jHipsterProperties;
+    
+    @Autowired private MessageSource messageSource;
+    
+    @Autowired private SpringTemplateEngine templateEngine;
+    
+    @Spy private JavaMailSenderImpl javaMailSender;
+    
+    @Captor private ArgumentCaptor<MimeMessage> messageCaptor;
+    
     private MailService mailService;
-
+    
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
         mailService = new MailService(jHipsterProperties, javaMailSender, messageSource, templateEngine);
     }
-
+    
     @Test
     public void testSendEmail() throws Exception {
         mailService.sendEmail("john.doe@example.com", "testSubject", "testContent", false, false);
@@ -69,7 +64,7 @@ public class MailServiceIntTest {
         assertThat(message.getContent().toString()).isEqualTo("testContent");
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/plain; charset=UTF-8");
     }
-
+    
     @Test
     public void testSendHtmlEmail() throws Exception {
         mailService.sendEmail("john.doe@example.com", "testSubject", "testContent", false, true);
@@ -82,7 +77,7 @@ public class MailServiceIntTest {
         assertThat(message.getContent().toString()).isEqualTo("testContent");
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
     }
-
+    
     @Test
     public void testSendMultipartEmail() throws Exception {
         mailService.sendEmail("john.doe@example.com", "testSubject", "testContent", true, false);
@@ -99,7 +94,7 @@ public class MailServiceIntTest {
         assertThat(aos.toString()).isEqualTo("\r\ntestContent");
         assertThat(part.getDataHandler().getContentType()).isEqualTo("text/plain; charset=UTF-8");
     }
-
+    
     @Test
     public void testSendMultipartHtmlEmail() throws Exception {
         mailService.sendEmail("john.doe@example.com", "testSubject", "testContent", true, true);
@@ -116,7 +111,7 @@ public class MailServiceIntTest {
         assertThat(aos.toString()).isEqualTo("\r\ntestContent");
         assertThat(part.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
     }
-
+    
     @Test
     public void testSendEmailFromTemplate() throws Exception {
         User user = new User();
@@ -129,10 +124,11 @@ public class MailServiceIntTest {
         assertThat(message.getSubject()).isEqualTo("test title");
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo(user.getEmail());
         assertThat(message.getFrom()[0].toString()).isEqualTo("test@localhost");
-        assertThat(message.getContent().toString()).isEqualToNormalizingNewlines("<html>test title, http://127.0.0.1:8080, john</html>\n");
+        assertThat(message.getContent().toString()).isEqualToNormalizingNewlines(
+            "<html>test title, http://127.0.0.1:8080, john</html>\n");
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
     }
-
+    
     @Test
     public void testSendActivationEmail() throws Exception {
         User user = new User();
@@ -147,7 +143,7 @@ public class MailServiceIntTest {
         assertThat(message.getContent().toString()).isNotEmpty();
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
     }
-
+    
     @Test
     public void testCreationEmail() throws Exception {
         User user = new User();
@@ -162,7 +158,7 @@ public class MailServiceIntTest {
         assertThat(message.getContent().toString()).isNotEmpty();
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
     }
-
+    
     @Test
     public void testSendPasswordResetMail() throws Exception {
         User user = new User();
@@ -177,11 +173,11 @@ public class MailServiceIntTest {
         assertThat(message.getContent().toString()).isNotEmpty();
         assertThat(message.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
     }
-
+    
     @Test
     public void testSendEmailWithException() throws Exception {
         doThrow(MailSendException.class).when(javaMailSender).send(any(MimeMessage.class));
         mailService.sendEmail("john.doe@example.com", "testSubject", "testContent", false, false);
     }
-
+    
 }

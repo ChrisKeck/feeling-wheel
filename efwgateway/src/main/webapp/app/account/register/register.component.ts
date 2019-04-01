@@ -1,16 +1,15 @@
-import { Component, OnInit, AfterViewInit, Renderer, ElementRef } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { JhiLanguageService } from 'ng-jhipster';
+import {HttpErrorResponse} from '@angular/common/http';
+import {AfterViewInit, Component, ElementRef, OnInit, Renderer} from '@angular/core';
+import {NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {LoginModalService} from 'app/core';
 
-import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/shared';
-import { LoginModalService } from 'app/core';
-import { Register } from './register.service';
+import {EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE} from 'app/shared';
+import {JhiLanguageService} from 'ng-jhipster';
+import {Register} from './register.service';
 
 @Component({
-    selector: 'jhi-register',
-    templateUrl: './register.component.html'
-})
+               selector: 'jhi-register', templateUrl: './register.component.html'
+           })
 export class RegisterComponent implements OnInit, AfterViewInit {
     confirmPassword: string;
     doNotMatch: string;
@@ -21,13 +20,12 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     success: boolean;
     modalRef: NgbModalRef;
 
-    constructor(
-        private languageService: JhiLanguageService,
-        private loginModalService: LoginModalService,
-        private registerService: Register,
-        private elementRef: ElementRef,
-        private renderer: Renderer
-    ) {}
+    constructor(private languageService: JhiLanguageService,
+                private loginModalService: LoginModalService,
+                private registerService: Register,
+                private elementRef: ElementRef,
+                private renderer: Renderer) {
+    }
 
     ngOnInit() {
         this.success = false;
@@ -48,12 +46,9 @@ export class RegisterComponent implements OnInit, AfterViewInit {
             this.errorEmailExists = null;
             this.languageService.getCurrent().then(key => {
                 this.registerAccount.langKey = key;
-                this.registerService.save(this.registerAccount).subscribe(
-                    () => {
-                        this.success = true;
-                    },
-                    response => this.processError(response)
-                );
+                this.registerService.save(this.registerAccount).subscribe(() => {
+                    this.success = true;
+                }, response => this.processError(response));
             });
         }
     }

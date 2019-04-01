@@ -23,7 +23,10 @@ spring:
     sleuth:
         sampler:
             probability: 1 # report 100% of traces to Zipkin
-
+    kafka:
+        # change this property if you are using your own
+        # Kafka cluster or your Docker IP is different
+        bootstrap-servers: kafka:9092
 eureka:
     client:
         service-url:

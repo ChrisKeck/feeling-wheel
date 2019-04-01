@@ -1,10 +1,12 @@
 package de.iso.apps.service.mapper;
 
-import de.iso.apps.contracts.IUser;
+import de.iso.apps.contracts.Userable;
 import de.iso.apps.domain.Authority;
 import de.iso.apps.domain.User;
+import de.iso.apps.service.dto.MailChangingDTO;
 import de.iso.apps.service.dto.UserDTO;
 import lombok.NonNull;
+import lombok.var;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -65,7 +67,7 @@ public class UserMapper {
         }
     }
     
-    private void map(IUser userDTO, IUser user) {
+    private void map(Userable userDTO, Userable user) {
         user.setId(userDTO.getId());
         user.setLogin(userDTO.getLogin());
         user.setFirstName(userDTO.getFirstName());
@@ -98,5 +100,17 @@ public class UserMapper {
         User user = new User();
         user.setId(id);
         return user;
+    }
+    
+    public MailChangingDTO userDTOToMailChangingDTO(UserDTO newMailUserDTO, UserDTO oldMailUserDTO) {
+        var mailBuilder = MailChangingDTO.builder();
+        
+        if (newMailUserDTO != null) {
+            mailBuilder.newMail(newMailUserDTO.getEmail());
+        }
+        if (oldMailUserDTO != null) {
+            mailBuilder.oldMail(oldMailUserDTO.getEmail());
+        }
+        return mailBuilder.build();
     }
 }

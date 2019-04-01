@@ -97,6 +97,9 @@ spring:
         consumer:
             group-id: tpd-loggers
             auto-offset-reset: earliest
+            bootstrap-servers: kafka:9092
+            enable-auto-commit: true
+
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
         bootstrap-servers: kafka:9092

@@ -80,13 +80,17 @@ spring:
         consumer:
             group-id: tpd-loggers
             auto-offset-reset: earliest
+            bootstrap-servers: kafka:9092
+            enable-auto-commit: true
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
         bootstrap-servers: kafka:9092
+        template:
+            default-topic: advice-topic
 
 tpd:
     topic-name: advice-topic
-    messages-per-request: 10
+    messages-per-request: 1
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
 # keytool -genkey -alias efwservice -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650

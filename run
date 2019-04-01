@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+mvn clean install
+mvn jib:dockerBuild -f efwgateway/pom.xml
+mvn jib:dockerBuild -f efwservice/pom.xml

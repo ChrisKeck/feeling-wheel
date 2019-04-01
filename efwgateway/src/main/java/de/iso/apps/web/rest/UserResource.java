@@ -216,6 +216,11 @@ public class UserResource {
     @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Void> deleteUser(@PathVariable String login) {
         log.debug("REST request to delete User: {}", login);
+        var user = userService.getUserWithAuthoritiesByLogin(login);
+        user.ifPresent(item -> {
+            var mailChanging = userMapper.userDTOToMailChangingDTO(null, userMapper.userToUserDTO(item));
+            mailChangingService.propagate(mailChanging);
+        });
         userService.deleteUser(login);
         return ResponseEntity.ok().headers(HeaderUtil.createAlert( "userManagement.deleted", login)).build();
     }

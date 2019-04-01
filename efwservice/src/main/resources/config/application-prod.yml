@@ -77,6 +77,8 @@ spring:
             discovery:
                 enabled: true
     kafka:
+        template:
+            default-topic: advice-topic
         consumer:
             group-id: tpd-loggers
             auto-offset-reset: earliest
@@ -85,8 +87,6 @@ spring:
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
         bootstrap-servers: kafka:9092
-        template:
-            default-topic: advice-topic
 
 tpd:
     topic-name: advice-topic

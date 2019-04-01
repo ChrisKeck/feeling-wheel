@@ -15,6 +15,7 @@ import de.iso.apps.service.dto.UserDTO;
 import de.iso.apps.service.mapper.UserMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
 import de.iso.apps.web.rest.vm.ManagedUserVM;
+import lombok.var;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -107,7 +108,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     
     private MockMvc restUserMockMvc;
     
-    @Mock private KafkaTemplate<String, Object> mockkafka;
+    @Mock private KafkaTemplate<String, MailChangingDTO> mockkafka;
     
     @Mock private Topicable<MailChangingDTO> topicable;
     
@@ -117,18 +118,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     public void setup() {
         cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).clear();
         cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).clear();
+        var mailchanging = new MailChangingService(topicable, userRepository, mockUserSearchRepository, userMapper) {
+            @Override
+            public void propagate(MailChangingDTO userDTO) {
+            
+            }
+        };
         UserResource userResource = new UserResource(userService,
                                                      userRepository,
-                                                     mailService,
-                                                     mockUserSearchRepository,
-                                                     new MailChangingService(topicable) {
-                                                         @Override
-                                                         public void propagate(MailChangingDTO userDTO) {
-                
-                                                         }
-                                                     },
+                                                     mailService, mockUserSearchRepository, mailchanging,
                                                      new UserMapper());
-        
+    
         this.restUserMockMvc = MockMvcBuilders.standaloneSetup(userResource).setCustomArgumentResolvers(
             pageableArgumentResolver).setControllerAdvice(exceptionTranslator).setMessageConverters(
             jacksonMessageConverter).build();

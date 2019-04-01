@@ -1,6 +1,7 @@
 package de.iso.apps.service.impl;
 
 import de.iso.apps.config.Constants;
+import de.iso.apps.contracts.Topicable;
 import de.iso.apps.domain.Employee;
 import de.iso.apps.repository.EmployeeRepository;
 import de.iso.apps.repository.search.EmployeeSearchRepository;
@@ -16,19 +17,42 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
-@Service public class MailChangingListener {
+@Service public class MailChangingServiceImpl implements de.iso.apps.service.MailChangingService {
     
-    private final Logger log = LoggerFactory.getLogger(MailChangingListener.class);
+    private final Logger log = LoggerFactory.getLogger(MailChangingServiceImpl.class);
     private final EmployeeRepository employeeRepository;
     private final EmployeeSearchRepository employeeSearchRepository;
     private CountDownLatch latch = new CountDownLatch(1);
     
-    public MailChangingListener(EmployeeRepository employeeRepository,
-                                EmployeeSearchRepository employeeSearchRepository) {
+    public MailChangingServiceImpl(EmployeeRepository employeeRepository,
+                                   EmployeeSearchRepository employeeSearchRepository,
+                                   Topicable<MailChangingDTO> topicable) {
+        this.topicable = topicable;
         this.employeeRepository = employeeRepository;
         this.employeeSearchRepository = employeeSearchRepository;
+    }
+    
+    
+    private final Topicable<MailChangingDTO> topicable;
+    
+    
+    @Override
+    public void propagate(MailChangingDTO userDTO) {
+        try {
+            latch = new CountDownLatch(topicable.getRequestsPerMessage());
+            for (int i = topicable.getRequestsPerMessage(); i >= 0; i--) {
+                topicable.getKafkaTemplate().send(topicable.getTopic(), String.valueOf(i), userDTO);
+            }
+            if (latch.await(60, TimeUnit.SECONDS)) {
+                log.info("If await is true");
+            }
+            log.info("All messages received");
+        } catch (Exception ex) {
+            log.error("Error", ex);
+        }
     }
     
     @KafkaListener(topics = Constants.TOPIC_MAIL_CHANGING, clientIdPrefix = "json",
@@ -83,25 +107,7 @@ import java.util.stream.StreamSupport;
         });
     }
     
-  /*  @KafkaListener(topics = Constants.TOPIC_MAIL_CHANGING, clientIdPrefix = "string",
-                   containerFactory = "kafkaListenerStringContainerFactory")
-    public void listenasString(ConsumerRecord<String, String> cr,
-                               @Payload String payload) {
-        log.info("Logger 2 [String] received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(),
-                 typeIdHeader(cr.headers()), payload, cr.toString());
-        latch.countDown();
-    }*/
-    /*
-    @KafkaListener(topics = "advice-topic", clientIdPrefix = "bytearray",
-                   containerFactory = "kafkaListenerByteArrayContainerFactory")
-    public void listenAsByteArray(ConsumerRecord<String, byte[]> cr,
-                                  @Payload byte[] payload) {
-        log.info("Logger 3 [ByteArray] received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(),
-                 typeIdHeader(cr.headers()), payload, cr.toString());
-        latch.countDown();
-    }*/
-    
-    private void createEmployee(@Payload MailChangingDTO payload) {
+    private void createEmployee(MailChangingDTO payload) {
         var repemployee = employeeSearchRepository.findOneByEmailIgnoreCase(payload.getNewMail());
         if (!repemployee.isPresent()) {
             var employee = new Employee();

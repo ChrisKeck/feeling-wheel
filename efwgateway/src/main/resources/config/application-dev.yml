@@ -94,9 +94,12 @@ spring:
             discovery:
                 enabled: true
     kafka:
+        template:
+            default-topic: advice-topic
         consumer:
             group-id: tpd-loggers
             auto-offset-reset: earliest
+            bootstrap-servers: kafka:9092
         producer:
             bootstrap-servers: kafka:9092
             retries: 2
@@ -107,6 +110,9 @@ spring:
 
 tpd:
     topic-name: advice-topic
+    messages-per-request: 1
+employee:
+    topic-name: employee-topic
     messages-per-request: 1
 server:
     port: 8080

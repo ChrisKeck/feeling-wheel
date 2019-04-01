@@ -78,18 +78,24 @@ spring:
                 enabled: true
     kafka:
         template:
-            default-topic: advice-topic
+            default-topic: employee-topic
         consumer:
             group-id: tpd-loggers
             auto-offset-reset: earliest
             bootstrap-servers: kafka:9092
             enable-auto-commit: true
+        producer:
+            bootstrap-servers: kafka:9092
+            retries: 2
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
         bootstrap-servers: kafka:9092
 
 tpd:
     topic-name: advice-topic
+    messages-per-request: 1
+employee:
+    topic-name: employee-topic
     messages-per-request: 1
 # ===================================================================
 # To enable TLS in production, generate a certificate using:

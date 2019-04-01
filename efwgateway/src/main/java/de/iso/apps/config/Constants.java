@@ -12,6 +12,7 @@ public final class Constants {
     public static final String ANONYMOUS_USER = "anonymoususer";
     public static final String DEFAULT_LANGUAGE = "de";
     public static final String KAFKA_REQ_PER_MSG_KEY = "requestsPerMessage";
+    public static final String TOPIC_MAIL_CHANGING = "employee-topic";
     
     private Constants() {
     }

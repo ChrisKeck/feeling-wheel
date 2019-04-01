@@ -451,6 +451,8 @@
             <scope>test</scope>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+
+
     </dependencies>
 
     <build>

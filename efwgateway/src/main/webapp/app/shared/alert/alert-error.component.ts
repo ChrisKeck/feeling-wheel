@@ -1,11 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { JhiEventManager, JhiAlert, JhiAlertService } from 'ng-jhipster';
-import { Subscription } from 'rxjs';
+import {Component, OnDestroy} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
+import {JhiAlert, JhiAlertService, JhiEventManager} from 'ng-jhipster';
+import {Subscription} from 'rxjs';
 
 @Component({
-    selector: 'jhi-alert-error',
-    template: `
+               selector: 'jhi-alert-error', template: `
         <div class="alerts" role="alert">
             <div *ngFor="let alert of alerts" [ngClass]="setClasses(alert)">
                 <ngb-alert *ngIf="alert && alert.type && alert.msg" [type]="alert.type" (close)="alert.close(alerts)">
@@ -14,10 +13,11 @@ import { Subscription } from 'rxjs';
             </div>
         </div>
     `
-})
+           })
 export class JhiAlertErrorComponent implements OnDestroy {
     alerts: any[];
     cleanHttpErrorListener: Subscription;
+
     /* tslint:disable */
     constructor(private alertService: JhiAlertService, private eventManager: JhiEventManager, private translateService: TranslateService) {
         /* tslint:enable */
@@ -45,7 +45,7 @@ export class JhiAlertErrorComponent implements OnDestroy {
                     });
                     if (errorHeader) {
                         const entityName = translateService.instant('global.menu.entities.' + entityKey);
-                        this.addErrorAlert(errorHeader, errorHeader, { entityName });
+                        this.addErrorAlert(errorHeader, errorHeader, {entityName});
                     } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.fieldErrors) {
                         const fieldErrors = httpErrorResponse.error.fieldErrors;
                         for (i = 0; i < fieldErrors.length; i++) {
@@ -56,14 +56,10 @@ export class JhiAlertErrorComponent implements OnDestroy {
                             // convert 'something[14].other[4].id' to 'something[].other[].id' so translations can be written to it
                             const convertedField = fieldError.field.replace(/\[\d*\]/g, '[]');
                             const fieldName = translateService.instant('efwgatewayApp.' + fieldError.objectName + '.' + convertedField);
-                            this.addErrorAlert('Error on field "' + fieldName + '"', 'error.' + fieldError.message, { fieldName });
+                            this.addErrorAlert('Error on field "' + fieldName + '"', 'error.' + fieldError.message, {fieldName});
                         }
                     } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.message) {
-                        this.addErrorAlert(
-                            httpErrorResponse.error.message,
-                            httpErrorResponse.error.message,
-                            httpErrorResponse.error.params
-                        );
+                        this.addErrorAlert(httpErrorResponse.error.message, httpErrorResponse.error.message, httpErrorResponse.error.params);
                     } else {
                         this.addErrorAlert(httpErrorResponse.error);
                     }
@@ -85,8 +81,7 @@ export class JhiAlertErrorComponent implements OnDestroy {
 
     setClasses(alert) {
         return {
-            toast: !!alert.toast,
-            [alert.position]: true
+            toast: !!alert.toast, [alert.position]: true
         };
     }
 
@@ -101,12 +96,7 @@ export class JhiAlertErrorComponent implements OnDestroy {
         message = key && key !== null ? key : message;
 
         const newAlert: JhiAlert = {
-            type: 'danger',
-            msg: message,
-            params: data,
-            timeout: 5000,
-            toast: this.alertService.isToast(),
-            scoped: true
+            type: 'danger', msg: message, params: data, timeout: 5000, toast: this.alertService.isToast(), scoped: true
         };
 
         this.alerts.push(this.alertService.addAlert(newAlert, this.alerts));

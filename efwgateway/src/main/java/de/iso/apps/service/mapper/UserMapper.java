@@ -17,20 +17,16 @@ import java.util.stream.Collectors;
 
 /**
  * Mapper for the entity User and its DTO called UserDTO.
- *
- * Normal mappers are generated using MapStruct, this one is hand-coded as MapStruct
- * support is still in beta, and requires a manual step with an IDE.
+ * <p>
+ * Normal mappers are generated using MapStruct, this one is hand-coded as MapStruct support is still in beta, and
+ * requires a manual step with an IDE.
  */
-@Service
-public class UserMapper {
+@Service public class UserMapper {
     
     public List<UserDTO> usersToUserDTOs(@NonNull List<User> users) {
-        return users.stream()
-            .filter(Objects::nonNull)
-            .map(this::userToUserDTO)
-            .collect(Collectors.toList());
+        return users.stream().filter(Objects::nonNull).map(this::userToUserDTO).collect(Collectors.toList());
     }
-
+    
     public UserDTO userToUserDTO(User user) {
         if (user == null) {
             return null;
@@ -41,18 +37,23 @@ public class UserMapper {
         userDTO.setCreatedDate(user.getCreatedDate());
         userDTO.setLastModifiedBy(user.getLastModifiedBy());
         userDTO.setLastModifiedDate(user.getLastModifiedDate());
-        userDTO.setAuthorities(user.getAuthorities()
-                                   .stream()
-                                   .map(Authority::getName)
-                                   .collect(Collectors.toSet()));
+        userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet()));
         return userDTO;
     }
     
+    private void map(Userable userDTO, Userable user) {
+        user.setId(userDTO.getId());
+        user.setLogin(userDTO.getLogin());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+        user.setImageUrl(userDTO.getImageUrl());
+        user.setActivated(userDTO.isActivated());
+        user.setLangKey(userDTO.getLangKey());
+    }
+    
     public List<User> userDTOsToUsers(@NonNull List<UserDTO> userDTOs) {
-        return userDTOs.stream()
-            .filter(Objects::nonNull)
-            .map(this::userDTOToUser)
-            .collect(Collectors.toList());
+        return userDTOs.stream().filter(Objects::nonNull).map(this::userDTOToUser).collect(Collectors.toList());
     }
     
     public User userDTOToUser(UserDTO userDTO) {
@@ -67,32 +68,20 @@ public class UserMapper {
         }
     }
     
-    private void map(Userable userDTO, Userable user) {
-        user.setId(userDTO.getId());
-        user.setLogin(userDTO.getLogin());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setEmail(userDTO.getEmail());
-        user.setImageUrl(userDTO.getImageUrl());
-        user.setActivated(userDTO.isActivated());
-        user.setLangKey(userDTO.getLangKey());
-    }
-    
-    
     private Set<Authority> authoritiesFromStrings(Set<String> authoritiesAsString) {
         Set<Authority> authorities = new HashSet<>();
-
-        if(authoritiesAsString != null){
+        
+        if (authoritiesAsString != null) {
             authorities = authoritiesAsString.stream().map(string -> {
                 Authority auth = new Authority();
                 auth.setName(string);
                 return auth;
             }).collect(Collectors.toSet());
         }
-
+        
         return authorities;
     }
-
+    
     public User userFromId(Long id) {
         if (id == null) {
             return null;

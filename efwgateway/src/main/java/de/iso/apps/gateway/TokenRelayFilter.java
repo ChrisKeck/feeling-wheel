@@ -6,29 +6,27 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-@Component
-public class TokenRelayFilter extends ZuulFilter {
-
-    @Override
-    public Object run() {
-        RequestContext ctx = RequestContext.getCurrentContext();
-        @SuppressWarnings("unchecked")
-        Set<String> headers = (Set<String>) ctx.get("ignoredHeaders");
-        // JWT tokens should be relayed to the resource servers
-        headers.remove("authorization");
-        return null;
-    }
-
+@Component public class TokenRelayFilter extends ZuulFilter {
+    
     @Override
     public boolean shouldFilter() {
         return true;
     }
-
+    
+    @Override
+    public Object run() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+        @SuppressWarnings("unchecked") Set<String> headers = (Set<String>) ctx.get("ignoredHeaders");
+        // JWT tokens should be relayed to the resource servers
+        headers.remove("authorization");
+        return null;
+    }
+    
     @Override
     public String filterType() {
         return "pre";
     }
-
+    
     @Override
     public int filterOrder() {
         return 10000;

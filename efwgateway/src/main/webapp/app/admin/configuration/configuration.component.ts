@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import { JhiConfigurationService } from './configuration.service';
+import {JhiConfigurationService} from './configuration.service';
 
 @Component({
-    selector: 'jhi-configuration',
-    templateUrl: './configuration.component.html'
-})
+               selector: 'jhi-configuration', templateUrl: './configuration.component.html'
+           })
 export class JhiConfigurationComponent implements OnInit {
     allConfiguration: any = null;
     configuration: any = null;

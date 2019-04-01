@@ -8,13 +8,12 @@ import java.util.Map;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 /**
- * Custom, parameterized exception, which can be translated on the client side.
- * For example:
+ * Custom, parameterized exception, which can be translated on the client side. For example:
  *
  * <pre>
  * throw new CustomParameterizedException(&quot;myCustomError&quot;, &quot;hello&quot;, &quot;world&quot;);
  * </pre>
- *
+ * <p>
  * Can be translated with:
  *
  * <pre>
@@ -22,19 +21,25 @@ import static org.zalando.problem.Status.BAD_REQUEST;
  * </pre>
  */
 public class CustomParameterizedException extends AbstractThrowableProblem {
-
+    
     private static final long serialVersionUID = 1L;
-
+    
     private static final String PARAM = "param";
-
+    
     public CustomParameterizedException(String message, String... params) {
         this(message, toParamMap(params));
     }
-
+    
     public CustomParameterizedException(String message, Map<String, Object> paramMap) {
-        super(ErrorConstants.PARAMETERIZED_TYPE, "Parameterized Exception", BAD_REQUEST, null, null, null, toProblemParameters(message, paramMap));
+        super(ErrorConstants.PARAMETERIZED_TYPE,
+              "Parameterized Exception",
+              BAD_REQUEST,
+              null,
+              null,
+              null,
+              toProblemParameters(message, paramMap));
     }
-
+    
     public static Map<String, Object> toParamMap(String... params) {
         Map<String, Object> paramMap = new HashMap<>();
         if (params != null && params.length > 0) {
@@ -44,7 +49,7 @@ public class CustomParameterizedException extends AbstractThrowableProblem {
         }
         return paramMap;
     }
-
+    
     public static Map<String, Object> toProblemParameters(String message, Map<String, Object> paramMap) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("message", message);

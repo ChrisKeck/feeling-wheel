@@ -18,8 +18,7 @@ import org.springframework.util.StringUtils;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.StreamSupport;
 
-@Service
-public class MailChangingListener {
+@Service public class MailChangingListener {
     
     private final Logger log = LoggerFactory.getLogger(MailChangingListener.class);
     private final EmployeeRepository employeeRepository;
@@ -34,10 +33,12 @@ public class MailChangingListener {
     
     @KafkaListener(topics = Constants.TOPIC_MAIL_CHANGING, clientIdPrefix = "json",
                    containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsObject(ConsumerRecord<String, MailChangingDTO> cr,
-                               @Payload MailChangingDTO payload) {
-        log.info("Logger 1 [JSON] received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(),
-                 typeIdHeader(cr.headers()), payload, cr.toString());
+    public void listenAsObject(ConsumerRecord<String, MailChangingDTO> cr, @Payload MailChangingDTO payload) {
+        log.info("Logger 1 [JSON] received key {}: Type [{}] | Payload: {} | Record: {}",
+                 cr.key(),
+                 typeIdHeader(cr.headers()),
+                 payload,
+                 cr.toString());
         try {
             if (StringUtils.hasText(payload.getNewMail()) && StringUtils.hasText(payload.getOldMail())) {
                 changeEmployee(payload);
@@ -55,12 +56,18 @@ public class MailChangingListener {
         
     }
     
+    private static String typeIdHeader(Headers headers) {
+        return StreamSupport.stream(headers.spliterator(), false)
+                            .filter(header -> header.key().equals("__TypeId__"))
+                            .findFirst()
+                            .map(header -> new String(header.value()))
+                            .orElse("N/A");
+    }
+    
     private void changeEmployee(@Payload MailChangingDTO payload) {
         var employee = employeeSearchRepository.findOneByEmailIgnoreCase(payload.getOldMail());
-        if (employee.isPresent() && employee.get()
-                                            .getEmail() != payload.getNewMail()) {
-            employee.get()
-                    .setEmail(payload.getNewMail());
+        if (employee.isPresent() && employee.get().getEmail() != payload.getNewMail()) {
+            employee.get().setEmail(payload.getNewMail());
             employeeRepository.save(employee.get());
             employeeSearchRepository.save(employee.get());
             log.info("Employee was changed by Listener");
@@ -74,17 +81,6 @@ public class MailChangingListener {
             employeeSearchRepository.deleteById(item.getId());
             log.info("Employee was deleted by Listener");
         });
-    }
-    
-    private void createEmployee(@Payload MailChangingDTO payload) {
-        var repemployee = employeeSearchRepository.findOneByEmailIgnoreCase(payload.getNewMail());
-        if (!repemployee.isPresent()) {
-            var employee = new Employee();
-            employee.setEmail(payload.getNewMail());
-            employeeRepository.save(employee);
-            employeeSearchRepository.save(employee);
-            log.info("Employee was created by Listener");
-        }
     }
     
   /*  @KafkaListener(topics = Constants.TOPIC_MAIL_CHANGING, clientIdPrefix = "string",
@@ -105,12 +101,14 @@ public class MailChangingListener {
         latch.countDown();
     }*/
     
-    private static String typeIdHeader(Headers headers) {
-        return StreamSupport.stream(headers.spliterator(), false)
-                            .filter(header -> header.key()
-                                                    .equals("__TypeId__"))
-                            .findFirst()
-                            .map(header -> new String(header.value()))
-                            .orElse("N/A");
+    private void createEmployee(@Payload MailChangingDTO payload) {
+        var repemployee = employeeSearchRepository.findOneByEmailIgnoreCase(payload.getNewMail());
+        if (!repemployee.isPresent()) {
+            var employee = new Employee();
+            employee.setEmail(payload.getNewMail());
+            employeeRepository.save(employee);
+            employeeSearchRepository.save(employee);
+            log.info("Employee was created by Listener");
+        }
     }
 }

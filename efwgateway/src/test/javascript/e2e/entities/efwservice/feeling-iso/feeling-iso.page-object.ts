@@ -1,4 +1,4 @@
-import { element, by, ElementFinder } from 'protractor';
+import {by, element, ElementFinder} from 'protractor';
 
 export class FeelingComponentsPage {
     createButton = element(by.id('jh-create-entity'));
@@ -45,9 +45,9 @@ export class FeelingUpdatePage {
 
     async feeltypeSelectLastOption() {
         await this.feeltypeSelect
-            .all(by.tagName('option'))
-            .last()
-            .click();
+                  .all(by.tagName('option'))
+                  .last()
+                  .click();
     }
 
     async setCapacityInput(capacity) {
@@ -64,9 +64,9 @@ export class FeelingUpdatePage {
 
     async feelwheelSelectLastOption() {
         await this.feelwheelSelect
-            .all(by.tagName('option'))
-            .last()
-            .click();
+                  .all(by.tagName('option'))
+                  .last()
+                  .click();
     }
 
     async feelwheelSelectOption(option) {

@@ -2,14 +2,17 @@ export interface GuinessCompatibleSpy extends jasmine.Spy {
     /** By chaining the spy with and.returnValue, all calls to the function will return a specific
      * value. */
     andReturn(val: any): void;
+
     /** By chaining the spy with and.callFake, all calls to the spy will delegate to the supplied
      * function. */
     andCallFake(fn: Function): GuinessCompatibleSpy;
+
     /** removes all recorded calls */
     reset();
 }
 
 export class SpyObject {
+
     static stub(object = null, config = null, overrides = null) {
         if (!(object instanceof SpyObject)) {
             overrides = config;
@@ -25,7 +28,6 @@ export class SpyObject {
         });
         return object;
     }
-
     constructor(type = null) {
         if (type) {
             Object.keys(type.prototype).forEach(prop => {

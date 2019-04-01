@@ -1,17 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpResponse } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { JhiParseLinks, JhiAlertService } from 'ng-jhipster';
+import {DatePipe} from '@angular/common';
+import {HttpResponse} from '@angular/common/http';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { ITEMS_PER_PAGE } from 'app/shared';
-import { Audit } from './audit.model';
-import { AuditsService } from './audits.service';
+import {ITEMS_PER_PAGE} from 'app/shared';
+import {JhiAlertService, JhiParseLinks} from 'ng-jhipster';
+import {Audit} from './audit.model';
+import {AuditsService} from './audits.service';
 
 @Component({
-    selector: 'jhi-audit',
-    templateUrl: './audits.component.html'
-})
+               selector: 'jhi-audit', templateUrl: './audits.component.html'
+           })
 export class AuditsComponent implements OnInit, OnDestroy {
     audits: Audit[];
     fromDate: string;
@@ -25,14 +24,12 @@ export class AuditsComponent implements OnInit, OnDestroy {
     toDate: string;
     totalItems: number;
 
-    constructor(
-        private auditsService: AuditsService,
-        private alertService: JhiAlertService,
-        private parseLinks: JhiParseLinks,
-        private activatedRoute: ActivatedRoute,
-        private datePipe: DatePipe,
-        private router: Router
-    ) {
+    constructor(private auditsService: AuditsService,
+                private alertService: JhiAlertService,
+                private parseLinks: JhiParseLinks,
+                private activatedRoute: ActivatedRoute,
+                private datePipe: DatePipe,
+                private router: Router) {
         this.itemsPerPage = ITEMS_PER_PAGE;
         this.routeData = this.activatedRoute.data.subscribe(data => {
             this.page = data['pagingParams'].page;
@@ -77,16 +74,9 @@ export class AuditsComponent implements OnInit, OnDestroy {
     loadAll() {
         this.auditsService
             .query({
-                page: this.page - 1,
-                size: this.itemsPerPage,
-                sort: this.sort(),
-                fromDate: this.fromDate,
-                toDate: this.toDate
-            })
-            .subscribe(
-                (res: HttpResponse<Audit[]>) => this.onSuccess(res.body, res.headers),
-                (res: HttpResponse<any>) => this.onError(res.body)
-            );
+                       page: this.page - 1, size: this.itemsPerPage, sort: this.sort(), fromDate: this.fromDate, toDate: this.toDate
+                   })
+            .subscribe((res: HttpResponse<Audit[]>) => this.onSuccess(res.body, res.headers), (res: HttpResponse<any>) => this.onError(res.body));
     }
 
     sort() {
@@ -107,8 +97,7 @@ export class AuditsComponent implements OnInit, OnDestroy {
     transition() {
         this.router.navigate(['/admin/audits'], {
             queryParams: {
-                page: this.page,
-                sort: this.predicate + ',' + (this.reverse ? 'asc' : 'desc')
+                page: this.page, sort: this.predicate + ',' + (this.reverse ? 'asc' : 'desc')
             }
         });
         this.loadAll();

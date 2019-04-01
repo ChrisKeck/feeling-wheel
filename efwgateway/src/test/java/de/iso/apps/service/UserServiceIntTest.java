@@ -3,11 +3,10 @@ package de.iso.apps.service;
 import de.iso.apps.EfwgatewayApp;
 import de.iso.apps.config.Constants;
 import de.iso.apps.domain.User;
-import de.iso.apps.repository.search.UserSearchRepository;
 import de.iso.apps.repository.UserRepository;
+import de.iso.apps.repository.search.UserSearchRepository;
 import de.iso.apps.service.dto.UserDTO;
 import de.iso.apps.service.util.RandomUtil;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,10 +22,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
@@ -38,33 +37,21 @@ import static org.mockito.Mockito.when;
  *
  * @see UserService
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = EfwgatewayApp.class)
-@Transactional
+@RunWith(SpringRunner.class) @SpringBootTest(classes = EfwgatewayApp.class) @Transactional
 public class UserServiceIntTest {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserService userService;
-
+    
+    @Mock DateTimeProvider dateTimeProvider;
+    @Autowired private UserRepository userRepository;
+    @Autowired private UserService userService;
     /**
      * This repository is mocked in the de.iso.apps.repository.search test package.
      *
      * @see de.iso.apps.repository.search.UserSearchRepositoryMockConfiguration
      */
-    @Autowired
-    private UserSearchRepository mockUserSearchRepository;
-
-    @Autowired
-    private AuditingHandler auditingHandler;
-
-    @Mock
-    DateTimeProvider dateTimeProvider;
-
+    @Autowired private UserSearchRepository mockUserSearchRepository;
+    @Autowired private AuditingHandler auditingHandler;
     private User user;
-
+    
     @Before
     public void init() {
         user = new User();
@@ -76,36 +63,36 @@ public class UserServiceIntTest {
         user.setLastName("doe");
         user.setImageUrl("http://placehold.it/50x50");
         user.setLangKey("en");
-
+        
         when(dateTimeProvider.getNow()).thenReturn(Optional.of(LocalDateTime.now()));
         auditingHandler.setDateTimeProvider(dateTimeProvider);
     }
-
+    
     @Test
     @Transactional
     public void assertThatUserMustExistToResetPassword() {
         userRepository.saveAndFlush(user);
         Optional<User> maybeUser = userService.requestPasswordReset("invalid.login@localhost");
         assertThat(maybeUser).isNotPresent();
-
+        
         maybeUser = userService.requestPasswordReset(user.getEmail());
         assertThat(maybeUser).isPresent();
         assertThat(maybeUser.orElse(null).getEmail()).isEqualTo(user.getEmail());
         assertThat(maybeUser.orElse(null).getResetDate()).isNotNull();
         assertThat(maybeUser.orElse(null).getResetKey()).isNotNull();
     }
-
+    
     @Test
     @Transactional
     public void assertThatOnlyActivatedUserCanRequestPasswordReset() {
         user.setActivated(false);
         userRepository.saveAndFlush(user);
-
+        
         Optional<User> maybeUser = userService.requestPasswordReset(user.getLogin());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
-
+    
     @Test
     @Transactional
     public void assertThatResetKeyMustNotBeOlderThan24Hours() {
@@ -115,12 +102,12 @@ public class UserServiceIntTest {
         user.setResetDate(daysAgo);
         user.setResetKey(resetKey);
         userRepository.saveAndFlush(user);
-
+        
         Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
-
+    
     @Test
     @Transactional
     public void assertThatResetKeyMustBeValid() {
@@ -129,12 +116,12 @@ public class UserServiceIntTest {
         user.setResetDate(daysAgo);
         user.setResetKey("1234");
         userRepository.saveAndFlush(user);
-
+        
         Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
-
+    
     @Test
     @Transactional
     public void assertThatUserCanResetPassword() {
@@ -145,16 +132,16 @@ public class UserServiceIntTest {
         user.setResetDate(daysAgo);
         user.setResetKey(resetKey);
         userRepository.saveAndFlush(user);
-
+        
         Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
         assertThat(maybeUser).isPresent();
         assertThat(maybeUser.orElse(null).getResetDate()).isNull();
         assertThat(maybeUser.orElse(null).getResetKey()).isNull();
         assertThat(maybeUser.orElse(null).getPassword()).isNotEqualTo(oldPassword);
-
+        
         userRepository.delete(user);
     }
-
+    
     @Test
     @Transactional
     public void testFindNotActivatedUsersByCreationDateBefore() {
@@ -169,11 +156,11 @@ public class UserServiceIntTest {
         userService.removeNotActivatedUsers();
         users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
         assertThat(users).isEmpty();
-
+        
         // Verify Elasticsearch mock
         verify(mockUserSearchRepository, times(1)).delete(user);
     }
-
+    
     @Test
     @Transactional
     public void assertThatAnonymousUserIsNotGet() {
@@ -183,27 +170,27 @@ public class UserServiceIntTest {
         }
         final PageRequest pageable = PageRequest.of(0, (int) userRepository.count());
         final Page<UserDTO> allManagedUsers = userService.getAllManagedUsers(pageable);
-        assertThat(allManagedUsers.getContent().stream()
-            .noneMatch(user -> Constants.ANONYMOUS_USER.equals(user.getLogin())))
-            .isTrue();
+        assertThat(allManagedUsers.getContent()
+                                  .stream()
+                                  .noneMatch(user -> Constants.ANONYMOUS_USER.equals(user.getLogin()))).isTrue();
     }
-
-
+    
+    
     @Test
     @Transactional
     public void testRemoveNotActivatedUsers() {
         // custom "now" for audit to use as creation date
         when(dateTimeProvider.getNow()).thenReturn(Optional.of(Instant.now().minus(30, ChronoUnit.DAYS)));
-
+        
         user.setActivated(false);
         userRepository.saveAndFlush(user);
-
+        
         assertThat(userRepository.findOneByLogin("johndoe")).isPresent();
         userService.removeNotActivatedUsers();
         assertThat(userRepository.findOneByLogin("johndoe")).isNotPresent();
-
+        
         // Verify Elasticsearch mock
         verify(mockUserSearchRepository, times(1)).delete(user);
     }
-
+    
 }

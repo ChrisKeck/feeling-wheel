@@ -22,24 +22,24 @@ spec:
         app: efwgateway-postgresql
     spec:
       volumes:
-      - name: data
-        emptyDir: {}
-      containers:
-      - name: postgres
-        image: postgres:10.4
-        env:
-        - name: POSTGRES_USER
-          value: efwgateway
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: efwgateway-postgresql
-              key: postgres-password
-        ports:
-        - containerPort: 5432
-        volumeMounts:
         - name: data
-          mountPath: /var/lib/postgresql/
+          emptyDir: {}
+      containers:
+        - name: postgres
+          image: postgres:10.4
+          env:
+            - name: POSTGRES_USER
+              value: efwgateway
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: efwgateway-postgresql
+                  key: postgres-password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/
 ---
 apiVersion: v1
 kind: Service
@@ -50,4 +50,4 @@ spec:
   selector:
     app: efwgateway-postgresql
   ports:
-  - port: 5432
+    - port: 5432

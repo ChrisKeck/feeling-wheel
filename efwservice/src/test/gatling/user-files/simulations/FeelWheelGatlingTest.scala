@@ -1,14 +1,9 @@
-import _root_.io.gatling.core.scenario.Simulation
-import ch.qos.logback.classic.{Level, LoggerContext}
-import io.gatling.core.Predef._
-import io.gatling.http.Predef._
+import ch.qos.logback.classic.LoggerContext
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.duration._
-
 /**
- * Performance test for the FeelWheel entity.
- */
+  * Performance test for the FeelWheel entity.
+  */
 class FeelWheelGatlingTest extends Simulation {
 
     val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
@@ -45,50 +40,51 @@ class FeelWheelGatlingTest extends Simulation {
 
     val scn = scenario("Test the FeelWheel entity")
         .exec(http("First unauthenticated request")
-        .get("/api/account")
-        .headers(headers_http)
-        .check(status.is(401))
+            .get("/api/account")
+            .headers(headers_http)
+            .check(status.is(401))
         ).exitHereIfFailed
         .pause(10)
         .exec(http("Authentication")
-        .post("/api/authenticate")
-        .headers(headers_http_authentication)
-        .body(StringBody("""{"username":"admin", "password":"admin"}""")).asJSON
-        .check(header.get("Authorization").saveAs("access_token"))).exitHereIfFailed
+            .post("/api/authenticate")
+            .headers(headers_http_authentication)
+            .body(StringBody("""{"username":"admin", "password":"admin"}""")).asJSON
+            .check(header.get("Authorization").saveAs("access_token"))).exitHereIfFailed
         .pause(2)
         .exec(http("Authenticated request")
-        .get("/api/account")
-        .headers(headers_http_authenticated)
-        .check(status.is(200)))
+            .get("/api/account")
+            .headers(headers_http_authenticated)
+            .check(status.is(200)))
         .pause(10)
         .repeat(2) {
             exec(http("Get all feelWheels")
-            .get("/efwservice/api/feel-wheels")
-            .headers(headers_http_authenticated)
-            .check(status.is(200)))
-            .pause(10 seconds, 20 seconds)
-            .exec(http("Create new feelWheel")
-            .post("/efwservice/api/feel-wheels")
-            .headers(headers_http_authenticated)
-            .body(StringBody("""{
+                .get("/efwservice/api/feel-wheels")
+                .headers(headers_http_authenticated)
+                .check(status.is(200)))
+                .pause(10 seconds, 20 seconds)
+                .exec(http("Create new feelWheel")
+                    .post("/efwservice/api/feel-wheels")
+                    .headers(headers_http_authenticated)
+                    .body(StringBody(
+                        """{
                 "id":null
                 , "subject":"SAMPLE_TEXT"
                 , "from":"2020-01-01T00:00:00.000Z"
                 , "to":"2020-01-01T00:00:00.000Z"
                 }""")).asJSON
-            .check(status.is(201))
-            .check(headerRegex("Location", "(.*)").saveAs("new_feelWheel_url"))).exitHereIfFailed
-            .pause(10)
-            .repeat(5) {
-                exec(http("Get created feelWheel")
-                .get("/efwservice${new_feelWheel_url}")
-                .headers(headers_http_authenticated))
+                    .check(status.is(201))
+                    .check(headerRegex("Location", "(.*)").saveAs("new_feelWheel_url"))).exitHereIfFailed
                 .pause(10)
-            }
-            .exec(http("Delete created feelWheel")
-            .delete("/efwservice${new_feelWheel_url}")
-            .headers(headers_http_authenticated))
-            .pause(10)
+                .repeat(5) {
+                    exec(http("Get created feelWheel")
+                        .get("/efwservice${new_feelWheel_url}")
+                        .headers(headers_http_authenticated))
+                        .pause(10)
+                }
+                .exec(http("Delete created feelWheel")
+                    .delete("/efwservice${new_feelWheel_url}")
+                    .headers(headers_http_authenticated))
+                .pause(10)
         }
 
     val users = scenario("Users").exec(scn)

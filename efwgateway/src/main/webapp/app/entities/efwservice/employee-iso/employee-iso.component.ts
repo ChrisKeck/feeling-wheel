@@ -1,20 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { JhiEventManager, JhiParseLinks, JhiAlertService } from 'ng-jhipster';
+import {HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {AccountService} from 'app/core';
 
-import { IEmployeeIso } from 'app/shared/model/efwservice/employee-iso.model';
-import { AccountService } from 'app/core';
+import {ITEMS_PER_PAGE} from 'app/shared';
 
-import { ITEMS_PER_PAGE } from 'app/shared';
-import { EmployeeIsoService } from './employee-iso.service';
+import {IEmployeeIso} from 'app/shared/model/efwservice/employee-iso.model';
+import {JhiAlertService, JhiEventManager, JhiParseLinks} from 'ng-jhipster';
+import {Subscription} from 'rxjs';
+import {EmployeeIsoService} from './employee-iso.service';
 
 @Component({
-    selector: 'jhi-employee-iso',
-    templateUrl: './employee-iso.component.html'
-})
+               selector: 'jhi-employee-iso', templateUrl: './employee-iso.component.html'
+           })
 export class EmployeeIsoComponent implements OnInit, OnDestroy {
     employees: IEmployeeIso[];
     currentAccount: any;
@@ -27,14 +25,12 @@ export class EmployeeIsoComponent implements OnInit, OnDestroy {
     totalItems: number;
     currentSearch: string;
 
-    constructor(
-        protected employeeService: EmployeeIsoService,
-        protected jhiAlertService: JhiAlertService,
-        protected eventManager: JhiEventManager,
-        protected parseLinks: JhiParseLinks,
-        protected activatedRoute: ActivatedRoute,
-        protected accountService: AccountService
-    ) {
+    constructor(protected employeeService: EmployeeIsoService,
+                protected jhiAlertService: JhiAlertService,
+                protected eventManager: JhiEventManager,
+                protected parseLinks: JhiParseLinks,
+                protected activatedRoute: ActivatedRoute,
+                protected accountService: AccountService) {
         this.employees = [];
         this.itemsPerPage = ITEMS_PER_PAGE;
         this.page = 0;
@@ -43,37 +39,27 @@ export class EmployeeIsoComponent implements OnInit, OnDestroy {
         };
         this.predicate = 'id';
         this.reverse = true;
-        this.currentSearch =
-            this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search']
-                ? this.activatedRoute.snapshot.params['search']
-                : '';
+        this.currentSearch = this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search'] ?
+                             this.activatedRoute.snapshot.params['search'] :
+                             '';
     }
 
     loadAll() {
         if (this.currentSearch) {
             this.employeeService
                 .search({
-                    query: this.currentSearch,
-                    page: this.page,
-                    size: this.itemsPerPage,
-                    sort: this.sort()
-                })
-                .subscribe(
-                    (res: HttpResponse<IEmployeeIso[]>) => this.paginateEmployees(res.body, res.headers),
-                    (res: HttpErrorResponse) => this.onError(res.message)
-                );
+                            query: this.currentSearch, page: this.page, size: this.itemsPerPage, sort: this.sort()
+                        })
+                .subscribe((res: HttpResponse<IEmployeeIso[]>) => this.paginateEmployees(res.body, res.headers),
+                           (res: HttpErrorResponse) => this.onError(res.message));
             return;
         }
         this.employeeService
             .query({
-                page: this.page,
-                size: this.itemsPerPage,
-                sort: this.sort()
-            })
-            .subscribe(
-                (res: HttpResponse<IEmployeeIso[]>) => this.paginateEmployees(res.body, res.headers),
-                (res: HttpErrorResponse) => this.onError(res.message)
-            );
+                       page: this.page, size: this.itemsPerPage, sort: this.sort()
+                   })
+            .subscribe((res: HttpResponse<IEmployeeIso[]>) => this.paginateEmployees(res.body, res.headers),
+                       (res: HttpErrorResponse) => this.onError(res.message));
     }
 
     reset() {

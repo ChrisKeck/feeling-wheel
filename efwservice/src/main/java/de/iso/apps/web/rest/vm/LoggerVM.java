@@ -9,20 +9,16 @@ import lombok.ToString;
 /**
  * View Model object for storing a Logback logger.
  */
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-public class LoggerVM {
-
+@Getter @Setter @ToString @NoArgsConstructor public class LoggerVM {
+    
     private String name;
-
+    
     private String level;
-
+    
     public LoggerVM(Logger logger) {
         this.name = logger.getName();
         this.level = logger.getEffectiveLevel().toString();
     }
-
-
+    
+    
 }

@@ -1,6 +1,6 @@
-import { ActivatedRoute, Router } from '@angular/router';
-import { SpyObject } from './spyobject';
-import { Observable, of } from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
+import {of} from 'rxjs';
+import {SpyObject} from './spyobject';
 import Spy = jasmine.Spy;
 
 export class MockActivatedRoute extends ActivatedRoute {
@@ -9,13 +9,10 @@ export class MockActivatedRoute extends ActivatedRoute {
         this.queryParams = of(parameters);
         this.params = of(parameters);
         this.data = of({
-            ...parameters,
-            pagingParams: {
-                page: 10,
-                ascending: false,
-                predicate: 'id'
+                           ...parameters, pagingParams: {
+                page: 10, ascending: false, predicate: 'id'
             }
-        });
+                       });
     }
 }
 

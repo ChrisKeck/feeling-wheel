@@ -1,8 +1,8 @@
 /* tslint:disable no-unused-expression */
-import { browser, ExpectedConditions as ec, promise } from 'protractor';
-import { NavBarPage, SignInPage } from '../../../page-objects/jhi-page-objects';
+import {browser, ExpectedConditions as ec, promise} from 'protractor';
+import {NavBarPage, SignInPage} from '../../../page-objects/jhi-page-objects';
 
-import { FeelingComponentsPage, FeelingDeleteDialog, FeelingUpdatePage } from './feeling-iso.page-object';
+import {FeelingComponentsPage, FeelingDeleteDialog, FeelingUpdatePage} from './feeling-iso.page-object';
 
 const expect = chai.expect;
 
@@ -39,11 +39,9 @@ describe('Feeling e2e test', () => {
         const nbButtonsBeforeCreate = await feelingComponentsPage.countDeleteButtons();
 
         await feelingComponentsPage.clickOnCreateButton();
-        await promise.all([
-            feelingUpdatePage.feeltypeSelectLastOption(),
-            feelingUpdatePage.setCapacityInput('5'),
-            feelingUpdatePage.feelwheelSelectLastOption()
-        ]);
+        await promise.all([feelingUpdatePage.feeltypeSelectLastOption(),
+                           feelingUpdatePage.setCapacityInput('5'),
+                           feelingUpdatePage.feelwheelSelectLastOption()]);
         expect(await feelingUpdatePage.getCapacityInput()).to.eq('5');
         const selectedIsSpeechable = feelingUpdatePage.getIsSpeechableInput();
         if (await selectedIsSpeechable.isSelected()) {

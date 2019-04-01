@@ -1,12 +1,11 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import {HttpHeaders, HttpResponse} from '@angular/common/http';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {Log} from 'app/admin';
+import {LogsComponent} from 'app/admin/logs/logs.component';
+import {LogsService} from 'app/admin/logs/logs.service';
+import {of} from 'rxjs';
 
-import { EfwgatewayTestModule } from '../../../test.module';
-import { LogsComponent } from 'app/admin/logs/logs.component';
-import { LogsService } from 'app/admin/logs/logs.service';
-import { ITEMS_PER_PAGE } from 'app/shared';
-import { Log } from 'app/admin';
+import {EfwgatewayTestModule} from '../../../test.module';
 
 describe('Component Tests', () => {
     describe('LogsComponent', () => {
@@ -16,12 +15,10 @@ describe('Component Tests', () => {
 
         beforeEach(async(() => {
             TestBed.configureTestingModule({
-                imports: [EfwgatewayTestModule],
-                declarations: [LogsComponent],
-                providers: [LogsService]
-            })
-                .overrideTemplate(LogsComponent, '')
-                .compileComponents();
+                                               imports: [EfwgatewayTestModule], declarations: [LogsComponent], providers: [LogsService]
+                                           })
+                   .overrideTemplate(LogsComponent, '')
+                   .compileComponents();
         }));
 
         beforeEach(() => {
@@ -40,14 +37,9 @@ describe('Component Tests', () => {
                 // GIVEN
                 const headers = new HttpHeaders().append('link', 'link;link');
                 const log = new Log('main', 'WARN');
-                spyOn(service, 'findAll').and.returnValue(
-                    of(
-                        new HttpResponse({
-                            body: [log],
-                            headers
-                        })
-                    )
-                );
+                spyOn(service, 'findAll').and.returnValue(of(new HttpResponse({
+                                                                                  body: [log], headers
+                                                                              })));
 
                 // WHEN
                 comp.ngOnInit();
@@ -62,7 +54,7 @@ describe('Component Tests', () => {
                 // GIVEN
                 const log = new Log('main', 'ERROR');
                 spyOn(service, 'changeLevel').and.returnValue(of(new HttpResponse()));
-                spyOn(service, 'findAll').and.returnValue(of(new HttpResponse({ body: [log] })));
+                spyOn(service, 'findAll').and.returnValue(of(new HttpResponse({body: [log]})));
 
                 // WHEN
                 comp.changeLevel('main', 'ERROR');

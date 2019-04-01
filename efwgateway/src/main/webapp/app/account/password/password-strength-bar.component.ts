@@ -1,8 +1,7 @@
-import { Component, ElementRef, Input, Renderer } from '@angular/core';
+import {Component, ElementRef, Input, Renderer} from '@angular/core';
 
 @Component({
-    selector: 'jhi-password-strength-bar',
-    template: `
+               selector: 'jhi-password-strength-bar', template: `
         <div id="strength">
             <small jhiTranslate="global.messages.validate.newpassword.strength">Password strength:</small>
             <ul id="strengthBar">
@@ -13,13 +12,31 @@ import { Component, ElementRef, Input, Renderer } from '@angular/core';
                 <li class="point"></li>
             </ul>
         </div>
-    `,
-    styleUrls: ['password-strength-bar.scss']
-})
+    `, styleUrls: ['password-strength-bar.scss']
+           })
 export class PasswordStrengthBarComponent {
     colors = ['#F00', '#F90', '#FF0', '#9F0', '#0F0'];
 
-    constructor(private renderer: Renderer, private elementRef: ElementRef) {}
+    constructor(private renderer: Renderer, private elementRef: ElementRef) {
+    }
+
+    @Input() set passwordToCheck(password: string) {
+        if (password) {
+            const c = this.getColor(this.measureStrength(password));
+            const element = this.elementRef.nativeElement;
+            if (element.className) {
+                this.renderer.setElementClass(element, element.className, false);
+            }
+            const lis = element.getElementsByTagName('li');
+            for (let i = 0; i < lis.length; i++) {
+                if (i < c.idx) {
+                    this.renderer.setElementStyle(lis[i], 'backgroundColor', c.col);
+                } else {
+                    this.renderer.setElementStyle(lis[i], 'backgroundColor', '#DDD');
+                }
+            }
+        }
+    }
 
     measureStrength(p: string): number {
         let force = 0;
@@ -61,25 +78,6 @@ export class PasswordStrengthBarComponent {
         } else {
             idx = 4;
         }
-        return { idx: idx + 1, col: this.colors[idx] };
-    }
-
-    @Input()
-    set passwordToCheck(password: string) {
-        if (password) {
-            const c = this.getColor(this.measureStrength(password));
-            const element = this.elementRef.nativeElement;
-            if (element.className) {
-                this.renderer.setElementClass(element, element.className, false);
-            }
-            const lis = element.getElementsByTagName('li');
-            for (let i = 0; i < lis.length; i++) {
-                if (i < c.idx) {
-                    this.renderer.setElementStyle(lis[i], 'backgroundColor', c.col);
-                } else {
-                    this.renderer.setElementStyle(lis[i], 'backgroundColor', '#DDD');
-                }
-            }
-        }
+        return {idx: idx + 1, col: this.colors[idx]};
     }
 }

@@ -5,13 +5,13 @@ metadata:
   namespace: default
 spec:
   hosts:
-  - efwservice
+    - efwservice
   http:
-  - route:
-    - destination:
-        host: efwservice
-        subset: "v1"
-      weight: 100
-    retries:
-      attempts: 3
-      perTryTimeout: 2s
+    - route:
+        - destination:
+            host: efwservice
+            subset: "v1"
+          weight: 100
+      retries:
+        attempts: 3
+        perTryTimeout: 2s

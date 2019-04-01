@@ -1,30 +1,29 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {HttpClient, HttpResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 
-import { SERVER_API_URL } from 'app/app.constants';
+import {SERVER_API_URL} from 'app/app.constants';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class JhiConfigurationService {
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+    }
 
     get(): Observable<any> {
-        return this.http.get(SERVER_API_URL + 'management/configprops', { observe: 'response' }).pipe(
-            map((res: HttpResponse<any>) => {
-                const properties: any[] = [];
-                const propertiesObject = this.getConfigPropertiesObjects(res.body);
-                for (const key in propertiesObject) {
-                    if (propertiesObject.hasOwnProperty(key)) {
-                        properties.push(propertiesObject[key]);
-                    }
+        return this.http.get(SERVER_API_URL + 'management/configprops', {observe: 'response'}).pipe(map((res: HttpResponse<any>) => {
+            const properties: any[] = [];
+            const propertiesObject = this.getConfigPropertiesObjects(res.body);
+            for (const key in propertiesObject) {
+                if (propertiesObject.hasOwnProperty(key)) {
+                    properties.push(propertiesObject[key]);
                 }
+            }
 
-                return properties.sort((propertyA, propertyB) => {
-                    return propertyA.prefix === propertyB.prefix ? 0 : propertyA.prefix < propertyB.prefix ? -1 : 1;
-                });
-            })
-        );
+            return properties.sort((propertyA, propertyB) => {
+                return propertyA.prefix === propertyB.prefix ? 0 : propertyA.prefix < propertyB.prefix ? -1 : 1;
+            });
+        }));
     }
 
     getConfigPropertiesObjects(res: Object) {
@@ -44,24 +43,22 @@ export class JhiConfigurationService {
     }
 
     getEnv(): Observable<any> {
-        return this.http.get(SERVER_API_URL + 'management/env', { observe: 'response' }).pipe(
-            map((res: HttpResponse<any>) => {
-                const properties: any = {};
-                const propertySources = res.body['propertySources'];
+        return this.http.get(SERVER_API_URL + 'management/env', {observe: 'response'}).pipe(map((res: HttpResponse<any>) => {
+            const properties: any = {};
+            const propertySources = res.body['propertySources'];
 
-                for (const propertyObject of propertySources) {
-                    const name = propertyObject['name'];
-                    const detailProperties = propertyObject['properties'];
-                    const vals: any[] = [];
-                    for (const keyDetail in detailProperties) {
-                        if (detailProperties.hasOwnProperty(keyDetail)) {
-                            vals.push({ key: keyDetail, val: detailProperties[keyDetail]['value'] });
-                        }
+            for (const propertyObject of propertySources) {
+                const name = propertyObject['name'];
+                const detailProperties = propertyObject['properties'];
+                const vals: any[] = [];
+                for (const keyDetail in detailProperties) {
+                    if (detailProperties.hasOwnProperty(keyDetail)) {
+                        vals.push({key: keyDetail, val: detailProperties[keyDetail]['value']});
                     }
-                    properties[name] = vals;
                 }
-                return properties;
-            })
-        );
+                properties[name] = vals;
+            }
+            return properties;
+        }));
     }
 }

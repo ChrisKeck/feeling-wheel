@@ -1,33 +1,33 @@
 #common configuration shared between all applications
 configserver:
-    name: Docker JHipster Registry
-    status: Connected to the JHipster Registry running in Docker
+  name: Docker JHipster Registry
+  status: Connected to the JHipster Registry running in Docker
 
 jhipster:
-    security:
-        authentication:
-            jwt:
-                base64-secret: YjdkMjNiZTE1NmM2YjdhOGUzYjljNTdhYzEyYjk0MGQ1Zjc2MzgyNDI1Zjg0MDRkMGQ4ZWVmZWY3N2JlZDRiMWM0NWI3ZjkzYmRkOGJiMzMxYWViZTc3ZjVmNzAwMmY3ZDg2NA==
-    logging:
-        logstash: # forward logs to ELK
-            enabled: true
-            host: jhipster-logstash
-    metrics:
-        logs: # report metrics in the logs
-            enabled: true
-            report-frequency: 60 # in seconds
+  security:
+    authentication:
+      jwt:
+        base64-secret: YjdkMjNiZTE1NmM2YjdhOGUzYjljNTdhYzEyYjk0MGQ1Zjc2MzgyNDI1Zjg0MDRkMGQ4ZWVmZWY3N2JlZDRiMWM0NWI3ZjkzYmRkOGJiMzMxYWViZTc3ZjVmNzAwMmY3ZDg2NA==
+  logging:
+    logstash: # forward logs to ELK
+      enabled: true
+      host: jhipster-logstash
+  metrics:
+    logs: # report metrics in the logs
+      enabled: true
+      report-frequency: 60 # in seconds
 spring:
-    zipkin:
-        base-url: http://jhipster-zipkin:9411
-        enabled: true
-    sleuth:
-        sampler:
-            probability: 1 # report 100% of traces to Zipkin
-    kafka:
-        # change this property if you are using your own
-        # Kafka cluster or your Docker IP is different
-        bootstrap-servers: kafka:9092
+  zipkin:
+    base-url: http://jhipster-zipkin:9411
+    enabled: true
+  sleuth:
+    sampler:
+      probability: 1 # report 100% of traces to Zipkin
+  kafka:
+    # change this property if you are using your own
+    # Kafka cluster or your Docker IP is different
+    bootstrap-servers: kafka:9092
 eureka:
-    client:
-        service-url:
-            defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/
+  client:
+    service-url:
+      defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/

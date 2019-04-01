@@ -22,6 +22,6 @@ spec:
       interval: 30s
       baseEjectionTime: 60s
   subsets:
-  - name: v1
-    labels:
-      version: "v1"
+    - name: v1
+      labels:
+        version: "v1"

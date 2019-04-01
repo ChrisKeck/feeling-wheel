@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing';
-import { JhiDateUtils } from 'ng-jhipster';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {TestBed} from '@angular/core/testing';
+import {SERVER_API_URL} from 'app/app.constants';
 
-import { UserService, User } from 'app/core';
-import { SERVER_API_URL } from 'app/app.constants';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {User, UserService} from 'app/core';
+import {JhiDateUtils} from 'ng-jhipster';
 
 describe('Service Tests', () => {
     describe('User Service', () => {
@@ -12,9 +12,8 @@ describe('Service Tests', () => {
 
         beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [HttpClientTestingModule],
-                providers: [JhiDateUtils]
-            });
+                                               imports: [HttpClientTestingModule], providers: [JhiDateUtils]
+                                           });
 
             service = TestBed.get(UserService);
             httpMock = TestBed.get(HttpTestingController);
@@ -26,9 +25,10 @@ describe('Service Tests', () => {
 
         describe('Service methods', () => {
             it('should call correct URL', () => {
-                service.find('user').subscribe(() => {});
+                service.find('user').subscribe(() => {
+                });
 
-                const req = httpMock.expectOne({ method: 'GET' });
+                const req = httpMock.expectOne({method: 'GET'});
                 const resourceUrl = SERVER_API_URL + 'api/users';
                 expect(req.request.url).toEqual(`${resourceUrl}/user`);
             });
@@ -37,7 +37,7 @@ describe('Service Tests', () => {
                     expect(received.body.login).toEqual('user');
                 });
 
-                const req = httpMock.expectOne({ method: 'GET' });
+                const req = httpMock.expectOne({method: 'GET'});
                 req.flush(new User(1, 'user'));
             });
 
@@ -45,7 +45,7 @@ describe('Service Tests', () => {
                 service.authorities().subscribe(_authorities => {
                     expect(_authorities).toEqual(['ROLE_USER', 'ROLE_ADMIN']);
                 });
-                const req = httpMock.expectOne({ method: 'GET' });
+                const req = httpMock.expectOne({method: 'GET'});
 
                 req.flush(['ROLE_USER', 'ROLE_ADMIN']);
             });
@@ -55,10 +55,9 @@ describe('Service Tests', () => {
                     expect(_error.status).toEqual(404);
                 });
 
-                const req = httpMock.expectOne({ method: 'GET' });
+                const req = httpMock.expectOne({method: 'GET'});
                 req.flush('Invalid request parameters', {
-                    status: 404,
-                    statusText: 'Bad Request'
+                    status: 404, statusText: 'Bad Request'
                 });
             });
         });

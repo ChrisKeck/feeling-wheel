@@ -29,39 +29,21 @@ import java.io.Serializable;
 /**
  * A Feeling.
  */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity
-@Table(name = "feeling")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName = "feeling")
+@Data @Builder @AllArgsConstructor @NoArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true) @Entity
+@Table(name = "feeling") @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) @Document(indexName = "feeling")
 public class Feeling implements Serializable {
     
     private static final long serialVersionUID = -2311189753747579503L;
-    @Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
-    private Long id;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "feeltype", nullable = false)
-    private FeelType feeltype;
-
-    @NotNull
-    @Column(name = "capacity", nullable = false)
-    private Integer capacity;
-
-    @Column(name = "is_speechable")
-    private Boolean isSpeechable;
-
-    @ManyToOne
-    @JsonIgnoreProperties("feelings")
-    private FeelWheel feelwheel;
+    @Include @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator") private Long id;
+    
+    @NotNull @Enumerated(EnumType.STRING) @Column(name = "feeltype", nullable = false) private FeelType feeltype;
+    
+    @NotNull @Column(name = "capacity", nullable = false) private Integer capacity;
+    
+    @Column(name = "is_speechable") private Boolean isSpeechable;
+    
+    @ManyToOne @JsonIgnoreProperties("feelings") private FeelWheel feelwheel;
     
     protected boolean canEqual(Object other) {
         return other != null &&

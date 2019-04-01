@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
-import { IFeelWheelIso } from 'app/shared/model/efwservice/feel-wheel-iso.model';
+import {IFeelWheelIso} from 'app/shared/model/efwservice/feel-wheel-iso.model';
 
 @Component({
-    selector: 'jhi-feel-wheel-iso-detail',
-    templateUrl: './feel-wheel-iso-detail.component.html'
-})
+               selector: 'jhi-feel-wheel-iso-detail', templateUrl: './feel-wheel-iso-detail.component.html'
+           })
 export class FeelWheelIsoDetailComponent implements OnInit {
     feelWheel: IFeelWheelIso;
 
-    constructor(protected activatedRoute: ActivatedRoute) {}
+    constructor(protected activatedRoute: ActivatedRoute) {
+    }
 
     ngOnInit() {
-        this.activatedRoute.data.subscribe(({ feelWheel }) => {
+        this.activatedRoute.data.subscribe(({feelWheel}) => {
             this.feelWheel = feelWheel;
         });
     }

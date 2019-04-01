@@ -1,20 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { JhiEventManager, JhiParseLinks, JhiAlertService } from 'ng-jhipster';
+import {HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {AccountService} from 'app/core';
 
-import { IFeelingIso } from 'app/shared/model/efwservice/feeling-iso.model';
-import { AccountService } from 'app/core';
+import {ITEMS_PER_PAGE} from 'app/shared';
 
-import { ITEMS_PER_PAGE } from 'app/shared';
-import { FeelingIsoService } from './feeling-iso.service';
+import {IFeelingIso} from 'app/shared/model/efwservice/feeling-iso.model';
+import {JhiAlertService, JhiEventManager, JhiParseLinks} from 'ng-jhipster';
+import {Subscription} from 'rxjs';
+import {FeelingIsoService} from './feeling-iso.service';
 
 @Component({
-    selector: 'jhi-feeling-iso',
-    templateUrl: './feeling-iso.component.html'
-})
+               selector: 'jhi-feeling-iso', templateUrl: './feeling-iso.component.html'
+           })
 export class FeelingIsoComponent implements OnInit, OnDestroy {
     feelings: IFeelingIso[];
     currentAccount: any;
@@ -27,14 +25,12 @@ export class FeelingIsoComponent implements OnInit, OnDestroy {
     totalItems: number;
     currentSearch: string;
 
-    constructor(
-        protected feelingService: FeelingIsoService,
-        protected jhiAlertService: JhiAlertService,
-        protected eventManager: JhiEventManager,
-        protected parseLinks: JhiParseLinks,
-        protected activatedRoute: ActivatedRoute,
-        protected accountService: AccountService
-    ) {
+    constructor(protected feelingService: FeelingIsoService,
+                protected jhiAlertService: JhiAlertService,
+                protected eventManager: JhiEventManager,
+                protected parseLinks: JhiParseLinks,
+                protected activatedRoute: ActivatedRoute,
+                protected accountService: AccountService) {
         this.feelings = [];
         this.itemsPerPage = ITEMS_PER_PAGE;
         this.page = 0;
@@ -43,37 +39,27 @@ export class FeelingIsoComponent implements OnInit, OnDestroy {
         };
         this.predicate = 'id';
         this.reverse = true;
-        this.currentSearch =
-            this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search']
-                ? this.activatedRoute.snapshot.params['search']
-                : '';
+        this.currentSearch = this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search'] ?
+                             this.activatedRoute.snapshot.params['search'] :
+                             '';
     }
 
     loadAll() {
         if (this.currentSearch) {
             this.feelingService
                 .search({
-                    query: this.currentSearch,
-                    page: this.page,
-                    size: this.itemsPerPage,
-                    sort: this.sort()
-                })
-                .subscribe(
-                    (res: HttpResponse<IFeelingIso[]>) => this.paginateFeelings(res.body, res.headers),
-                    (res: HttpErrorResponse) => this.onError(res.message)
-                );
+                            query: this.currentSearch, page: this.page, size: this.itemsPerPage, sort: this.sort()
+                        })
+                .subscribe((res: HttpResponse<IFeelingIso[]>) => this.paginateFeelings(res.body, res.headers),
+                           (res: HttpErrorResponse) => this.onError(res.message));
             return;
         }
         this.feelingService
             .query({
-                page: this.page,
-                size: this.itemsPerPage,
-                sort: this.sort()
-            })
-            .subscribe(
-                (res: HttpResponse<IFeelingIso[]>) => this.paginateFeelings(res.body, res.headers),
-                (res: HttpErrorResponse) => this.onError(res.message)
-            );
+                       page: this.page, size: this.itemsPerPage, sort: this.sort()
+                   })
+            .subscribe((res: HttpResponse<IFeelingIso[]>) => this.paginateFeelings(res.body, res.headers),
+                       (res: HttpErrorResponse) => this.onError(res.message));
     }
 
     reset() {

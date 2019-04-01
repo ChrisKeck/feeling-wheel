@@ -1,12 +1,12 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { HttpResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import {HttpResponse} from '@angular/common/http';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {PasswordComponent} from 'app/account/password/password.component';
+import {PasswordService} from 'app/account/password/password.service';
+import {JhiTrackerService} from 'app/core/tracker/tracker.service';
+import {of, throwError} from 'rxjs';
+import {MockTrackerService} from '../../../helpers/mock-tracker.service';
 
-import { EfwgatewayTestModule } from '../../../test.module';
-import { PasswordComponent } from 'app/account/password/password.component';
-import { PasswordService } from 'app/account/password/password.service';
-import { JhiTrackerService } from 'app/core/tracker/tracker.service';
-import { MockTrackerService } from '../../../helpers/mock-tracker.service';
+import {EfwgatewayTestModule} from '../../../test.module';
 
 describe('Component Tests', () => {
     describe('PasswordComponent', () => {
@@ -16,17 +16,12 @@ describe('Component Tests', () => {
 
         beforeEach(async(() => {
             TestBed.configureTestingModule({
-                imports: [EfwgatewayTestModule],
-                declarations: [PasswordComponent],
-                providers: [
-                    {
-                        provide: JhiTrackerService,
-                        useClass: MockTrackerService
-                    }
-                ]
-            })
-                .overrideTemplate(PasswordComponent, '')
-                .compileComponents();
+                                               imports: [EfwgatewayTestModule], declarations: [PasswordComponent], providers: [{
+                           provide: JhiTrackerService, useClass: MockTrackerService
+                       }]
+                                           })
+                   .overrideTemplate(PasswordComponent, '')
+                   .compileComponents();
         }));
 
         beforeEach(() => {
@@ -50,11 +45,10 @@ describe('Component Tests', () => {
         it('should call Auth.changePassword when passwords match', () => {
             // GIVEN
             const passwordValues = {
-                currentPassword: 'oldPassword',
-                newPassword: 'myPassword'
+                currentPassword: 'oldPassword', newPassword: 'myPassword'
             };
 
-            spyOn(service, 'save').and.returnValue(of(new HttpResponse({ body: true })));
+            spyOn(service, 'save').and.returnValue(of(new HttpResponse({body: true})));
             comp.currentPassword = passwordValues.currentPassword;
             comp.newPassword = comp.confirmPassword = passwordValues.newPassword;
 
@@ -67,7 +61,7 @@ describe('Component Tests', () => {
 
         it('should set success to OK upon success', function() {
             // GIVEN
-            spyOn(service, 'save').and.returnValue(of(new HttpResponse({ body: true })));
+            spyOn(service, 'save').and.returnValue(of(new HttpResponse({body: true})));
             comp.newPassword = comp.confirmPassword = 'myPassword';
 
             // WHEN

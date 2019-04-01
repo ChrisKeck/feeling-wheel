@@ -1,23 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { JhiEventManager } from 'ng-jhipster';
+import {Component, OnInit} from '@angular/core';
+import {NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 
-import { LoginModalService, AccountService, Account } from 'app/core';
+import {Account, AccountService, LoginModalService} from 'app/core';
+import {JhiEventManager} from 'ng-jhipster';
 
 @Component({
-    selector: 'jhi-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['home.scss']
-})
+               selector: 'jhi-home', templateUrl: './home.component.html', styleUrls: ['home.scss']
+           })
 export class HomeComponent implements OnInit {
     account: Account;
     modalRef: NgbModalRef;
 
-    constructor(
-        private accountService: AccountService,
-        private loginModalService: LoginModalService,
-        private eventManager: JhiEventManager
-    ) {}
+    constructor(private accountService: AccountService, private loginModalService: LoginModalService, private eventManager: JhiEventManager) {
+    }
 
     ngOnInit() {
         this.accountService.identity().then((account: Account) => {

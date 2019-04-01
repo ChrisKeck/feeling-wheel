@@ -1,12 +1,11 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 
-import { EfwgatewaySharedModule } from 'app/shared';
-import { HOME_ROUTE, HomeComponent } from './';
+import {EfwgatewaySharedModule} from 'app/shared';
+import {HOME_ROUTE, HomeComponent} from './';
 
 @NgModule({
-    imports: [EfwgatewaySharedModule, RouterModule.forChild([HOME_ROUTE])],
-    declarations: [HomeComponent],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
-export class EfwgatewayHomeModule {}
+              imports: [EfwgatewaySharedModule, RouterModule.forChild([HOME_ROUTE])], declarations: [HomeComponent], schemas: [CUSTOM_ELEMENTS_SCHEMA]
+          })
+export class EfwgatewayHomeModule {
+}

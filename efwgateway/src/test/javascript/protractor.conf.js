@@ -1,4 +1,3 @@
-
 exports.config = {
     allScriptsTimeout: 20000,
 
@@ -13,8 +12,8 @@ exports.config = {
         browserName: 'chrome',
         chromeOptions: {
             args: process.env.JHI_E2E_HEADLESS
-                ? [ "--headless", "--disable-gpu", "--window-size=800,600" ]
-                : [ "--disable-gpu", "--window-size=800,600" ]
+                ? ["--headless", "--disable-gpu", "--window-size=800,600"]
+                : ["--disable-gpu", "--window-size=800,600"]
         }
     },
 
@@ -33,13 +32,13 @@ exports.config = {
         timeout: 720000
     },
 
-    beforeLaunch: function() {
+    beforeLaunch: function () {
         require('ts-node').register({
             project: ''
         });
     },
 
-    onPrepare: function() {
+    onPrepare: function () {
         browser.driver.manage().window().setSize(1280, 1024);
         // Disable animations
         // @ts-ignore

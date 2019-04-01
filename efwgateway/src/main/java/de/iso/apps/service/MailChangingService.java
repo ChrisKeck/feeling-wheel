@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-@Service
-public class MailChangingService {
+@Service public class MailChangingService {
     private final Logger log = LoggerFactory.getLogger(MailChangingService.class);
     
     private final Topicable<MailChangingDTO> topicable;
@@ -27,8 +26,7 @@ public class MailChangingService {
         try {
             latch = new CountDownLatch(topicable.getRequestsPerMessage());
             for (int i = topicable.getRequestsPerMessage(); i >= 0; i--) {
-                topicable.getKafkaTemplate()
-                         .send(topicable.getTopic(), String.valueOf(i), userDTO);
+                topicable.getKafkaTemplate().send(topicable.getTopic(), String.valueOf(i), userDTO);
             }
             if (latch.await(60, TimeUnit.SECONDS)) {
                 log.info("If await is true");

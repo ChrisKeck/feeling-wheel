@@ -30,41 +30,24 @@ import java.util.Set;
 /**
  * A FeelWheel.
  */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity
-@Table(name = "feel_wheel")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName = "feelwheel")
-public class FeelWheel implements Serializable {
+@Data @Builder @AllArgsConstructor @NoArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true) @Entity
+@Table(name = "feel_wheel") @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Document(indexName = "feelwheel") public class FeelWheel implements Serializable {
     
     private static final long serialVersionUID = -2054759772503157281L;
-    @Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
-    private Long id;
-
-    @NotNull
-    @Column(name = "subject", nullable = false)
-    private String subject;
-
-    @Column(name = "jhi_from")
-    private Instant from;
-
-    @Column(name = "jhi_to")
-    private Instant to;
-
-    @OneToMany(mappedBy = "feelwheel")
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @Include @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator") private Long id;
+    
+    @NotNull @Column(name = "subject", nullable = false) private String subject;
+    
+    @Column(name = "jhi_from") private Instant from;
+    
+    @Column(name = "jhi_to") private Instant to;
+    
+    @OneToMany(mappedBy = "feelwheel") @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Feeling> feelings = new HashSet<>();
-    @ManyToOne
-    @JsonIgnoreProperties("feelWheels")
-    private Employee employee;
-
+    @ManyToOne @JsonIgnoreProperties("feelWheels") private Employee employee;
+    
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     
     
@@ -73,7 +56,7 @@ public class FeelWheel implements Serializable {
         feeling.setFeelwheel(this);
         return this;
     }
-
+    
     public FeelWheel removeFeeling(Feeling feeling) {
         this.feelings.remove(feeling);
         feeling.setFeelwheel(null);

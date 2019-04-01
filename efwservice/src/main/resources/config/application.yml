@@ -56,9 +56,9 @@ hystrix:
             execution:
                 isolation:
                     strategy: SEMAPHORE
-# See https://github.com/spring-cloud/spring-cloud-netflix/issues/1330
-#                    thread:
-#                        timeoutInMilliseconds: 10000
+    # See https://github.com/spring-cloud/spring-cloud-netflix/issues/1330
+    #                    thread:
+    #                        timeoutInMilliseconds: 10000
     shareSecurityContext: true
 
 management:
@@ -150,8 +150,8 @@ jhipster:
         core-pool-size: 2
         max-pool-size: 50
         queue-capacity: 10000
-    # By default CORS is disabled. Uncomment to enable.
-    #cors:
+        # By default CORS is disabled. Uncomment to enable.
+        #cors:
         #allowed-origins: "*"
         #allowed-methods: "*"
         #allowed-headers: "*"

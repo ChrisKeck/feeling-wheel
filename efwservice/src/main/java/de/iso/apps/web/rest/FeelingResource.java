@@ -31,46 +31,44 @@ import java.util.Optional;
 /**
  * REST controller for managing Feeling.
  */
-@RestController
-@RequestMapping("/api")
-public class FeelingResource {
-
-    private final Logger log = LoggerFactory.getLogger(FeelingResource.class);
-
+@RestController @RequestMapping("/api") public class FeelingResource {
+    
     private static final String ENTITY_NAME = "efwserviceFeeling";
-
+    private final Logger log = LoggerFactory.getLogger(FeelingResource.class);
     private final FeelingService feelingService;
-
+    
     public FeelingResource(FeelingService feelingService) {
         this.feelingService = feelingService;
     }
-
+    
     /**
      * POST  /feelings : Create a new feeling.
      *
      * @param feelingDTO the feelingDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new feelingDTO, or with status 400 (Bad Request) if the feeling has already an ID
+     * @return the ResponseEntity with status 201 (Created) and with body the new feelingDTO, or with status 400 (Bad
+     * Request) if the feeling has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/feelings")
-    public ResponseEntity<FeelingDTO> createFeeling(@Valid @RequestBody FeelingDTO feelingDTO) throws URISyntaxException {
+    public ResponseEntity<FeelingDTO> createFeeling(@Valid @RequestBody FeelingDTO feelingDTO)
+    throws URISyntaxException {
         log.debug("REST request to save Feeling : {}", feelingDTO);
         if (feelingDTO.getId() != null) {
             throw new BadRequestAlertException("A new feeling cannot already have an ID", ENTITY_NAME, "idexists");
         }
         FeelingDTO result = feelingService.save(feelingDTO);
         return ResponseEntity.created(new URI("/api/feelings/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                             .body(result);
     }
-
+    
     /**
      * PUT  /feelings : Updates an existing feeling.
      *
      * @param feelingDTO the feelingDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated feelingDTO,
-     * or with status 400 (Bad Request) if the feelingDTO is not valid,
-     * or with status 500 (Internal Server Error) if the feelingDTO couldn't be updated
+     * @return the ResponseEntity with status 200 (OK) and with body the updated feelingDTO, or with status 400 (Bad
+     * Request) if the feelingDTO is not valid, or with status 500 (Internal Server Error) if the feelingDTO couldn't be
+     * updated
      */
     @PutMapping("/feelings")
     public ResponseEntity<FeelingDTO> updateFeeling(@Valid @RequestBody FeelingDTO feelingDTO) {
@@ -79,11 +77,11 @@ public class FeelingResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         FeelingDTO result = feelingService.save(feelingDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, feelingDTO.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME,
+                                                                              feelingDTO.getId().toString())).body(
+            result);
     }
-
+    
     /**
      * GET  /feelings : get all the feelings.
      *
@@ -97,7 +95,7 @@ public class FeelingResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/feelings");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
-
+    
     /**
      * GET  /feelings/:id : get the "id" feeling.
      *
@@ -110,7 +108,7 @@ public class FeelingResource {
         Optional<FeelingDTO> feelingDTO = feelingService.findOne(id);
         return ResponseUtil.wrapOrNotFound(feelingDTO);
     }
-
+    
     /**
      * DELETE  /feelings/:id : delete the "id" feeling.
      *
@@ -123,10 +121,9 @@ public class FeelingResource {
         feelingService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
-
+    
     /**
-     * SEARCH  /_search/feelings?query=:query : search for the feeling corresponding
-     * to the query.
+     * SEARCH  /_search/feelings?query=:query : search for the feeling corresponding to the query.
      *
      * @param query the query of the feeling search
      * @param pageable the pagination information
@@ -139,5 +136,5 @@ public class FeelingResource {
         HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/feelings");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
-
+    
 }

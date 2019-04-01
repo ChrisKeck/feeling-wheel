@@ -29,37 +29,21 @@ import java.util.Set;
 /**
  * A Employee.
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity
-@Table(name = "employee")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName = "employee")
-public class Employee implements Serializable {
+@Data @Builder @NoArgsConstructor @AllArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true) @Entity
+@Table(name = "employee") @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Document(indexName = "employee") public class Employee implements Serializable {
     
     private static final long serialVersionUID = -4055529959146231035L;
-    @Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
-    private Long id;
-
-    @NotNull
-    @Column(name = "email", nullable = false)
-    private String email;
-
-    @OneToMany(mappedBy = "employee")
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @Include @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator") private Long id;
+    
+    @NotNull @Column(name = "email", nullable = false) private String email;
+    
+    @OneToMany(mappedBy = "employee") @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<FeelWheel> feelWheels = new HashSet<>();
-    @OneToMany(mappedBy = "employee")
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @OneToMany(mappedBy = "employee") @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Employee> employees = new HashSet<>();
-    @ManyToOne
-    @JsonIgnoreProperties("employees")
-    private Employee employee;
+    @ManyToOne @JsonIgnoreProperties("employees") private Employee employee;
     
     
     public Employee addFeelWheel(FeelWheel feelWheel) {
@@ -67,7 +51,7 @@ public class Employee implements Serializable {
         feelWheel.setEmployee(this);
         return this;
     }
-
+    
     public Employee removeFeelWheel(FeelWheel feelWheel) {
         this.feelWheels.remove(feelWheel);
         feelWheel.setEmployee(null);
@@ -80,7 +64,7 @@ public class Employee implements Serializable {
         employee.setEmployee(this);
         return this;
     }
-
+    
     public Employee removeEmployee(Employee employee) {
         this.employees.remove(employee);
         employee.setEmployee(null);

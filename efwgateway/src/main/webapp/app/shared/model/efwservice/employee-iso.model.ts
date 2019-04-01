@@ -1,5 +1,5 @@
-import { IFeelWheelIso } from 'app/shared/model/efwservice/feel-wheel-iso.model';
-import { IEmployeeIso } from 'app/shared/model/efwservice/employee-iso.model';
+import {IEmployeeIso} from 'app/shared/model/efwservice/employee-iso.model';
+import {IFeelWheelIso} from 'app/shared/model/efwservice/feel-wheel-iso.model';
 
 export interface IEmployeeIso {
     id?: number;
@@ -11,12 +11,11 @@ export interface IEmployeeIso {
 }
 
 export class EmployeeIso implements IEmployeeIso {
-    constructor(
-        public id?: number,
-        public email?: string,
-        public feelWheels?: IFeelWheelIso[],
-        public employees?: IEmployeeIso[],
-        public employeeEmail?: string,
-        public employeeId?: number
-    ) {}
+    constructor(public id?: number,
+                public email?: string,
+                public feelWheels?: IFeelWheelIso[],
+                public employees?: IEmployeeIso[],
+                public employeeEmail?: string,
+                public employeeId?: number) {
+    }
 }

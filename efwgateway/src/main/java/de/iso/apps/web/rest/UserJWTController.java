@@ -21,52 +21,48 @@ import javax.validation.Valid;
 /**
  * Controller to authenticate users.
  */
-@RestController
-@RequestMapping("/api")
-public class UserJWTController {
-
+@RestController @RequestMapping("/api") public class UserJWTController {
+    
     private final TokenProvider tokenProvider;
-
+    
     private final AuthenticationManager authenticationManager;
-
+    
     public UserJWTController(TokenProvider tokenProvider, AuthenticationManager authenticationManager) {
         this.tokenProvider = tokenProvider;
         this.authenticationManager = authenticationManager;
     }
-
+    
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM loginVM) {
-
-        UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(loginVM.getUsername(), loginVM.getPassword());
-
+        
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginVM.getUsername(),
+                                                                                                          loginVM.getPassword());
+        
         Authentication authentication = this.authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        boolean rememberMe = (loginVM.getRememberMe() == null) ?
-            false :
-            loginVM.getRememberMe();
+        boolean rememberMe = (loginVM.getRememberMe() == null) ? false : loginVM.getRememberMe();
         String jwt = tokenProvider.createToken(authentication, rememberMe);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
         return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
     }
-
+    
     /**
      * Object to return as body in JWT Authentication.
      */
     static class JWTToken {
-
+        
         private String idToken;
-
+        
         JWTToken(String idToken) {
             this.idToken = idToken;
         }
-
+        
         @JsonProperty("id_token")
         String getIdToken() {
             return idToken;
         }
-
+        
         void setIdToken(String idToken) {
             this.idToken = idToken;
         }

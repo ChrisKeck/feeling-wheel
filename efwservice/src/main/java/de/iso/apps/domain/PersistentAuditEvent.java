@@ -29,37 +29,21 @@ import java.util.Map;
  *
  * @see org.springframework.boot.actuate.audit.AuditEvent
  */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity
-@Table(name = "jhi_persistent_audit_event")
-public class PersistentAuditEvent implements Serializable {
+@Data @Builder @AllArgsConstructor @NoArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true) @Entity
+@Table(name = "jhi_persistent_audit_event") public class PersistentAuditEvent implements Serializable {
     
     private static final long serialVersionUID = 1251540894827424160L;
-    @Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "event_id")
-    private Long id;
-
-    @NotNull
-    @Column(nullable = false)
-    private String principal;
-
-    @Column(name = "event_date")
-    private Instant auditEventDate;
-
-    @Column(name = "event_type")
-    private String auditEventType;
-
-    @ElementCollection
-    @MapKeyColumn(name = "name")
-    @Column(name = "value")
-    @CollectionTable(name = "jhi_persistent_audit_evt_data", joinColumns=@JoinColumn(name="event_id"))
+    @Include @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator") @Column(name = "event_id") private Long id;
+    
+    @NotNull @Column(nullable = false) private String principal;
+    
+    @Column(name = "event_date") private Instant auditEventDate;
+    
+    @Column(name = "event_type") private String auditEventType;
+    
+    @ElementCollection @MapKeyColumn(name = "name") @Column(name = "value")
+    @CollectionTable(name = "jhi_persistent_audit_evt_data", joinColumns = @JoinColumn(name = "event_id"))
     private Map<String, String> data = new HashMap<>();
     
     protected boolean canEqual(Object other) {

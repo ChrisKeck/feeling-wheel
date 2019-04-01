@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { Observable, throwError } from 'rxjs';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {SettingsComponent} from 'app/account/settings/settings.component';
+import {AccountService} from 'app/core';
+import {JhiTrackerService} from 'app/core/tracker/tracker.service';
+import {throwError} from 'rxjs';
+import {MockTrackerService} from '../../../helpers/mock-tracker.service';
 
-import { EfwgatewayTestModule } from '../../../test.module';
-import { AccountService } from 'app/core';
-import { SettingsComponent } from 'app/account/settings/settings.component';
-import { JhiTrackerService } from 'app/core/tracker/tracker.service';
-import { MockTrackerService } from '../../../helpers/mock-tracker.service';
+import {EfwgatewayTestModule} from '../../../test.module';
 
 describe('Component Tests', () => {
     describe('SettingsComponent', () => {
@@ -15,17 +15,12 @@ describe('Component Tests', () => {
 
         beforeEach(async(() => {
             TestBed.configureTestingModule({
-                imports: [EfwgatewayTestModule],
-                declarations: [SettingsComponent],
-                providers: [
-                    {
-                        provide: JhiTrackerService,
-                        useClass: MockTrackerService
-                    }
-                ]
-            })
-                .overrideTemplate(SettingsComponent, '')
-                .compileComponents();
+                                               imports: [EfwgatewayTestModule], declarations: [SettingsComponent], providers: [{
+                           provide: JhiTrackerService, useClass: MockTrackerService
+                       }]
+                                           })
+                   .overrideTemplate(SettingsComponent, '')
+                   .compileComponents();
         }));
 
         beforeEach(() => {
@@ -37,13 +32,9 @@ describe('Component Tests', () => {
         it('should send the current identity upon save', () => {
             // GIVEN
             const accountValues = {
-                firstName: 'John',
-                lastName: 'Doe',
+                firstName: 'John', lastName: 'Doe',
 
-                activated: true,
-                email: 'john.doe@mail.com',
-                langKey: 'de',
-                login: 'john'
+                activated: true, email: 'john.doe@mail.com', langKey: 'de', login: 'john'
             };
             mockAuth.setIdentityResponse(accountValues);
 
@@ -60,8 +51,7 @@ describe('Component Tests', () => {
         it('should notify of success upon successful save', () => {
             // GIVEN
             const accountValues = {
-                firstName: 'John',
-                lastName: 'Doe'
+                firstName: 'John', lastName: 'Doe'
             };
             mockAuth.setIdentityResponse(accountValues);
 

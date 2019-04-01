@@ -14,27 +14,21 @@ import java.time.Instant;
 /**
  * A DTO for the FeelWheel entity.
  */
-@Data
-@Builder
-@AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor
+@Data @Builder @AllArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true) @NoArgsConstructor
 public class FeelWheelDTO implements Serializable {
     
     private static final long serialVersionUID = -3931739120912753732L;
-    @Include
-    private Long id;
-
-    @NotNull
-    private String subject;
-
+    @Include private Long id;
+    
+    @NotNull private String subject;
+    
     private Instant from;
-
+    
     private Instant to;
-
-
+    
+    
     private Long employeeId;
-
+    
     private String employeeEmail;
     
     protected boolean canEqual(Object other) {
@@ -42,5 +36,5 @@ public class FeelWheelDTO implements Serializable {
                getClass() == other.getClass() &&
                (this.getId() != null || ((FeelWheelDTO) other).getId() != null);
     }
-
+    
 }

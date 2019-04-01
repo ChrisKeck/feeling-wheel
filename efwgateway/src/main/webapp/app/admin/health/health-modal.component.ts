@@ -1,16 +1,16 @@
-import { Component } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {Component} from '@angular/core';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { JhiHealthService } from './health.service';
+import {JhiHealthService} from './health.service';
 
 @Component({
-    selector: 'jhi-health-modal',
-    templateUrl: './health-modal.component.html'
-})
+               selector: 'jhi-health-modal', templateUrl: './health-modal.component.html'
+           })
 export class JhiHealthModalComponent {
     currentHealth: any;
 
-    constructor(private healthService: JhiHealthService, public activeModal: NgbActiveModal) {}
+    constructor(private healthService: JhiHealthService, public activeModal: NgbActiveModal) {
+    }
 
     baseName(name) {
         return this.healthService.getBaseName(name);

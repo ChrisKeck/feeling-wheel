@@ -1,42 +1,37 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { JhiAlertService } from 'ng-jhipster';
-import { IFeelingIso } from 'app/shared/model/efwservice/feeling-iso.model';
-import { FeelingIsoService } from './feeling-iso.service';
-import { IFeelWheelIso } from 'app/shared/model/efwservice/feel-wheel-iso.model';
-import { FeelWheelIsoService } from 'app/entities/efwservice/feel-wheel-iso';
+import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {FeelWheelIsoService} from 'app/entities/efwservice/feel-wheel-iso';
+import {IFeelWheelIso} from 'app/shared/model/efwservice/feel-wheel-iso.model';
+import {IFeelingIso} from 'app/shared/model/efwservice/feeling-iso.model';
+import {JhiAlertService} from 'ng-jhipster';
+import {Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
+import {FeelingIsoService} from './feeling-iso.service';
 
 @Component({
-    selector: 'jhi-feeling-iso-update',
-    templateUrl: './feeling-iso-update.component.html'
-})
+               selector: 'jhi-feeling-iso-update', templateUrl: './feeling-iso-update.component.html'
+           })
 export class FeelingIsoUpdateComponent implements OnInit {
     feeling: IFeelingIso;
     isSaving: boolean;
 
     feelwheels: IFeelWheelIso[];
 
-    constructor(
-        protected jhiAlertService: JhiAlertService,
-        protected feelingService: FeelingIsoService,
-        protected feelWheelService: FeelWheelIsoService,
-        protected activatedRoute: ActivatedRoute
-    ) {}
+    constructor(protected jhiAlertService: JhiAlertService,
+                protected feelingService: FeelingIsoService,
+                protected feelWheelService: FeelWheelIsoService,
+                protected activatedRoute: ActivatedRoute) {
+    }
 
     ngOnInit() {
         this.isSaving = false;
-        this.activatedRoute.data.subscribe(({ feeling }) => {
+        this.activatedRoute.data.subscribe(({feeling}) => {
             this.feeling = feeling;
         });
         this.feelWheelService
             .query()
-            .pipe(
-                filter((mayBeOk: HttpResponse<IFeelWheelIso[]>) => mayBeOk.ok),
-                map((response: HttpResponse<IFeelWheelIso[]>) => response.body)
-            )
+            .pipe(filter((mayBeOk: HttpResponse<IFeelWheelIso[]>) => mayBeOk.ok), map((response: HttpResponse<IFeelWheelIso[]>) => response.body))
             .subscribe((res: IFeelWheelIso[]) => (this.feelwheels = res), (res: HttpErrorResponse) => this.onError(res.message));
     }
 
@@ -51,6 +46,10 @@ export class FeelingIsoUpdateComponent implements OnInit {
         } else {
             this.subscribeToSaveResponse(this.feelingService.create(this.feeling));
         }
+    }
+
+    trackFeelWheelById(index: number, item: IFeelWheelIso) {
+        return item.id;
     }
 
     protected subscribeToSaveResponse(result: Observable<HttpResponse<IFeelingIso>>) {
@@ -68,9 +67,5 @@ export class FeelingIsoUpdateComponent implements OnInit {
 
     protected onError(errorMessage: string) {
         this.jhiAlertService.error(errorMessage, null, null);
-    }
-
-    trackFeelWheelById(index: number, item: IFeelWheelIso) {
-        return item.id;
     }
 }

@@ -1,4 +1,4 @@
-import { element, by, ElementFinder } from 'protractor';
+import {by, element, ElementFinder} from 'protractor';
 
 export class NavBarPage {
     entityMenu = element(by.id('entity-menu'));
@@ -61,6 +61,7 @@ export class NavBarPage {
         await this.clickOnSignIn();
         return new SignInPage();
     }
+
     async getPasswordPage() {
         await this.clickOnAccountMenu();
         await this.clickOnPasswordMenu();
@@ -133,6 +134,7 @@ export class SignInPage {
         await this.loginButton.click();
     }
 }
+
 export class PasswordPage {
     currentPassword = element(by.id('currentPassword'));
     password = element(by.id('newPassword'));

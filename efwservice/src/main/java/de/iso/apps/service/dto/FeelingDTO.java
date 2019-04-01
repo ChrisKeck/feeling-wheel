@@ -14,28 +14,21 @@ import java.io.Serializable;
 /**
  * A DTO for the Feeling entity.
  */
-@Data
-@Builder
-@AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor
+@Data @Builder @AllArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true) @NoArgsConstructor
 public class FeelingDTO implements Serializable {
     
     private static final long serialVersionUID = 2528690780601204297L;
-    @Include
-    private Long id;
-
-    @NotNull
-    private FeelType feeltype;
-
-    @NotNull
-    private Integer capacity;
-
+    @Include private Long id;
+    
+    @NotNull private FeelType feeltype;
+    
+    @NotNull private Integer capacity;
+    
     private Boolean isSpeechable;
-
-
+    
+    
     private Long feelwheelId;
-
+    
     private String feelwheelSubject;
     
     protected boolean canEqual(Object other) {

@@ -9,10 +9,12 @@ import de.iso.apps.repository.search.UserSearchRepository;
 import de.iso.apps.security.AuthoritiesConstants;
 import de.iso.apps.security.SecurityUtils;
 import de.iso.apps.service.dto.UserDTO;
+import de.iso.apps.service.mapper.MailChangingMapper;
 import de.iso.apps.service.util.RandomUtil;
 import de.iso.apps.web.rest.errors.EmailAlreadyUsedException;
 import de.iso.apps.web.rest.errors.InvalidPasswordException;
 import de.iso.apps.web.rest.errors.LoginAlreadyUsedException;
+import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -48,17 +50,23 @@ import java.util.stream.Collectors;
     private final AuthorityRepository authorityRepository;
     
     private final CacheManager cacheManager;
+    private final MailChangingService mailChangingService;
+    private final MailChangingMapper mailChangingMapper;
     
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        UserSearchRepository userSearchRepository,
                        AuthorityRepository authorityRepository,
-                       CacheManager cacheManager) {
+                       CacheManager cacheManager,
+                       MailChangingService mailChangingService,
+                       MailChangingMapper mailChangingMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userSearchRepository = userSearchRepository;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.mailChangingService = mailChangingService;
+        this.mailChangingMapper = mailChangingMapper;
     }
     
     public Optional<User> activateRegistration(String key) {
@@ -135,6 +143,8 @@ import java.util.stream.Collectors;
         userRepository.save(newUser);
         userSearchRepository.save(newUser);
         this.clearUserCaches(newUser);
+        var mail = mailChangingMapper.toMailChangingDTO(newUser, null);
+        mailChangingService.propagate(mail);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
     }
@@ -146,6 +156,8 @@ import java.util.stream.Collectors;
         userRepository.delete(existingUser);
         userRepository.flush();
         this.clearUserCaches(existingUser);
+        var mail = mailChangingMapper.toMailChangingDTO(null, existingUser);
+        mailChangingService.propagate(mail);
         return true;
     }
     
@@ -171,8 +183,11 @@ import java.util.stream.Collectors;
                 Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
             user.setAuthorities(authorities);
         }
-        userRepository.save(user);
+        var newUser = userRepository.save(user);
         userSearchRepository.save(user);
+        var mail = mailChangingMapper.toMailChangingDTO(newUser, null);
+        mailChangingService.propagate(mail);
+    
         this.clearUserCaches(user);
         log.debug("Created Information for User: {}", user);
         return user;
@@ -189,12 +204,16 @@ import java.util.stream.Collectors;
      */
     public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
         SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin).ifPresent(user -> {
+            var oldMail = user.getEmail();
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setEmail(email.toLowerCase());
             user.setLangKey(langKey);
             user.setImageUrl(imageUrl);
             userSearchRepository.save(user);
+            var mail = mailChangingMapper.toMailChangingDTO(user, User.builder().email(oldMail).build());
+            mailChangingService.propagate(mail);
+    
             this.clearUserCaches(user);
             log.debug("Changed Information for User: {}", user);
         });
@@ -209,6 +228,7 @@ import java.util.stream.Collectors;
     public Optional<UserDTO> updateUser(UserDTO userDTO) {
         return Optional.of(userRepository.findById(userDTO.getId())).filter(Optional::isPresent).map(Optional::get).map(
             user -> {
+                var oldMail = user.getEmail();
                 this.clearUserCaches(user);
                 user.setLogin(userDTO.getLogin().toLowerCase());
                 user.setFirstName(userDTO.getFirstName());
@@ -222,7 +242,10 @@ import java.util.stream.Collectors;
                 userDTO.getAuthorities().stream().map(authorityRepository::findById).filter(Optional::isPresent).map(
                     Optional::get).forEach(managedAuthorities::add);
                 userSearchRepository.save(user);
+    
                 this.clearUserCaches(user);
+                var mail = mailChangingMapper.toMailChangingDTO(user, User.builder().email(oldMail).build());
+                mailChangingService.propagate(mail);
                 log.debug("Changed Information for User: {}", user);
                 return user;
             }).map(UserDTO::new);
@@ -233,6 +256,8 @@ import java.util.stream.Collectors;
             userRepository.delete(user);
             userSearchRepository.delete(user);
             this.clearUserCaches(user);
+            var mail = mailChangingMapper.toMailChangingDTO(null, user);
+            mailChangingService.propagate(mail);
             log.debug("Deleted User: {}", user);
         });
     }
@@ -282,6 +307,8 @@ import java.util.stream.Collectors;
                 log.debug("Deleting not activated user {}", user.getLogin());
                 userRepository.delete(user);
                 userSearchRepository.delete(user);
+                var mail = mailChangingMapper.toMailChangingDTO(null, user);
+                mailChangingService.propagate(mail);
                 this.clearUserCaches(user);
             });
     }

@@ -97,12 +97,10 @@ spring:
         template:
             default-topic: employee-topic
         consumer:
-            group-id: tpd-loggers
+            group-id: tpd-efwservice
             auto-offset-reset: earliest
-            bootstrap-servers: kafka:9092
             enable-auto-commit: true
         producer:
-            bootstrap-servers: kafka:9092
             retries: 2
 
         # change this property if you are using your own
@@ -111,10 +109,8 @@ spring:
 
 tpd:
     topic-name: advice-topic
-    messages-per-request: 1
 employee:
     topic-name: employee-topic
-    messages-per-request: 1
 server:
     port: 8081
 

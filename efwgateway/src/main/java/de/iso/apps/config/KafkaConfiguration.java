@@ -22,11 +22,7 @@ import java.util.Map;
 @EnableKafka @Configuration public class KafkaConfiguration {
     @Autowired private KafkaProperties kafkaProperties;
     @Value("${tpd.topic-name}") private String topicName;
-    @Value("${tpd.messages-per-request}") private int numberofRequests;
-    @Value("${employee.topic-name}") private String employeeTopicName;
-    @Value("${employee.messages-per-request}") private int employeeNumberofRequests;
-    // Producer configuration
-    
+
     @Bean
     public KafkaTemplate<String, MailChangingDTO> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
@@ -48,7 +44,7 @@ import java.util.Map;
     
     @Bean
     public NewTopic adviceTopic() {
-        return new NewTopic(topicName, 3, (short) 1);
+        return new NewTopic(topicName, 1, (short) 1);
     }
     
     @Bean
@@ -66,7 +62,7 @@ import java.util.Map;
         
         @Override
         public int getRequestsPerMessage() {
-            return numberofRequests;
+            return 1;
         }
         
         @Override

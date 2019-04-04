@@ -94,14 +94,10 @@ spring:
             discovery:
                 enabled: true
     kafka:
-        template:
-            default-topic: advice-topic
         consumer:
             group-id: tpd-loggers
             auto-offset-reset: earliest
-            bootstrap-servers: kafka:9092
         producer:
-            bootstrap-servers: kafka:9092
             retries: 2
 
         # change this property if you are using your own

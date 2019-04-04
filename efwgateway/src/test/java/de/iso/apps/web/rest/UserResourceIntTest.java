@@ -15,7 +15,6 @@ import de.iso.apps.service.dto.UserDTO;
 import de.iso.apps.service.mapper.UserMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
 import de.iso.apps.web.rest.vm.ManagedUserVM;
-import lombok.var;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -108,8 +106,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     
     private MockMvc restUserMockMvc;
     
-    @Mock private KafkaTemplate<String, MailChangingDTO> mockkafka;
-    
     @Mock private Topicable<MailChangingDTO> topicable;
     
     private User user;
@@ -118,10 +114,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     public void setup() {
         cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).clear();
         cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).clear();
-        var mailchanging = new MailChangingService(topicable, userRepository, mockUserSearchRepository, userMapper) {
+        MailChangingService mailchanging = new MailChangingService(topicable) {
             @Override
             public void propagate(MailChangingDTO userDTO) {
-            
+    
             }
         };
         UserResource userResource = new UserResource(userService,

@@ -79,8 +79,6 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
     private final MailService mailService;
     
     private final UserSearchRepository userSearchRepository;
-    private final MailChangingService mailChangingService;
-    private final UserMapper userMapper;
     
     public UserResource(UserService userService,
                         UserRepository userRepository,
@@ -93,8 +91,6 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userSearchRepository = userSearchRepository;
-        this.mailChangingService = mailChangingService;
-        this.userMapper = userMapper;
     }
     
     /**
@@ -123,9 +119,6 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
             throw new EmailAlreadyUsedException();
         } else {
             User newUser = userService.createUser(userDTO);
-            var newUserDTO = userMapper.userToUserDTO(newUser);
-            var mailChangingDTO = userMapper.userDTOToMailChangingDTO(newUserDTO, null);
-            mailChangingService.propagate(mailChangingDTO);
             mailService.sendCreationEmail(newUser);
             return ResponseEntity.created(new URI("/api/users/" + newUser.getLogin())).headers(HeaderUtil.createAlert(
                 "userManagement.created",
@@ -154,14 +147,6 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
             throw new LoginAlreadyUsedException();
         }
         Optional<UserDTO> updatedUser = userService.updateUser(userDTO);
-        if (logInUser.isPresent() &&
-            updatedUser.isPresent() &&
-            logInUser.get().getEmail() != updatedUser.get().getEmail()) {
-            var mappedDTO = userMapper.userToUserDTO(logInUser.get());
-            var mailingChanging = userMapper.userDTOToMailChangingDTO(updatedUser.get(), mappedDTO);
-            
-            mailChangingService.propagate(mailingChanging);
-        }
         return ResponseUtil.wrapOrNotFound(updatedUser,
                                            HeaderUtil.createAlert("userManagement.updated", userDTO.getLogin()));
     }
@@ -211,10 +196,6 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
     public ResponseEntity<Void> deleteUser(@PathVariable String login) {
         log.debug("REST request to delete User: {}", login);
         var user = userService.getUserWithAuthoritiesByLogin(login);
-        user.ifPresent(item -> {
-            var mailChanging = userMapper.userDTOToMailChangingDTO(null, userMapper.userToUserDTO(item));
-            mailChangingService.propagate(mailChanging);
-        });
         userService.deleteUser(login);
         return ResponseEntity.ok().headers(HeaderUtil.createAlert("userManagement.deleted", login)).build();
     }

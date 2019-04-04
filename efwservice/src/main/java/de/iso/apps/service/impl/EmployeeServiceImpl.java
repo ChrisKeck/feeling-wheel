@@ -62,19 +62,15 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
             oldemployee = this.findOne(employeeDTO.getId());
         }
         Employee employee = employeeMapper.toEntity(employeeDTO);
-    
         employee = employeeRepository.save(employee);
         EmployeeDTO result = employeeMapper.toDto(employee);
-    
-    
         employeeSearchRepository.save(employee);
-        oldemployee.map((EmployeeDTO item) -> {
-            var mailChanging = mailChangingMapper.employeeDTOToMailChangingDTO(result, item);
+        if (oldemployee.isPresent()) {
+            var mailChanging = mailChangingMapper.employeeDTOToMailChangingDTO(result, oldemployee.get());
             if (!Objects.equals(mailChanging.getNewMail(), mailChanging.getOldMail())) {
                 mailChangingService.propagate(mailChanging);
             }
-            return item;
-        });
+        }
         return result;
     }
     

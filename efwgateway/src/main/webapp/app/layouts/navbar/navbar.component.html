@@ -23,7 +23,7 @@
                 <a (click)="collapseNavbar()" class="nav-link" routerLink="/">
                     <span>
                         <fa-icon icon="home"></fa-icon>
-                        <span jhiTranslate="global.menu.home">Home</span>
+                        <span jhiTranslate="global.menu.home"></span>
                     </span>
                 </a>
             </li>
@@ -37,7 +37,6 @@
                     <span>
                         <fa-icon icon="th-list"></fa-icon>
                         <span jhiTranslate="global.menu.entities.main">
-                            Entities
                         </span>
                     </span>
                 </a>
@@ -49,7 +48,7 @@
                            routerLink="employee-iso"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="asterisk"></fa-icon>
-                            <span jhiTranslate="global.menu.entities.efwserviceEmployeeIso">Employee Iso</span>
+                            <span jhiTranslate="global.menu.entities.efwserviceEmployeeIso"></span>
                         </a>
                     </li>
                     <li>
@@ -59,7 +58,7 @@
                            routerLink="feeling-iso"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="asterisk"></fa-icon>
-                            <span jhiTranslate="global.menu.entities.efwserviceFeelingIso">Feeling Iso</span>
+                            <span jhiTranslate="global.menu.entities.efwserviceFeelingIso"></span>
                         </a>
                     </li>
                     <li>
@@ -69,7 +68,7 @@
                            routerLink="feel-wheel-iso"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="asterisk"></fa-icon>
-                            <span jhiTranslate="global.menu.entities.efwserviceFeelWheelIso">Feel Wheel Iso</span>
+                            <span jhiTranslate="global.menu.entities.efwserviceFeelWheelIso"></span>
                         </a>
                     </li>
                     <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
@@ -83,7 +82,7 @@
                 <a class="nav-link dropdown-toggle" href="javascript:void(0);" id="admin-menu" ngbDropdownToggle>
                     <span>
                         <fa-icon icon="user-plus"></fa-icon>
-                        <span jhiTranslate="global.menu.admin.main">Administration</span>
+                        <span jhiTranslate="global.menu.admin.main"></span>
                     </span>
                 </a>
                 <ul aria-labelledby="admin-menu" class="dropdown-menu" ngbDropdownMenu>
@@ -93,7 +92,7 @@
                            routerLink="admin/gateway"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="road"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.gateway">Gateway</span>
+                            <span jhiTranslate="global.menu.admin.gateway"></span>
                         </a>
                     </li>
                     <li>
@@ -102,7 +101,7 @@
                            routerLink="admin/user-management"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="user"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.userManagement">User management</span>
+                            <span jhiTranslate="global.menu.admin.userManagement"></span>
                         </a>
                     </li>
                     <li>
@@ -111,7 +110,7 @@
                            routerLink="admin/jhi-tracker"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="eye"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.tracker">User tracker</span>
+                            <span jhiTranslate="global.menu.admin.tracker"></span>
                         </a>
                     </li>
                     <li>
@@ -120,7 +119,7 @@
                            routerLink="admin/jhi-metrics"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="tachometer-alt"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
+                            <span jhiTranslate="global.menu.admin.metrics"></span>
                         </a>
                     </li>
                     <li>
@@ -129,7 +128,7 @@
                            routerLink="admin/jhi-health"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="heart"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.health">Health</span>
+                            <span jhiTranslate="global.menu.admin.health"></span>
                         </a>
                     </li>
                     <li>
@@ -138,7 +137,7 @@
                            routerLink="admin/jhi-configuration"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="list"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
+                            <span jhiTranslate="global.menu.admin.configuration"></span>
                         </a>
                     </li>
                     <li>
@@ -147,7 +146,7 @@
                            routerLink="admin/audits"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="bell"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.audits">Audits</span>
+                            <span jhiTranslate="global.menu.admin.audits"></span>
                         </a>
                     </li>
                     <li>
@@ -156,7 +155,7 @@
                            routerLink="admin/logs"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="tasks"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.logs">Logs</span>
+                            <span jhiTranslate="global.menu.admin.logs"></span>
                         </a>
                     </li>
                     <li *ngIf="swaggerEnabled">
@@ -165,14 +164,14 @@
                            routerLink="admin/docs"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="book"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.apidocs">API</span>
+                            <span jhiTranslate="global.menu.admin.apidocs"></span>
                         </a>
                     </li>
                     <!-- jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here -->
                     <li *ngIf="!inProduction">
                         <a (click)="collapseNavbar()" class="dropdown-item" href='./h2-console' target="_tab">
                             <fa-icon fixedWidth="true" icon="hdd"></fa-icon>
-                            <span jhiTranslate="global.menu.admin.database">Database</span>
+                            <span jhiTranslate="global.menu.admin.database"></span>
                         </a>
                     </li>
                 </ul>
@@ -184,7 +183,7 @@
                    ngbDropdownToggle>
                     <span>
                         <fa-icon icon="flag"></fa-icon>
-                        <span jhiTranslate="global.menu.language">Language</span>
+                        <span jhiTranslate="global.menu.language"></span>
                     </span>
                 </a>
                 <ul aria-labelledby="languagesnavBarDropdown" class="dropdown-menu" ngbDropdownMenu>
@@ -205,7 +204,6 @@
                   <span *ngIf="!getImageUrl()">
                     <fa-icon icon="user"></fa-icon>
                     <span jhiTranslate="global.menu.account.main">
-                      Account
                     </span>
                   </span>
                     <span *ngIf="getImageUrl()">
@@ -219,7 +217,7 @@
                            routerLink="settings"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="wrench"></fa-icon>
-                            <span jhiTranslate="global.menu.account.settings">Settings</span>
+                            <span jhiTranslate="global.menu.account.settings"></span>
                         </a>
                     </li>
                     <li *ngSwitchCase="true">
@@ -228,19 +226,19 @@
                            routerLink="password"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="clock"></fa-icon>
-                            <span jhiTranslate="global.menu.account.password">Password</span>
+                            <span jhiTranslate="global.menu.account.password"></span>
                         </a>
                     </li>
                     <li *ngSwitchCase="true">
                         <a (click)="logout()" class="dropdown-item" id="logout">
                             <fa-icon fixedWidth="true" icon="sign-out-alt"></fa-icon>
-                            <span jhiTranslate="global.menu.account.logout">Sign out</span>
+                            <span jhiTranslate="global.menu.account.logout"></span>
                         </a>
                     </li>
                     <li *ngSwitchCase="false">
                         <a (click)="login()" class="dropdown-item" id="login">
                             <fa-icon fixedWidth="true" icon="sign-in-alt"></fa-icon>
-                            <span jhiTranslate="global.menu.account.login">Sign in</span>
+                            <span jhiTranslate="global.menu.account.login"></span>
                         </a>
                     </li>
                     <li *ngSwitchCase="false">
@@ -249,7 +247,7 @@
                            routerLink="register"
                            routerLinkActive="active">
                             <fa-icon fixedWidth="true" icon="user-plus"></fa-icon>
-                            <span jhiTranslate="global.menu.account.register">Register</span>
+                            <span jhiTranslate="global.menu.account.register"></span>
                         </a>
                     </li>
                 </ul>

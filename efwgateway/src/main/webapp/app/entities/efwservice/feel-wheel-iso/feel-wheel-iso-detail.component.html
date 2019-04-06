@@ -2,24 +2,24 @@
     <div class="col-8">
         <div *ngIf="feelWheel">
             <h2>
-                <span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.detail.title">Feel Wheel</span> {{feelWheel.subject}}
+                <span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.detail.title"></span> {{feelWheel.subject}}
             </h2>
             <hr>
             <jhi-alert-error></jhi-alert-error>
             <dl class="row-md jh-entity-details">
-                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.subject">Subject</span></dt>
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.subject"></span></dt>
                 <dd>
                     <span>{{feelWheel.subject}}</span>
                 </dd>
-                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.from">From</span></dt>
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.from"></span></dt>
                 <dd>
                     <span>{{feelWheel.from}}</span>
                 </dd>
-                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.to">To</span></dt>
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.to"></span></dt>
                 <dd>
                     <span>{{feelWheel.to}}</span>
                 </dd>
-                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.employee">Employee</span></dt>
+                <dt><span jhiTranslate="efwgatewayApp.efwserviceFeelWheel.employee"></span></dt>
                 <dd>
                     <div *ngIf="feelWheel.employeeId">
                         <a [routerLink]="['/employee-iso', feelWheel.employeeId, 'view']">{{feelWheel.employeeEmail}}</a>
@@ -30,13 +30,13 @@
             <button (click)="previousState()"
                     class="btn btn-info"
                     type="submit">
-                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> </span>
             </button>
             
             <button [routerLink]="['/feel-wheel-iso', feelWheel.id, 'edit']"
                     class="btn btn-primary"
                     type="button">
-                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> </span>
             </button>
         </div>
     </div>

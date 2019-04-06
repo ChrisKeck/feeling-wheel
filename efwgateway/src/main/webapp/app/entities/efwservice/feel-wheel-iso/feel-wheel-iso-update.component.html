@@ -20,7 +20,6 @@
                         <small [hidden]="!editForm.controls.subject?.errors?.required"
                                class="form-text text-danger"
                                jhiTranslate="entity.validation.required">
-                            This field is required.
                         </small>
                     </div>
                 </div>
@@ -41,7 +40,7 @@
                 <div class="form-group">
                     <label class="form-control-label"
                            for="field_to"
-                           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.to">To</label>
+                           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.to"></label>
                     <div class="d-flex">
                         <input [(ngModel)]="to"
                                class="form-control"
@@ -56,7 +55,7 @@
                 <div class="form-group">
                     <label class="form-control-label"
                            for="field_employee"
-                           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.employee">Employee</label>
+                           jhiTranslate="efwgatewayApp.efwserviceFeelWheel.employee"></label>
                     <select [(ngModel)]="feelWheel.employeeId" class="form-control" id="field_employee" name="employee">
                         <option [ngValue]="null"></option>
                         <option *ngFor="let employeeOption of employees; trackBy: trackEmployeeById"
@@ -66,13 +65,13 @@
             </div>
             <div>
                 <button (click)="previousState()" class="btn btn-secondary" id="cancel-save" type="button">
-                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel"></span>
                 </button>
                 <button [disabled]="editForm.form.invalid || isSaving"
                         class="btn btn-primary"
                         id="save-entity"
                         type="submit">
-                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save"></span>
                 </button>
             </div>
         </form>

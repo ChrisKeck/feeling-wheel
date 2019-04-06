@@ -2,9 +2,9 @@
     "efwgatewayApp": {
         "FeelType": {
             "null": "",
-            "ANGRY": "ANGRY",
-            "SAD": "SAD",
-            "HAPPY": "HAPPY"
+            "ANGRY": "wütend",
+            "SAD": "traurig",
+            "HAPPY": "glücklich"
         }
     }
 }

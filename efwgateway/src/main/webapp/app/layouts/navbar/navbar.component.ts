@@ -9,7 +9,7 @@ import {JhiLanguageService} from 'ng-jhipster';
 import {SessionStorageService} from 'ngx-webstorage';
 
 @Component({
-               selector: 'jhi-navbar', templateUrl: './navbar.component.html', styleUrls: ['navbar.scss']
+               selector: 'jhi-navbar', templateUrl: './navbar.component.html', styleUrls: ['navbar.component.scss']
            })
 export class NavbarComponent implements OnInit {
     inProduction: boolean;

@@ -1,0 +1,10 @@
+<div class="btn-group">
+    <button ngbButton routerLink="feeling-iso"
+            routerLinkActive="active" jhiTranslate="global.menu.entities.efwserviceFeelingIso"></button>
+    <button ngbButton routerLink="feel-wheel-iso"
+            routerLinkActive="active" jhiTranslate="global.menu.entities.efwserviceFeelWheelIso"></button>
+    <button *jhiHasAnyAuthority="['ROLE_TPL','ROLE_ADMIN']" routerLink="employee-iso"
+            routerLinkActive="active" jhiTranslate="global.menu.entities.efwserviceEmployeeIso" ngbButton></button>
+    <button *jhiHasAnyAuthority="['ROLE_ADMIN']" routerLink="admin/user-management"
+            routerLinkActive="active" jhiTranslate="global.menu.admin.userManagement"></button>
+</div>

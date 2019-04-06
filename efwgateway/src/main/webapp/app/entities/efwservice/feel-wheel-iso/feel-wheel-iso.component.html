@@ -6,7 +6,6 @@
                 id="jh-create-entity">
             <fa-icon [icon]="'plus'"></fa-icon>
             <span class="hidden-sm-down" jhiTranslate="efwgatewayApp.efwserviceFeelWheel.home.createLabel">
-            Create new Feel Wheel
             </span>
         </button>
     </h2>
@@ -35,7 +34,7 @@
     <div *ngIf="feelWheels" class="table-responsive">
         <table class="table table-striped">
             <thead>
-            <tr [(ascending)]="reverse" [(predicate)]="predicate" [callback]="reset.bind(this)" jhiSort>
+            <tr jhiSort [(ascending)]="reverse" [(predicate)]="predicate" [callback]="reset.bind(this)">
                 <th *jhiHasAnyAuthority="['ROLE_ADMIN']" jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span>
                     <fa-icon [icon]="'sort'"></fa-icon>
                 </th>
@@ -75,13 +74,13 @@
                                 class="btn btn-info btn-sm"
                                 type="submit">
                             <fa-icon [icon]="'eye'"></fa-icon>
-                            <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.view"></span>
                         </button>
                         <button [routerLink]="['/feel-wheel-iso', feelWheel.id, 'edit']"
                                 class="btn btn-primary btn-sm"
                                 type="submit">
                             <fa-icon [icon]="'pencil-alt'"></fa-icon>
-                            <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.edit"></span>
                         </button>
                         <button [routerLink]="['/', 'feel-wheel-iso', { outlets: { popup: feelWheel.id + '/delete'} }]"
                                 class="btn btn-danger btn-sm"
@@ -89,7 +88,7 @@
                                 replaceUrl="true"
                                 type="submit">
                             <fa-icon [icon]="'times'"></fa-icon>
-                            <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.delete"></span>
                         </button>
                     </div>
                 </td>

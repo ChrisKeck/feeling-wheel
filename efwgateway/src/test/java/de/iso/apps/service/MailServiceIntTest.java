@@ -2,7 +2,9 @@ package de.iso.apps.service;
 
 import de.iso.apps.EfwgatewayApp;
 import de.iso.apps.config.Constants;
-import de.iso.apps.domain.User;
+import de.iso.apps.service.dto.UserDTO;
+import de.iso.apps.service.impl.MailServiceImpl;
+import de.iso.apps.service.mapper.UserMapper;
 import io.github.jhipster.config.JHipsterProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +51,11 @@ import static org.mockito.Mockito.verify;
     public void setup() {
         MockitoAnnotations.initMocks(this);
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
-        mailService = new MailService(jHipsterProperties, javaMailSender, messageSource, templateEngine);
+        mailService = new MailServiceImpl(jHipsterProperties,
+                                          javaMailSender,
+                                          messageSource,
+                                          templateEngine,
+                                          new UserMapper());
     }
     
     @Test
@@ -114,7 +120,7 @@ import static org.mockito.Mockito.verify;
     
     @Test
     public void testSendEmailFromTemplate() throws Exception {
-        User user = new User();
+        UserDTO user = new UserDTO();
         user.setLogin("john");
         user.setEmail("john.doe@example.com");
         user.setLangKey("en");
@@ -131,7 +137,7 @@ import static org.mockito.Mockito.verify;
     
     @Test
     public void testSendActivationEmail() throws Exception {
-        User user = new User();
+        UserDTO user = new UserDTO();
         user.setLangKey(Constants.DEFAULT_LANGUAGE);
         user.setLogin("john");
         user.setEmail("john.doe@example.com");
@@ -146,7 +152,7 @@ import static org.mockito.Mockito.verify;
     
     @Test
     public void testCreationEmail() throws Exception {
-        User user = new User();
+        UserDTO user = new UserDTO();
         user.setLangKey(Constants.DEFAULT_LANGUAGE);
         user.setLogin("john");
         user.setEmail("john.doe@example.com");
@@ -161,7 +167,7 @@ import static org.mockito.Mockito.verify;
     
     @Test
     public void testSendPasswordResetMail() throws Exception {
-        User user = new User();
+        UserDTO user = new UserDTO();
         user.setLangKey(Constants.DEFAULT_LANGUAGE);
         user.setLogin("john");
         user.setEmail("john.doe@example.com");

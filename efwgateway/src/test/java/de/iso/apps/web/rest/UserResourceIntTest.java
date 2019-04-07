@@ -26,7 +26,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -104,10 +103,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     @Autowired private EntityManager em;
     
     @Autowired private CacheManager cacheManager;
-    
+    @Mock private MailChangingService mailChangingService;
     private MockMvc restUserMockMvc;
-    
-    @Mock private KafkaTemplate<String, Object> mockkafka;
     
     @Mock private Topicable<MailChangingDTO> topicable;
     
@@ -117,18 +114,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     public void setup() {
         cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).clear();
         cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).clear();
-        UserResource userResource = new UserResource(userService,
-                                                     userRepository,
-                                                     mailService,
-                                                     mockUserSearchRepository,
-                                                     new MailChangingService(topicable) {
-                                                         @Override
-                                                         public void propagate(MailChangingDTO userDTO) {
-                
-                                                         }
-                                                     },
-                                                     new UserMapper());
-        
+        UserResource userResource = new UserResource(userService, mailService, mailChangingService);
+    
         this.restUserMockMvc = MockMvcBuilders.standaloneSetup(userResource).setCustomArgumentResolvers(
             pageableArgumentResolver).setControllerAdvice(exceptionTranslator).setMessageConverters(
             jacksonMessageConverter).build();

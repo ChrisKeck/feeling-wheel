@@ -7,6 +7,7 @@ import de.iso.apps.repository.search.EmployeeSearchRepository;
 import de.iso.apps.repository.search.EmployeeSearchRepositoryMockConfiguration;
 import de.iso.apps.service.EmployeeService;
 import de.iso.apps.service.dto.EmployeeDTO;
+import de.iso.apps.service.impl.EmployeeServiceImpl;
 import de.iso.apps.service.mapper.EmployeeMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
 import org.junit.Before;
@@ -60,8 +61,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     
     @Autowired private EmployeeMapper employeeMapper;
     
-    @Autowired private EmployeeService employeeService;
-    
     /**
      * This repository is mocked in the de.iso.apps.repository.search test package.
      *
@@ -78,15 +77,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     @Autowired private EntityManager em;
     
     @Qualifier("mvcValidator") @Autowired private Validator validator;
-    
     private MockMvc restEmployeeMockMvc;
     
     private Employee employee;
     
     @Before
     public void setup() {
+        EmployeeService employeeService = new EmployeeServiceImpl(employeeRepository,
+                                                                  employeeMapper, mockEmployeeSearchRepository);
         MockitoAnnotations.initMocks(this);
-        EmployeeResource employeeResource = new EmployeeResource(employeeService);
+    
+        EmployeeResource employeeResource = new EmployeeResource(employeeService, (result, email) -> {
+        
+        });
         this.restEmployeeMockMvc = MockMvcBuilders.standaloneSetup(employeeResource)
                                                   .setCustomArgumentResolvers(pageableArgumentResolver)
                                                   .setControllerAdvice(exceptionTranslator)

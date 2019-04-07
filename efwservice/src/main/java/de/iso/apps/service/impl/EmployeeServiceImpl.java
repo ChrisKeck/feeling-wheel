@@ -6,6 +6,7 @@ import de.iso.apps.repository.search.EmployeeSearchRepository;
 import de.iso.apps.service.EmployeeService;
 import de.iso.apps.service.dto.EmployeeDTO;
 import de.iso.apps.service.mapper.EmployeeMapper;
+import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -29,10 +30,8 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
     private final EmployeeMapper employeeMapper;
     
     private final EmployeeSearchRepository employeeSearchRepository;
-    
     public EmployeeServiceImpl(EmployeeRepository employeeRepository,
-                               EmployeeMapper employeeMapper,
-                               EmployeeSearchRepository employeeSearchRepository) {
+                               EmployeeMapper employeeMapper, EmployeeSearchRepository employeeSearchRepository) {
         this.employeeRepository = employeeRepository;
         this.employeeMapper = employeeMapper;
         this.employeeSearchRepository = employeeSearchRepository;
@@ -89,9 +88,11 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Employee : {}", id);
+        var employee = this.findOne(id);
         employeeRepository.deleteById(id);
         employeeSearchRepository.deleteById(id);
     }
+    
     
     /**
      * Search for the employee corresponding to the query.

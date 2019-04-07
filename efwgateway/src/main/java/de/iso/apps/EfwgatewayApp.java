@@ -2,38 +2,23 @@ package de.iso.apps;
 
 import de.iso.apps.config.ApplicationProperties;
 import de.iso.apps.config.DefaultProfileUtil;
-import de.iso.apps.contracts.Topicable;
-import de.iso.apps.service.dto.MailChangingDTO;
 import io.github.jhipster.config.JHipsterConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @SpringBootApplication @EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
 @EnableDiscoveryClient @EnableZuulProxy public class EfwgatewayApp {
@@ -41,9 +26,7 @@ import java.util.Map;
     private static final Logger log = LoggerFactory.getLogger(EfwgatewayApp.class);
     
     private final Environment env;
-    @Autowired private KafkaProperties kafkaProperties;
-    @Value("${tpd.topic-name}") private String topicName;
-    @Value("${tpd.messages-per-request}") private int numberofRequests;
+    
     
     public EfwgatewayApp(Environment env) {
         this.env = env;
@@ -122,54 +105,5 @@ import java.util.Map;
         }
     }
     
-    // Producer configuration
-    
-    @Bean
-    public KafkaTemplate<String, MailChangingDTO> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
-    }
-    
-    @Bean
-    public ProducerFactory<String, MailChangingDTO> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs());
-    }
-    
-    @Bean
-    public Map<String, Object> producerConfigs() {
-        Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties());
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        
-        return props;
-    }
-    
-    @Bean
-    public NewTopic adviceTopic() {
-        return new NewTopic(topicName, 3, (short) 1);
-    }
-    
-    @Bean
-    public Topicable topicableMailChanging() {
-        return new TopicableMailChangingImpl();
-    }
-    
-    public class TopicableMailChangingImpl implements Topicable<MailChangingDTO> {
-        
-        
-        @Override
-        public String getTopic() {
-            return topicName;
-        }
-        
-        @Override
-        public int getRequestsPerMessage() {
-            return numberofRequests;
-        }
-        
-        @Override
-        public KafkaTemplate<String, MailChangingDTO> getKafkaTemplate() {
-            return kafkaTemplate();
-        }
-    }
     
 }

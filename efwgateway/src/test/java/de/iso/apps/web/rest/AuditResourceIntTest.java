@@ -5,6 +5,7 @@ import de.iso.apps.config.audit.AuditEventConverter;
 import de.iso.apps.domain.PersistentAuditEvent;
 import de.iso.apps.repository.PersistenceAuditEventRepository;
 import de.iso.apps.service.AuditEventService;
+import de.iso.apps.service.impl.AuditEventServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +61,7 @@ public class AuditResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        AuditEventService auditEventService = new AuditEventService(auditEventRepository, auditEventConverter);
+        AuditEventService auditEventService = new AuditEventServiceImpl(auditEventRepository, auditEventConverter);
         AuditResource auditResource = new AuditResource(auditEventService);
         this.restAuditMockMvc = MockMvcBuilders.standaloneSetup(auditResource).setCustomArgumentResolvers(
             pageableArgumentResolver).setConversionService(formattingConversionService).setMessageConverters(

@@ -77,20 +77,20 @@ spring:
             discovery:
                 enabled: true
     kafka:
-        template:
-            default-topic: advice-topic
         consumer:
-            group-id: tpd-loggers
+            group-id: tpd-efwservice
             auto-offset-reset: earliest
-            bootstrap-servers: kafka:9092
             enable-auto-commit: true
+        producer:
+            retries: 2
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
         bootstrap-servers: kafka:9092
 
 tpd:
     topic-name: advice-topic
-    messages-per-request: 1
+employee:
+    topic-name: employee-topic
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
 # keytool -genkey -alias efwservice -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650

@@ -42,4 +42,5 @@ import java.util.Objects;
         Authority authority = (Authority) o;
         return Objects.equals(name, authority.name);
     }
+    
 }

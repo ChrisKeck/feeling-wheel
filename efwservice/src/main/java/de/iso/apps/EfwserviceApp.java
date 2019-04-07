@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.core.env.Environment;
-import org.springframework.kafka.annotation.EnableKafka;
 
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
@@ -20,7 +19,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 
-@EnableKafka() @SpringBootApplication
+@SpringBootApplication
 @EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class}) @EnableDiscoveryClient
 public class EfwserviceApp {
     
@@ -105,5 +104,6 @@ public class EfwserviceApp {
                       "run with both the 'dev' and 'cloud' profiles at the same time.");
         }
     }
+    
     
 }

@@ -1,11 +1,13 @@
 package de.iso.apps.web.rest;
 
 import de.iso.apps.service.EmployeeService;
+import de.iso.apps.service.MailChangingService;
 import de.iso.apps.service.dto.EmployeeDTO;
 import de.iso.apps.web.rest.errors.BadRequestAlertException;
 import de.iso.apps.web.rest.util.HeaderUtil;
 import de.iso.apps.web.rest.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -27,7 +29,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * REST controller for managing Employee.
@@ -37,10 +38,11 @@ import java.util.concurrent.CountDownLatch;
     private static final String ENTITY_NAME = "efwserviceEmployee";
     private final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
     private final EmployeeService employeeService;
-    private CountDownLatch latch;
+    private final MailChangingService mailChangingService;
     
-    public EmployeeResource(EmployeeService employeeService) {
+    public EmployeeResource(EmployeeService employeeService, MailChangingService mailChangingService) {
         this.employeeService = employeeService;
+        this.mailChangingService = mailChangingService;
     }
     
     /**
@@ -59,6 +61,7 @@ import java.util.concurrent.CountDownLatch;
             throw new BadRequestAlertException("A new employee cannot already have an ID", ENTITY_NAME, "idexists");
         }
         EmployeeDTO result = employeeService.save(employeeDTO);
+        mailChangingService.propagate(result, null);
         return ResponseEntity.created(new URI("/api/employees/" + result.getId()))
                              .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
                              .body(result);
@@ -79,6 +82,7 @@ import java.util.concurrent.CountDownLatch;
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         EmployeeDTO result = employeeService.save(employeeDTO);
+        mailChangingService.propagate(result, employeeDTO);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME,
                                                                               employeeDTO.getId().toString())).body(
             result);
@@ -120,7 +124,9 @@ import java.util.concurrent.CountDownLatch;
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         log.debug("REST request to delete Employee : {}", id);
+        var olEmp = employeeService.findOne(id);
         employeeService.delete(id);
+        olEmp.ifPresent(item -> mailChangingService.propagate(null, item));
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
     

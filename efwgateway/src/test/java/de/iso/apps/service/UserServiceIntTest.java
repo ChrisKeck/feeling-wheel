@@ -72,14 +72,16 @@ public class UserServiceIntTest {
     @Transactional
     public void assertThatUserMustExistToResetPassword() {
         userRepository.saveAndFlush(user);
-        Optional<User> maybeUser = userService.requestPasswordReset("invalid.login@localhost");
+        Optional<UserDTO> maybeUser = userService.requestPasswordReset("invalid.login@localhost");
         assertThat(maybeUser).isNotPresent();
-        
-        maybeUser = userService.requestPasswordReset(user.getEmail());
-        assertThat(maybeUser).isPresent();
-        assertThat(maybeUser.orElse(null).getEmail()).isEqualTo(user.getEmail());
-        assertThat(maybeUser.orElse(null).getResetDate()).isNotNull();
-        assertThat(maybeUser.orElse(null).getResetKey()).isNotNull();
+    
+        userService.requestPasswordReset(user.getEmail());
+        Optional<User> userOptional = userRepository.findOneByLogin(user.getLogin());
+    
+        assertThat(userOptional).isPresent();
+        assertThat(userOptional.orElse(null).getEmail()).isEqualTo(user.getEmail());
+        assertThat(userOptional.orElse(null).getResetDate()).isNotNull();
+        assertThat(userOptional.orElse(null).getResetKey()).isNotNull();
     }
     
     @Test
@@ -87,8 +89,8 @@ public class UserServiceIntTest {
     public void assertThatOnlyActivatedUserCanRequestPasswordReset() {
         user.setActivated(false);
         userRepository.saveAndFlush(user);
-        
-        Optional<User> maybeUser = userService.requestPasswordReset(user.getLogin());
+    
+        Optional<UserDTO> maybeUser = userService.requestPasswordReset(user.getLogin());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
@@ -102,8 +104,8 @@ public class UserServiceIntTest {
         user.setResetDate(daysAgo);
         user.setResetKey(resetKey);
         userRepository.saveAndFlush(user);
-        
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
+    
+        Optional<UserDTO> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
@@ -116,8 +118,8 @@ public class UserServiceIntTest {
         user.setResetDate(daysAgo);
         user.setResetKey("1234");
         userRepository.saveAndFlush(user);
-        
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
+    
+        Optional<UserDTO> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
@@ -132,12 +134,13 @@ public class UserServiceIntTest {
         user.setResetDate(daysAgo);
         user.setResetKey(resetKey);
         userRepository.saveAndFlush(user);
-        
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
-        assertThat(maybeUser).isPresent();
-        assertThat(maybeUser.orElse(null).getResetDate()).isNull();
-        assertThat(maybeUser.orElse(null).getResetKey()).isNull();
-        assertThat(maybeUser.orElse(null).getPassword()).isNotEqualTo(oldPassword);
+    
+        userService.completePasswordReset("johndoe2", user.getResetKey());
+        Optional<User> userOptional = userRepository.findOneByLogin(user.getLogin());
+        assertThat(userOptional).isPresent();
+        assertThat(userOptional.orElse(null).getResetDate()).isNull();
+        assertThat(userOptional.orElse(null).getResetKey()).isNull();
+        assertThat(userOptional.orElse(null).getPassword()).isNotEqualTo(oldPassword);
         
         userRepository.delete(user);
     }
@@ -168,8 +171,8 @@ public class UserServiceIntTest {
         if (!userRepository.findOneByLogin(Constants.ANONYMOUS_USER).isPresent()) {
             userRepository.saveAndFlush(user);
         }
-        final PageRequest pageable = PageRequest.of(0, (int) userRepository.count());
-        final Page<UserDTO> allManagedUsers = userService.getAllManagedUsers(pageable);
+        PageRequest pageable = PageRequest.of(0, (int) userRepository.count());
+        Page<UserDTO> allManagedUsers = userService.getAllManagedUsers(pageable);
         assertThat(allManagedUsers.getContent()
                                   .stream()
                                   .noneMatch(user -> Constants.ANONYMOUS_USER.equals(user.getLogin()))).isTrue();

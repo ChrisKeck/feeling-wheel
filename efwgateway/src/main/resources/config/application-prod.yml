@@ -82,7 +82,6 @@ spring:
             auto-offset-reset: earliest
         producer:
             retries: 2
-            bootstrap-servers: kafka:9092
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
         bootstrap-servers: kafka:9092
@@ -91,6 +90,10 @@ spring:
 
 tpd:
     topic-name: advice-topic
+    messages-per-request: 1
+
+employee:
+    topic-name: employee-topic
     messages-per-request: 1
 # ===================================================================
 # To enable TLS in production, generate a certificate using:

@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 
 @Configuration @EnableKafka public class KafkaConfiguration {
     private final KafkaProperties kafkaProperties;
-    @Value("${employee.topic-name}") private String name;
+    @Value("${tpd.topic-name}") private String name;
     private static final Logger log = LoggerFactory.getLogger(KafkaConfiguration.class);
     
     public KafkaConfiguration(KafkaProperties kafkaProperties) {

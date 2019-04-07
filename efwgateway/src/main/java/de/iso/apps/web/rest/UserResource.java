@@ -101,7 +101,13 @@ import java.util.Optional;
         } else {
             validate(userDTO);
             UserDTO newUser = userService.createUser(userDTO);
-            mailService.sendCreationEmail(newUser);
+            try {
+        
+                mailService.sendCreationEmail(newUser);
+            } catch (Exception ex) {
+                newUser.setActivated(true);
+                userService.updateUser(newUser);
+            }
             changingService.propagate(newUser, null);
             return ResponseEntity.created(new URI("/api/users/" + newUser.getLogin())).headers(HeaderUtil.createAlert(
                 "userManagement.created",

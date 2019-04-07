@@ -211,13 +211,11 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
     @Override
     public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
         SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin).ifPresent(user -> {
-            var oldUser = userMapper.userToUserDTO(user);
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setEmail(email.toLowerCase());
             user.setLangKey(langKey);
             user.setImageUrl(imageUrl);
-            var newUser = userMapper.userToUserDTO(userSearchRepository.save(user));
             this.clearUserCaches(user);
             log.debug("Changed Information for User: {}", user);
         });

@@ -102,7 +102,7 @@ spring:
             retries: 2
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
-        bootstrap-servers: kafka:9092,localhost:9092
+        bootstrap-servers: kafka:9092
 
 kafka-topics:
     user:

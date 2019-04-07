@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service public class MailChangingListenerService implements ExternalObservailable<String, MailChangingDTO> {
@@ -34,9 +35,13 @@ import java.util.Optional;
     private void changeEmployee(MailChangingDTO payload) {
         Optional<EmployeeDTO> employeeDTO = getEmployeeDTO(payload.getOldMail());
         employeeDTO.ifPresent(item -> {
-            item.setEmail(payload.getNewMail());
-            employeeService.save(item);
-            log.info("Employee was changed by Listener");
+            if (!Objects.equals(item.getEmail(), payload.getNewMail())) {
+        
+                item.setEmail(payload.getNewMail());
+                employeeService.save(item);
+                log.info("Employee was changed by Listener");
+            }
+    
         });
     }
     

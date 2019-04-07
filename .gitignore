@@ -3,3 +3,4 @@ Efw.iml
 *.css.map
 *.css
 *.versionsBackup
+/shared/shared.iml

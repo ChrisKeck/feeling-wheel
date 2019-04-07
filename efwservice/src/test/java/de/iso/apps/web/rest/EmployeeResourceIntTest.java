@@ -84,9 +84,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     @Before
     public void setup() {
         EmployeeService employeeService = new EmployeeServiceImpl(employeeRepository,
-                                                                  employeeMapper, mockEmployeeSearchRepository);
+                                                                  employeeMapper,
+                                                                  mockEmployeeSearchRepository);
         MockitoAnnotations.initMocks(this);
-    
         EmployeeResource employeeResource = new EmployeeResource(employeeService, (result, email) -> {
         
         });

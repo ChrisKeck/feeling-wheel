@@ -1,67 +1,34 @@
 package de.iso.apps.service.impl;
 
+import de.iso.apps.contracts.ExternalObservailable;
+import de.iso.apps.contracts.ExternalObserver;
 import de.iso.apps.service.UserService;
 import de.iso.apps.service.dto.MailChangingDTO;
 import de.iso.apps.service.dto.UserDTO;
 import lombok.var;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.header.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
-import java.util.stream.StreamSupport;
 
-@Service public class MailChangingListenerService {
+@Service public class MailChangingListenerService implements ExternalObservailable<String, MailChangingDTO> {
     private final Logger log = LoggerFactory.getLogger(MailChangingListenerService.class);
     private final UserService userService;
+    private final ExternalObserver<String, MailChangingDTO> externalObserver;
     
     
-    public MailChangingListenerService(UserService service) {
+    public MailChangingListenerService(UserService service,
+                                       @Qualifier("externalObserver")
+                                           ExternalObserver<String, MailChangingDTO> externalObserver) {
         userService = service;
+        externalObserver.add(this);
+        this.externalObserver = externalObserver;
     }
 
     
-    @Async
-    @KafkaListener(topics = "${employee.topic-name}",
-                   clientIdPrefix = "json", containerFactory = "employeeListenerContainerFactory")
-    public void listenAsObject(ConsumerRecord<String, MailChangingDTO> cr, @Payload MailChangingDTO payload) {
-        log.info("Logger 1 [JSON] received key {}: Type [{}] | Payload: {} | Record: {}",
-                 cr.key(),
-                 typeIdHeader(cr.headers()),
-                 payload,
-                 cr.toString());
-        try {
-            if (wasMailChanged(payload)) {
-                changeEmployee(payload);
-            } else if (wasMailDeleted(payload)) {
-                deleteEmployee(payload);
-            } else if (wasMailCreated(payload)) {
-                createEmployee(payload);
-            }
-            
-        } catch (Exception e) {
-            log.error("Error in Listener", e);
-        }
-        
-    }
-    
-    private static String typeIdHeader(Headers headers) {
-        return StreamSupport.stream(headers.spliterator(), false)
-                            .filter(header -> header.key().equals("__TypeId__"))
-                            .findFirst()
-                            .map(header -> new String(header.value()))
-                            .orElse("N/A");
-    }
-    
-    private boolean wasMailChanged(MailChangingDTO payload) {
-        return StringUtils.hasText(payload.getNewMail()) && StringUtils.hasText(payload.getOldMail());
-    }
     
     private void changeEmployee(MailChangingDTO payload) {
         var optionalUser = userService.getUserWithAuthoritiesByLogin(payload.getOldMail());
@@ -100,5 +67,25 @@ import java.util.stream.StreamSupport;
         }
     }
     
+    private boolean wasMailChanged(MailChangingDTO payload) {
+        return StringUtils.hasText(payload.getNewMail()) && StringUtils.hasText(payload.getOldMail());
+    }
+    
+    @Override
+    public void valueChanged(String s, MailChangingDTO mailChangingDTO) {
+        if (wasMailChanged(mailChangingDTO)) {
+            changeEmployee(mailChangingDTO);
+        } else if (wasMailDeleted(mailChangingDTO)) {
+            deleteEmployee(mailChangingDTO);
+        } else if (wasMailCreated(mailChangingDTO)) {
+            createEmployee(mailChangingDTO);
+        }
+        
+    }
+    
+    @Override
+    public int compareTo(ExternalObservailable<String, MailChangingDTO> externalObservailable) {
+        return this.getClass().getTypeName().compareTo(externalObservailable.getClass().getTypeName());
+    }
 }
     

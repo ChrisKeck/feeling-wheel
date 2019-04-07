@@ -95,21 +95,20 @@ spring:
                 enabled: true
     kafka:
         consumer:
-            group-id: tpd-loggers
+            group-id: efwgateway
             auto-offset-reset: earliest
+            enable-auto-commit: true
         producer:
             retries: 2
-
         # change this property if you are using your own
         # Kafka cluster or your Docker IP is different
-        bootstrap-servers: kafka:9092
+        bootstrap-servers: kafka:9092,localhost:9092
 
-tpd:
-    topic-name: advice-topic
-    messages-per-request: 1
-employee:
-    topic-name: employee-topic
-    messages-per-request: 1
+kafka-topics:
+    user:
+        name: user-changed
+    employee:
+        name: employee-changed
 server:
     port: 8080
 

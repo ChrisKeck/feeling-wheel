@@ -1,21 +1,29 @@
 package de.iso.apps.config;
 
+import de.iso.apps.contracts.ExternalObservailable;
+import de.iso.apps.contracts.ExternalObserver;
 import de.iso.apps.contracts.Topicable;
 import de.iso.apps.service.dto.MailChangingDTO;
+import lombok.NonNull;
 import lombok.var;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -23,27 +31,28 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.messaging.handler.annotation.Payload;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
+import java.util.stream.StreamSupport;
 
 @Configuration @EnableKafka public class KafkaConfiguration {
     private final KafkaProperties kafkaProperties;
-    @Value("${tpd.topic-name}") private String name;
+    @Value("${kafka-topics.user.name}") private String name;
     private static final Logger log = LoggerFactory.getLogger(KafkaConfiguration.class);
     
     public KafkaConfiguration(KafkaProperties kafkaProperties) {
         this.kafkaProperties = kafkaProperties;
     }
     
-    //
-//
-//
-//Producer
-//
-//
-//
+    @Bean("externalObserver")
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    ExternalObserver<String, MailChangingDTO> externalObserver() {
+        return new MailChangingObserver();
+    }
     
     @Bean
     public Topicable<MailChangingDTO> userProducer() {
@@ -56,7 +65,6 @@ import java.util.function.Consumer;
         return new TopicableMailChangingImpl(template, new NewTopic(name, 1, (short) 1));
     }
     
-    
     //
     //
     // Consumer configuration
@@ -64,7 +72,7 @@ import java.util.function.Consumer;
     // If you only need one kind of deserialization, you only need to set the
     // Consumer configuration properties. Uncomment this and remove all others below.
     
-    @Bean("employeeListenerContainerFactory")
+    @Bean("mailChangingListenerContainerFactory")
     @Primary
     public ConcurrentKafkaListenerContainerFactory<String, MailChangingDTO> kafkaListenerContainerFactory() {
         Map<String, Object> props = new HashMap<>(kafkaProperties.buildConsumerProperties());
@@ -81,6 +89,42 @@ import java.util.function.Consumer;
         return factory;
     }
     
+    private static class MailChangingObserver implements ExternalObserver<String, MailChangingDTO> {
+        private ConcurrentSkipListSet<ExternalObservailable<String, MailChangingDTO>> list = new ConcurrentSkipListSet<>();
+        
+        @Override
+        public void add(@NonNull ExternalObservailable<String, MailChangingDTO> observailable) {
+            list.add(observailable);
+        }
+        
+        @KafkaListener(topics = "${kafka-topics.user.name}",
+                       clientIdPrefix = "json",
+                       containerFactory = "mailChangingListenerContainerFactory",
+                       groupId = "efwservice")
+        public void listenAsObject(ConsumerRecord<String, MailChangingDTO> cr, @Payload MailChangingDTO payload) {
+            
+            
+            for (ExternalObservailable<String, MailChangingDTO> item : list) {
+                try {
+                    item.valueChanged(cr.key(), payload);
+                } catch (Exception e) {
+                    log.info("Logger 1 [JSON] received key {}: Type [{}] | Payload: {} | Record: {}",
+                    
+                             cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+                    log.error("Error in Listener", e);
+                }
+            }
+        }
+        
+        private static String typeIdHeader(Headers headers) {
+            return StreamSupport.stream(headers.spliterator(), false)
+                                .filter(header -> header.key()
+                                                        .equals("__TypeId__"))
+                                .findFirst()
+                                .map(header -> new String(header.value()))
+                                .orElse("N/A");
+        }
+    }
     
     private static class TopicableMailChangingImpl implements Topicable<MailChangingDTO> {
         private final KafkaTemplate<String, MailChangingDTO> kafkaTemplate;
@@ -88,7 +132,6 @@ import java.util.function.Consumer;
         private static final Logger log = LoggerFactory.getLogger(TopicableMailChangingImpl.class);
         
         TopicableMailChangingImpl(KafkaTemplate<String, MailChangingDTO> kafkaTemplate, NewTopic newTopic) {
-            
             this.kafkaTemplate = kafkaTemplate;
             this.newTopic = newTopic;
         }

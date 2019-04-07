@@ -36,8 +36,7 @@ import java.util.stream.StreamSupport;
     }
     
     @KafkaListener(topics = "${tpd.topic-name}",
-                   clientIdPrefix = "json",
-                   containerFactory = "kafkaListenerContainerFactory")
+                   clientIdPrefix = "json", containerFactory = "kafkaListenerContainerFactory", groupId = "efwservice")
     public void listenAsObject(ConsumerRecord<String, MailChangingDTO> cr, @Payload MailChangingDTO payload) {
         
         try {

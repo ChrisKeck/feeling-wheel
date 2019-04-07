@@ -1,7 +1,8 @@
 package de.iso.apps.service;
 
-import de.iso.apps.service.dto.MailChangingDTO;
+import de.iso.apps.service.dto.EmployeeDTO;
 
 public interface MailChangingService {
-    void propagate(MailChangingDTO userDTO);
+    
+    void propagate(EmployeeDTO result, EmployeeDTO email);
 }

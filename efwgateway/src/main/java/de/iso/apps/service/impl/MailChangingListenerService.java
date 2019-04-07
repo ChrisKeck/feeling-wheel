@@ -1,9 +1,8 @@
-package de.iso.apps.service;
+package de.iso.apps.service.impl;
 
-import de.iso.apps.domain.User;
-import de.iso.apps.repository.UserRepository;
+import de.iso.apps.service.UserService;
 import de.iso.apps.service.dto.MailChangingDTO;
-import de.iso.apps.service.mapper.UserMapper;
+import de.iso.apps.service.dto.UserDTO;
 import lombok.var;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Headers;
@@ -16,28 +15,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.StreamSupport;
 
 @Service public class MailChangingListenerService {
-    private static AtomicInteger counter = new AtomicInteger(1);
     private final Logger log = LoggerFactory.getLogger(MailChangingListenerService.class);
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final UserService userService;
     
     
-    public MailChangingListenerService(UserRepository userRepository, UserMapper userMapper, UserService service) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
+    public MailChangingListenerService(UserService service) {
         userService = service;
     }
-    
+
     
     @Async
     @KafkaListener(topics = "${employee.topic-name}",
-                   clientIdPrefix = "json",
-                   containerFactory = "kafkaListenerContainerFactory")
+                   clientIdPrefix = "json", containerFactory = "employeeListenerContainerFactory")
     public void listenAsObject(ConsumerRecord<String, MailChangingDTO> cr, @Payload MailChangingDTO payload) {
         log.info("Logger 1 [JSON] received key {}: Type [{}] | Payload: {} | Record: {}",
                  cr.key(),
@@ -72,11 +64,11 @@ import java.util.stream.StreamSupport;
     }
     
     private void changeEmployee(MailChangingDTO payload) {
-        var optionalUser = userRepository.findOneByEmailIgnoreCase(payload.getOldMail());
+        var optionalUser = userService.getUserWithAuthoritiesByLogin(payload.getOldMail());
         if (optionalUser.isPresent() && !Objects.equals(optionalUser.get().getEmail(), payload.getNewMail())) {
             var user = optionalUser.get();
             user.setEmail(payload.getNewMail());
-            userService.updateUser(userMapper.userToUserDTO(user));
+            userService.updateUser(user);
             log.info("User was changed by Listener");
         }
     }
@@ -86,7 +78,7 @@ import java.util.stream.StreamSupport;
     }
     
     private void deleteEmployee(MailChangingDTO payload) {
-        var employee = userRepository.findOneByEmailIgnoreCase(payload.getOldMail());
+        var employee = userService.getUserWithAuthoritiesByEmail(payload.getOldMail());
         employee.ifPresent(item -> {
             userService.deleteUser(item.getLogin());
             log.info("User was deleted by Listener");
@@ -98,13 +90,12 @@ import java.util.stream.StreamSupport;
     }
     
     private void createEmployee(MailChangingDTO payload) {
-        var repemployee = userRepository.findOneByEmailIgnoreCase(payload.getNewMail());
+        var repemployee = userService.getUserWithAuthoritiesByEmail(payload.getNewMail());
         if (!repemployee.isPresent()) {
-            var employee = new User();
+            var employee = new UserDTO();
             employee.setEmail(payload.getNewMail());
             employee.setLogin(payload.getNewMail());
-            employee.setPassword(payload.getNewMail());
-            userService.createUser(userMapper.userToUserDTO(employee));
+            userService.createUser(employee);
             log.info("User was created by Listener");
         }
     }

@@ -103,7 +103,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     @Autowired private EntityManager em;
     
     @Autowired private CacheManager cacheManager;
-    
+    @Mock private MailChangingService mailChangingService;
     private MockMvc restUserMockMvc;
     
     @Mock private Topicable<MailChangingDTO> topicable;
@@ -114,16 +114,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     public void setup() {
         cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).clear();
         cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).clear();
-        MailChangingService mailchanging = new MailChangingService(topicable) {
-            @Override
-            public void propagate(MailChangingDTO userDTO) {
-    
-            }
-        };
-        UserResource userResource = new UserResource(userService,
-                                                     userRepository,
-                                                     mailService, mockUserSearchRepository, mailchanging,
-                                                     new UserMapper());
+        UserResource userResource = new UserResource(userService, mailService, mailChangingService);
     
         this.restUserMockMvc = MockMvcBuilders.standaloneSetup(userResource).setCustomArgumentResolvers(
             pageableArgumentResolver).setControllerAdvice(exceptionTranslator).setMessageConverters(

@@ -1,15 +1,11 @@
 package de.iso.apps.web.rest;
 
 import de.iso.apps.config.Constants;
-import de.iso.apps.domain.User;
-import de.iso.apps.repository.UserRepository;
-import de.iso.apps.repository.search.UserSearchRepository;
 import de.iso.apps.security.AuthoritiesConstants;
 import de.iso.apps.service.MailChangingService;
 import de.iso.apps.service.MailService;
 import de.iso.apps.service.UserService;
 import de.iso.apps.service.dto.UserDTO;
-import de.iso.apps.service.mapper.UserMapper;
 import de.iso.apps.web.rest.errors.BadRequestAlertException;
 import de.iso.apps.web.rest.errors.EmailAlreadyUsedException;
 import de.iso.apps.web.rest.errors.LoginAlreadyUsedException;
@@ -37,12 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
  * REST controller for managing users.
@@ -73,24 +66,15 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
     private final Logger log = LoggerFactory.getLogger(UserResource.class);
     
     private final UserService userService;
-    
-    private final UserRepository userRepository;
-    
     private final MailService mailService;
+    private final MailChangingService changingService;
     
-    private final UserSearchRepository userSearchRepository;
     
-    public UserResource(UserService userService,
-                        UserRepository userRepository,
-                        MailService mailService,
-                        UserSearchRepository userSearchRepository,
-                        MailChangingService mailChangingService,
-                        UserMapper userMapper) {
+    public UserResource(UserService userService, MailService mailService, MailChangingService changingService) {
         
         this.userService = userService;
-        this.userRepository = userRepository;
         this.mailService = mailService;
-        this.userSearchRepository = userSearchRepository;
+        this.changingService = changingService;
     }
     
     /**
@@ -107,19 +91,18 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
      */
     @PostMapping("/users")
     @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<User> createUser(@Valid @RequestBody UserDTO userDTO) throws URISyntaxException {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) throws URISyntaxException {
         log.debug("REST request to save User : {}", userDTO);
         
         if (userDTO.getId() != null) {
             throw new BadRequestAlertException("A new user cannot already have an ID", "userManagement", "idexists");
             // Lowercase the user login before comparing with database
-        } else if (userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).isPresent()) {
-            throw new LoginAlreadyUsedException();
-        } else if (userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).isPresent()) {
-            throw new EmailAlreadyUsedException();
+    
         } else {
-            User newUser = userService.createUser(userDTO);
+            validate(userDTO);
+            UserDTO newUser = userService.createUser(userDTO);
             mailService.sendCreationEmail(newUser);
+            changingService.propagate(newUser, null);
             return ResponseEntity.created(new URI("/api/users/" + newUser.getLogin())).headers(HeaderUtil.createAlert(
                 "userManagement.created",
                 newUser.getLogin())).body(newUser);
@@ -138,17 +121,23 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
     @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO) {
         log.debug("REST request to update User : {}", userDTO);
-        Optional<User> existingUser = userRepository.findOneByEmailIgnoreCase(userDTO.getEmail());
+        validate(userDTO);
+        Optional<UserDTO> updatedUserOpt = userService.updateUser(userDTO);
+        UserDTO updatedUser = updatedUserOpt.orElse(userDTO);
+        changingService.propagate(updatedUser, userDTO);
+        return ResponseUtil.wrapOrNotFound(updatedUserOpt,
+                                           HeaderUtil.createAlert("userManagement.updated", updatedUser.getLogin()));
+    }
+    
+    private void validate(@RequestBody @Valid UserDTO userDTO) {
+        Optional<UserDTO> existingUser = userService.getUserWithAuthoritiesByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
             throw new EmailAlreadyUsedException();
         }
-        var logInUser = userRepository.findOneByLogin(userDTO.getLogin().toLowerCase());
+        var logInUser = userService.getUserWithAuthoritiesByLogin(userDTO.getLogin().toLowerCase());
         if (logInUser.isPresent() && (!logInUser.get().getId().equals(userDTO.getId()))) {
             throw new LoginAlreadyUsedException();
         }
-        Optional<UserDTO> updatedUser = userService.updateUser(userDTO);
-        return ResponseUtil.wrapOrNotFound(updatedUser,
-                                           HeaderUtil.createAlert("userManagement.updated", userDTO.getLogin()));
     }
     
     /**
@@ -182,7 +171,7 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
     @GetMapping("/users/{login:" + Constants.LOGIN_REGEX + "}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String login) {
         log.debug("REST request to get User : {}", login);
-        return ResponseUtil.wrapOrNotFound(userService.getUserWithAuthoritiesByLogin(login).map(UserDTO::new));
+        return ResponseUtil.wrapOrNotFound(userService.getUserWithAuthoritiesByLogin(login));
     }
     
     /**
@@ -197,6 +186,7 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
         log.debug("REST request to delete User: {}", login);
         var user = userService.getUserWithAuthoritiesByLogin(login);
         userService.deleteUser(login);
+        user.ifPresent(item -> changingService.propagate(null, item));
         return ResponseEntity.ok().headers(HeaderUtil.createAlert("userManagement.deleted", login)).build();
     }
     
@@ -207,8 +197,7 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
      * @return the result of the search
      */
     @GetMapping("/_search/users/{query}")
-    public List<User> search(@PathVariable String query) {
-        return StreamSupport.stream(userSearchRepository.search(queryStringQuery(query)).spliterator(), false).collect(
-            Collectors.toList());
+    public List<UserDTO> search(@PathVariable String query) {
+        return new ArrayList<>(userService.search(query));
     }
 }

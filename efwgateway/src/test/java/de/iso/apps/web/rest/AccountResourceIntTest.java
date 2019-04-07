@@ -6,11 +6,15 @@ import de.iso.apps.domain.Authority;
 import de.iso.apps.domain.User;
 import de.iso.apps.repository.AuthorityRepository;
 import de.iso.apps.repository.UserRepository;
+import de.iso.apps.repository.search.UserSearchRepository;
 import de.iso.apps.security.AuthoritiesConstants;
+import de.iso.apps.service.MailChangingService;
 import de.iso.apps.service.MailService;
 import de.iso.apps.service.UserService;
 import de.iso.apps.service.dto.PasswordChangeDTO;
 import de.iso.apps.service.dto.UserDTO;
+import de.iso.apps.service.impl.UserServiceImpl;
+import de.iso.apps.service.mapper.UserMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
 import de.iso.apps.web.rest.vm.KeyAndPasswordVM;
 import de.iso.apps.web.rest.vm.ManagedUserVM;
@@ -22,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,10 +41,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -57,30 +64,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     @Autowired private UserRepository userRepository;
     
     @Autowired private AuthorityRepository authorityRepository;
-    
-    @Autowired private UserService userService;
+    private UserService userService;
     
     @Autowired private PasswordEncoder passwordEncoder;
     
     @Autowired private HttpMessageConverter<?>[] httpMessageConverters;
     
     @Autowired private ExceptionTranslator exceptionTranslator;
-    
-    @Mock private UserService mockUserService;
+    private UserServiceImpl mockUserService;
     
     @Mock private MailService mockMailService;
-    
+
     private MockMvc restMvc;
     
     private MockMvc restUserMockMvc;
-    
+    @Autowired private UserSearchRepository userSearchRepository;
+    @Autowired private CacheManager cacheManager;
+    @Mock private MailChangingService mailChangingService;
     @Before
     public void setup() {
+        mockUserService = spy(new UserServiceImpl(userRepository,
+                                                  userSearchRepository,
+                                                  authorityRepository,
+                                                  cacheManager,
+                                                  new UserMapper(),
+                                                  passwordEncoder));
+        userService = new UserServiceImpl(userRepository,
+                                          userSearchRepository,
+                                          authorityRepository,
+                                          cacheManager,
+                                          new UserMapper(),
+                                          passwordEncoder);
         MockitoAnnotations.initMocks(this);
         doNothing().when(mockMailService).sendActivationEmail(any());
-        AccountResource accountResource = new AccountResource(userRepository, userService, mockMailService);
-        
-        AccountResource accountUserMockResource = new AccountResource(userRepository, mockUserService, mockMailService);
+        AccountResource accountResource = new AccountResource(userService, mockMailService, mailChangingService);
+    
+        AccountResource accountUserMockResource = new AccountResource(mockUserService,
+                                                                      mockMailService,
+                                                                      mailChangingService);
         this.restMvc = MockMvcBuilders.standaloneSetup(accountResource)
                                       .setMessageConverters(httpMessageConverters)
                                       .setControllerAdvice(exceptionTranslator)
@@ -110,15 +131,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         Authority authority = new Authority();
         authority.setName(AuthoritiesConstants.ADMIN);
         authorities.add(authority);
-        
-        User user = new User();
+    
+        UserDTO user = new UserDTO();
         user.setLogin("test");
         user.setFirstName("john");
         user.setLastName("doe");
         user.setEmail("john.doe@jhipster.com");
         user.setImageUrl("http://placehold.it/50x50");
         user.setLangKey("en");
-        user.setAuthorities(authorities);
+        user.setAuthorities(authorities.stream().map(Authority::getName).collect(Collectors.toSet()));
         when(mockUserService.getUserWithAuthorities()).thenReturn(Optional.of(user));
         
         restUserMockMvc.perform(get("/api/account").accept(MediaType.APPLICATION_JSON))
@@ -436,7 +457,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         userRepository.saveAndFlush(user);
         
         UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("not-used");
+        userDTO.setLogin("save-account");
         userDTO.setFirstName("firstname");
         userDTO.setLastName("lastname");
         userDTO.setEmail("save-account@example.com");
@@ -510,7 +531,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         userRepository.saveAndFlush(anotherUser);
         
         UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("not-used");
+        userDTO.setLogin("save-existing-email-and-login");
         userDTO.setFirstName("firstname");
         userDTO.setLastName("lastname");
         userDTO.setEmail("save-existing-email2@example.com");
@@ -518,7 +539,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         userDTO.setImageUrl("http://placehold.it/50x50");
         userDTO.setLangKey(Constants.DEFAULT_LANGUAGE);
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
-        
+    
         restMvc.perform(post("/api/account").contentType(TestUtil.APPLICATION_JSON_UTF8)
                                             .content(TestUtil.convertObjectToJsonBytes(userDTO)))
                .andExpect(status().isBadRequest());
@@ -540,7 +561,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         userRepository.saveAndFlush(user);
         
         UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("not-used");
+        userDTO.setLogin("save-existing-email-and-login");
         userDTO.setFirstName("firstname");
         userDTO.setLastName("lastname");
         userDTO.setEmail("save-existing-email-and-login@example.com");

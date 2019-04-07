@@ -1,9 +1,8 @@
 package de.iso.apps.web.rest;
 
 
-import de.iso.apps.domain.User;
-import de.iso.apps.repository.UserRepository;
 import de.iso.apps.security.SecurityUtils;
+import de.iso.apps.service.MailChangingService;
 import de.iso.apps.service.MailService;
 import de.iso.apps.service.UserService;
 import de.iso.apps.service.dto.PasswordChangeDTO;
@@ -38,17 +37,17 @@ import java.util.Optional;
     
     private final Logger log = LoggerFactory.getLogger(AccountResource.class);
     
-    private final UserRepository userRepository;
     
     private final UserService userService;
     
     private final MailService mailService;
+    private final MailChangingService changingService;
     
-    public AccountResource(UserRepository userRepository, UserService userService, MailService mailService) {
+    public AccountResource(UserService userService, MailService mailService, MailChangingService changingService) {
         
-        this.userRepository = userRepository;
         this.userService = userService;
         this.mailService = mailService;
+        this.changingService = changingService;
     }
     
     /**
@@ -62,17 +61,18 @@ import java.util.Optional;
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
-        if (!checkPasswordLength(managedUserVM.getPassword())) {
+        if (checkValidPasswordLength(managedUserVM.getPassword())) {
             throw new InvalidPasswordException();
         }
-        User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
+        UserDTO user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
         mailService.sendActivationEmail(user);
+        changingService.propagate(user, null);
     }
     
-    private static boolean checkPasswordLength(String password) {
-        return !StringUtils.isEmpty(password) &&
-               password.length() >= ManagedUserVM.PASSWORD_MIN_LENGTH &&
-               password.length() <= ManagedUserVM.PASSWORD_MAX_LENGTH;
+    private static boolean checkValidPasswordLength(String password) {
+        return StringUtils.isEmpty(password) ||
+               password.length() < ManagedUserVM.PASSWORD_MIN_LENGTH ||
+               password.length() > ManagedUserVM.PASSWORD_MAX_LENGTH;
     }
     
     /**
@@ -83,7 +83,7 @@ import java.util.Optional;
      */
     @GetMapping("/activate")
     public void activateAccount(@RequestParam(value = "key") String key) {
-        Optional<User> user = userService.activateRegistration(key);
+        Optional<UserDTO> user = userService.activateRegistration(key);
         if (!user.isPresent()) {
             throw new InternalServerErrorException("No user was found for this activation key");
         }
@@ -95,6 +95,7 @@ import java.util.Optional;
      * @param request the HTTP request
      * @return the login if the user is authenticated
      */
+    @SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
     @GetMapping("/authenticate")
     public String isAuthenticated(HttpServletRequest request) {
         log.debug("REST request to check if the current user is authenticated");
@@ -110,7 +111,6 @@ import java.util.Optional;
     @GetMapping("/account")
     public UserDTO getAccount() {
         return userService.getUserWithAuthorities()
-                          .map(UserDTO::new)
                           .orElseThrow(() -> new InternalServerErrorException("User could not be found"));
     }
     
@@ -125,11 +125,11 @@ import java.util.Optional;
     public void saveAccount(@Valid @RequestBody UserDTO userDTO) {
         String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new InternalServerErrorException(
             "Current user login not found"));
-        Optional<User> existingUser = userRepository.findOneByEmailIgnoreCase(userDTO.getEmail());
+        Optional<UserDTO> existingUser = userService.getUserWithAuthoritiesByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userLogin))) {
             throw new EmailAlreadyUsedException();
         }
-        Optional<User> user = userRepository.findOneByLogin(userLogin);
+        Optional<UserDTO> user = userService.getUserWithAuthoritiesByLogin(userLogin);
         if (!user.isPresent()) {
             throw new InternalServerErrorException("User could not be found");
         }
@@ -138,6 +138,7 @@ import java.util.Optional;
                                userDTO.getEmail(),
                                userDTO.getLangKey(),
                                userDTO.getImageUrl());
+        changingService.propagate(userDTO, user.get());
     }
     
     /**
@@ -148,7 +149,7 @@ import java.util.Optional;
      */
     @PostMapping(path = "/account/change-password")
     public void changePassword(@RequestBody PasswordChangeDTO passwordChangeDto) {
-        if (!checkPasswordLength(passwordChangeDto.getNewPassword())) {
+        if (checkValidPasswordLength(passwordChangeDto.getNewPassword())) {
             throw new InvalidPasswordException();
         }
         userService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
@@ -175,11 +176,11 @@ import java.util.Optional;
      */
     @PostMapping(path = "/account/reset-password/finish")
     public void finishPasswordReset(@RequestBody KeyAndPasswordVM keyAndPassword) {
-        if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
+        if (checkValidPasswordLength(keyAndPassword.getNewPassword())) {
             throw new InvalidPasswordException();
         }
-        Optional<User> user = userService.completePasswordReset(keyAndPassword.getNewPassword(),
-                                                                keyAndPassword.getKey());
+        Optional<UserDTO> user = userService.completePasswordReset(keyAndPassword.getNewPassword(),
+                                                                   keyAndPassword.getKey());
     
         if (!user.isPresent()) {
             throw new InternalServerErrorException("No user was found for this reset key");

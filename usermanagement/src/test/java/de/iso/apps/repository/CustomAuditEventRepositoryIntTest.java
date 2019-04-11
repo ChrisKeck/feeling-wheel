@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test class for the CustomAuditEventRepository class.
  *
- * @see CustomAuditEventRepository
+ * @see de.iso.apps.repository.CustomAuditEventRepository
  */
 @RunWith(SpringRunner.class) @SpringBootTest(classes = EfwgatewayApp.class) @Transactional
 public class CustomAuditEventRepositoryIntTest {

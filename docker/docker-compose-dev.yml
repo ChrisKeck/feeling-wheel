@@ -4,61 +4,50 @@ services:
     image: efwgateway
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
-      - 'SPRING_PROFILES_ACTIVE=prod,webpack,zipkin,swagger,IDE'
+      - 'SPRING_PROFILES_ACTIVE=prod,webpack,zipkin,swagger'
       - 'EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka'
       - 'SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config'
-      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://efwgateway-postgresql:5432/efwgateway'
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://efw-postgresql:5432/efwgateway'
       - JHIPSTER_SLEEP=30
-      - 'SPRING_DATA_JEST_URI=http://efwgateway-elasticsearch:9200'
+      - 'SPRING_DATA_JEST_URI=http://jhipster-elasticsearch:9300'
       - SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=kafka
       - SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=zookeeper
       - JHIPSTER_REGISTRY_PASSWORD=admin
     ports:
       - '8080:8080'
       - '5005:5005'
-  efwgateway-postgresql:
+  efw-postgresql:
+    hostname: efw-postgresql
     image: 'postgres:10.4'
     environment:
-      - POSTGRES_USER=efwgateway
-      - POSTGRES_PASSWORD=
-  efwgateway-elasticsearch:
-    image: 'elasticsearch:5.6.13'
-    command: '-Enetwork.host=0.0.0.0 -Ediscovery.type=single-node'
-    environment:
-      - ES_JAVA_OPTS=-Xms1024m -Xmx1024m
-
+      - POSTGRES_USER=efw
+      - POSTGRES_PASSWORD=efw
+    ports:
+      - 5432:5432
   efwservice-app:
     image: efwservice
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
-      - 'SPRING_PROFILES_ACTIVE=prod,webpack,zipkin,swagger,IDE'
+      - 'SPRING_PROFILES_ACTIVE=prod,webpack,zipkin,swagger'
       - 'EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka'
       - 'SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config'
-      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://efwservice-postgresql:5432/efwservice'
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://efw-postgresql:5432/efwservice'
       - JHIPSTER_SLEEP=30
-      - 'SPRING_DATA_JEST_URI=http://efwservice-elasticsearch:9200'
+      - 'SPRING_DATA_JEST_URI=http://jhipster-elasticsearch:9300'
       - SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=kafka
       - SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=zookeeper
       - JHIPSTER_REGISTRY_PASSWORD=admin
     ports:
       - '8081:8081'
       - '5006:5005'
-  efwservice-postgresql:
-    image: 'postgres:10.4'
-    environment:
-      - POSTGRES_USER=efwservice
-      - POSTGRES_PASSWORD=
-  efwservice-elasticsearch:
-    image: 'elasticsearch:5.6.13'
-    command: '-Enetwork.host=0.0.0.0 -Ediscovery.type=single-node'
-    environment:
-      - ES_JAVA_OPTS=-Xms1024m -Xmx1024m
+
 
   zookeeper:
     extends:
       file: kafka.yml
       service: zookeeper
   kafka:
+    hostname: kafka
     extends:
       file: kafka.yml
       service: kafka
@@ -68,6 +57,9 @@ services:
       service: jhipster-registry
 
   jhipster-elasticsearch:
+    command: '-Enetwork.host=0.0.0.0 -Ediscovery.type=single-node'
+    environment:
+      - ES_JAVA_OPTS=-Xms1024m -Xmx1024m
     extends:
       file: jhipster-console.yml
       service: jhipster-elasticsearch

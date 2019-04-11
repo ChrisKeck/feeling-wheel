@@ -1,14 +1,19 @@
 version: '2'
 services:
   jhipster-elasticsearch:
+    command: '-Enetwork.host=0.0.0.0 -Ediscovery.type=single-node'
     image: jhipster/jhipster-elasticsearch:v4.0.0
     # Uncomment this as well as the volume section down below
     # to have elasticsearch data persisted to a volume
     # you will need to create a named volume with `docker volume create log-data`
     #volumes:
     #   - log-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
   jhipster-logstash:
     image: jhipster/jhipster-logstash:v4.0.0
+    hostname: jhipster-logstash
     environment:
       - INPUT_TCP_PORT=5000
       - INPUT_UDP_PORT=5000

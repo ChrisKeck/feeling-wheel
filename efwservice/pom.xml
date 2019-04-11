@@ -17,13 +17,6 @@
         <start-class>de.iso.apps.EfwserviceApp</start-class>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-
-            <!-- jhipster-needle-maven-add-dependency-management -->
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok-maven-plugin -->
         <dependency>

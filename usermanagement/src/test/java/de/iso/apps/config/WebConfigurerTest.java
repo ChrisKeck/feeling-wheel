@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Unit tests for the WebConfigurer class.
  *
- * @see WebConfigurer
+ * @see de.iso.apps.config.WebConfigurer
  */
 public class WebConfigurerTest {
     

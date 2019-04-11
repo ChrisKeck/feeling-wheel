@@ -3,6 +3,7 @@ package de.iso.apps.config;
 import io.github.jhipster.config.JHipsterConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cloud.config.java.AbstractCloudConfig;
@@ -18,10 +19,15 @@ import javax.sql.DataSource;
     
     private static final String CLOUD_CONFIGURATION_HIKARI_PREFIX = "spring.datasource.hikari";
     private final Logger log = LoggerFactory.getLogger(CloudDatabaseConfiguration.class);
+    private final CacheManager cachceManager;
     
+    public CloudDatabaseConfiguration(@Qualifier("cacheManager") CacheManager cacheManager) {
+        
+        this.cachceManager = cacheManager;
+    }
     @Bean
     @ConfigurationProperties(CLOUD_CONFIGURATION_HIKARI_PREFIX)
-    public DataSource dataSource(CacheManager cacheManager) {
+    public DataSource dataSource() {
         log.info("Configuring JDBC datasource from a cloud provider");
         return connectionFactory().dataSource();
     }

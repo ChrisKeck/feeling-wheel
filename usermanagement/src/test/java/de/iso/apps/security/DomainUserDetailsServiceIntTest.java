@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test class for DomainUserDetailsService.
  *
- * @see DomainUserDetailsService
+ * @see de.iso.apps.security.DomainUserDetailsService
  */
 @RunWith(SpringRunner.class) @SpringBootTest(classes = EfwgatewayApp.class) @Transactional
 public class DomainUserDetailsServiceIntTest {

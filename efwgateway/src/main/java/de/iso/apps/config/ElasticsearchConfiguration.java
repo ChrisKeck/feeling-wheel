@@ -33,9 +33,9 @@ import java.io.IOException;
     
     @Bean
     @Primary
-    public ElasticsearchOperations elasticsearchTemplate(final JestClient jestClient,
-                                                         final ElasticsearchConverter elasticsearchConverter,
-                                                         final SimpleElasticsearchMappingContext simpleElasticsearchMappingContext,
+    public ElasticsearchOperations elasticsearchTemplate(JestClient jestClient,
+                                                         ElasticsearchConverter elasticsearchConverter,
+                                                         SimpleElasticsearchMappingContext simpleElasticsearchMappingContext,
                                                          EntityMapper mapper) {
         return new JestElasticsearchTemplate(jestClient,
                                              elasticsearchConverter,

@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test class for the SecurityUtils utility class.
  *
- * @see SecurityUtils
+ * @see de.iso.apps.security.SecurityUtils
  */
 public class SecurityUtilsUnitTest {
     

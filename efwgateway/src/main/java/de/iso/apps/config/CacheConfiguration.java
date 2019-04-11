@@ -12,6 +12,7 @@ import io.github.jhipster.config.JHipsterProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -53,8 +54,8 @@ import javax.annotation.PreDestroy;
         Hazelcast.shutdownAll();
     }
     
-    @Bean
-    public CacheManager cacheManager(HazelcastInstance hazelcastInstance) {
+    @Bean("cacheManager")
+    public CacheManager cacheManager(@Qualifier("hazelcastInstance") HazelcastInstance hazelcastInstance) {
         log.debug("Starting HazelcastCacheManager");
         return new com.hazelcast.spring.cache.HazelcastCacheManager(hazelcastInstance);
     }

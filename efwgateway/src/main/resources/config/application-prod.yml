@@ -36,8 +36,8 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         url: jdbc:postgresql://localhost:5432/efwgateway
-        username: efwgateway
-        password:
+        username: efw
+        password: efw
         hikari:
             poolName: Hikari
             auto-commit: false
@@ -57,7 +57,7 @@ spring:
             hibernate.cache.hazelcast.use_lite_member: true
     data:
         jest:
-            uri: http://localhost:9200
+            uri: http://0.0.0.0:9300
     liquibase:
         contexts: prod
     mail:

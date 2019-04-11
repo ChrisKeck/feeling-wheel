@@ -8,6 +8,7 @@ import de.iso.apps.repository.search.UserSearchRepository;
 import de.iso.apps.service.dto.UserDTO;
 import de.iso.apps.service.util.RandomUtil;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,9 @@ import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,12 +47,118 @@ public class UserServiceIntTest {
     @Mock DateTimeProvider dateTimeProvider;
     @Autowired private UserRepository userRepository;
     @Autowired private UserService userService;
+    
     /**
      * This repository is mocked in the de.iso.apps.repository.search test package.
      *
      * @see de.iso.apps.repository.search.UserSearchRepositoryMockConfiguration
      */
-    @Autowired private UserSearchRepository mockUserSearchRepository;
+    private UserSearchRepository mockUserSearchRepository = new UserSearchRepository() {
+        @Override
+        public void findOneByEmailIgnoreCase(String oldMail) {
+        
+        }
+        
+        @Override
+        public <S extends User> S index(S s) {
+            return null;
+        }
+        
+        @Override
+        public Iterable<User> search(QueryBuilder queryBuilder) {
+            return null;
+        }
+        
+        @Override
+        public Page<User> search(QueryBuilder queryBuilder, Pageable pageable) {
+            return null;
+        }
+        
+        @Override
+        public Page<User> search(SearchQuery searchQuery) {
+            return null;
+        }
+        
+        @Override
+        public Page<User> searchSimilar(User user, String[] strings, Pageable pageable) {
+            return null;
+        }
+        
+        @Override
+        public void refresh() {
+        
+        }
+        
+        @Override
+        public Class<User> getEntityClass() {
+            return null;
+        }
+        
+        @Override
+        public Iterable<User> findAll(Sort sort) {
+            return null;
+        }
+        
+        @Override
+        public Page<User> findAll(Pageable pageable) {
+            return null;
+        }
+        
+        @Override
+        public <S extends User> S save(S s) {
+            return null;
+        }
+        
+        @Override
+        public <S extends User> Iterable<S> saveAll(Iterable<S> iterable) {
+            return null;
+        }
+        
+        @Override
+        public Optional<User> findById(Long aLong) {
+            return Optional.empty();
+        }
+        
+        @Override
+        public boolean existsById(Long aLong) {
+            return false;
+        }
+        
+        @Override
+        public Iterable<User> findAll() {
+            return userRepository.findAll();
+        }
+        
+        @Override
+        public Iterable<User> findAllById(Iterable<Long> iterable) {
+            return null;
+        }
+        
+        @Override
+        public long count() {
+            return 0;
+        }
+        
+        @Override
+        public void deleteById(Long aLong) {
+        
+        }
+        
+        @Override
+        public void delete(User user) {
+        
+        }
+        
+        @Override
+        public void deleteAll(Iterable<? extends User> iterable) {
+        
+        }
+        
+        @Override
+        public void deleteAll() {
+        
+        }
+    };
     @Autowired private AuditingHandler auditingHandler;
     private User user;
     

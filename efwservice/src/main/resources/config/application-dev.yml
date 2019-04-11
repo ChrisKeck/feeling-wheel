@@ -73,6 +73,12 @@ spring:
             properties:
                 path:
                     home: target/elasticsearch
+            repositories:
+                enabled: true
+        jest:
+            uri: http://0.0.0.0:9300
+
+
     liquibase:
         contexts: dev
     mail:

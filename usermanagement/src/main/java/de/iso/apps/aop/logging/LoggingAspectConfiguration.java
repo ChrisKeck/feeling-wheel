@@ -1,6 +1,5 @@
-package de.iso.apps.config;
+package de.iso.apps.aop.logging;
 
-import de.iso.apps.aop.logging.LoggingAspect;
 import io.github.jhipster.config.JHipsterConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

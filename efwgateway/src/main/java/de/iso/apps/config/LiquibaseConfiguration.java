@@ -1,5 +1,6 @@
 package de.iso.apps.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import io.github.jhipster.config.JHipsterConstants;
 import io.github.jhipster.config.liquibase.AsyncSpringLiquibase;
 import liquibase.integration.spring.SpringLiquibase;
@@ -12,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
-
-import javax.sql.DataSource;
 
 @Configuration public class LiquibaseConfiguration {
     
@@ -29,8 +28,7 @@ import javax.sql.DataSource;
     }
     
     @Bean
-    public SpringLiquibase liquibase(@Qualifier("taskExecutor") TaskExecutor taskExecutor,
-                                     DataSource dataSource,
+    public SpringLiquibase liquibase(@Qualifier("taskExecutor") TaskExecutor taskExecutor, HikariDataSource dataSource,
                                      LiquibaseProperties liquibaseProperties) {
         
         // Use liquibase.integration.spring.SpringLiquibase if you don't want Liquibase to start asynchronously

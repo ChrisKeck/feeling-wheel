@@ -1,62 +1,35 @@
 package de.iso.apps.service.impl;
 
+import de.iso.apps.contracts.ExternalObservailable;
+import de.iso.apps.contracts.ExternalObserver;
 import de.iso.apps.service.EmployeeService;
 import de.iso.apps.service.dto.EmployeeDTO;
 import de.iso.apps.service.dto.MailChangingDTO;
 import lombok.var;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.header.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
-@Service public class MailChangingListenerService {
+@Service public class MailChangingListenerService implements ExternalObservailable<String, MailChangingDTO> {
     
     private final Logger log = LoggerFactory.getLogger(MailChangingListenerService.class);
     private final EmployeeService employeeService;
+    private final ExternalObserver<String, MailChangingDTO> externalObserver;
     
-    public MailChangingListenerService(EmployeeService employeeService) {
+    public MailChangingListenerService(EmployeeService employeeService,
+                                       @Qualifier("externalObserver")
+                                           ExternalObserver<String, MailChangingDTO> externalObserver) {
         this.employeeService = employeeService;
+        externalObserver.add(this);
+        this.externalObserver = externalObserver;
     }
     
-    private static String typeIdHeader(Headers headers) {
-        return StreamSupport.stream(headers.spliterator(), false)
-                            .filter(header -> header.key().equals("__TypeId__"))
-                            .findFirst()
-                            .map(header -> new String(header.value()))
-                            .orElse("N/A");
-    }
-    
-    @KafkaListener(topics = "${tpd.topic-name}",
-                   clientIdPrefix = "json", containerFactory = "kafkaListenerContainerFactory", groupId = "efwservice")
-    public void listenAsObject(ConsumerRecord<String, MailChangingDTO> cr, @Payload MailChangingDTO payload) {
-        
-        try {
-            if (StringUtils.hasText(payload.getNewMail()) && StringUtils.hasText(payload.getOldMail())) {
-                changeEmployee(payload);
-            } else if (StringUtils.hasText(payload.getOldMail()) && !StringUtils.hasText(payload.getNewMail())) {
-                deleteEmployee(payload);
-            } else if (StringUtils.hasText(payload.getNewMail()) && !StringUtils.hasText(payload.getOldMail())) {
-                createEmployee(payload);
-            }
-            
-        } catch (Exception e) {
-            log.info("Logger 1 [JSON] received key {}: Type [{}] | Payload: {} | Record: {}",
-                     cr.key(),
-                     typeIdHeader(cr.headers()),
-                     payload,
-                     cr.toString());
-            log.error("Error in Listener", e);
-        }
-    }
     
     private void changeEmployee(MailChangingDTO payload) {
         Optional<EmployeeDTO> employeeDTO = getEmployeeDTO(payload.getOldMail());
@@ -93,5 +66,24 @@ import java.util.stream.StreamSupport;
             employeeService.save(employee);
             log.info("Employee was created by Listener");
         }
+    }
+    
+    @Override
+    public void valueChanged(String key, MailChangingDTO value) {
+        
+        if (StringUtils.hasText(value.getNewMail()) && StringUtils.hasText(value.getOldMail())) {
+            changeEmployee(value);
+        } else if (StringUtils.hasText(value.getOldMail()) && !StringUtils.hasText(value.getNewMail())) {
+            deleteEmployee(value);
+        } else if (StringUtils.hasText(value.getNewMail()) && !StringUtils.hasText(value.getOldMail())) {
+            createEmployee(value);
+        }
+        
+        
+    }
+    
+    @Override
+    public int compareTo(ExternalObservailable<String, MailChangingDTO> externalObservailable) {
+        return this.getClass().getTypeName().compareTo(externalObservailable.getClass().getTypeName());
     }
 }

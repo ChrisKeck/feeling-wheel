@@ -97,7 +97,7 @@ spring:
         template:
             default-topic: employee-topic
         consumer:
-            group-id: tpd-efwservice
+            group-id: efwservice
             auto-offset-reset: earliest
             enable-auto-commit: true
         producer:
@@ -107,10 +107,11 @@ spring:
         # Kafka cluster or your Docker IP is different
         bootstrap-servers: kafka:9092
 
-tpd:
-    topic-name: advice-topic
-employee:
-    topic-name: employee-topic
+kafka-topics:
+    user:
+        name: user-changed
+    employee:
+        name: employee-changed
 server:
     port: 8081
 

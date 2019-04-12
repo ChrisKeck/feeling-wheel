@@ -24,9 +24,21 @@ spring:
     sampler:
       probability: 1 # report 100% of traces to Zipkin
   kafka:
+    consumer:
+      group-id: efwgateway
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+    producer:
+      retries: 2
     # change this property if you are using your own
     # Kafka cluster or your Docker IP is different
     bootstrap-servers: kafka:9092
+
+kafka-topics:
+  user:
+    name: user-changed
+  employee:
+    name: employee-changed
 eureka:
   client:
     service-url:

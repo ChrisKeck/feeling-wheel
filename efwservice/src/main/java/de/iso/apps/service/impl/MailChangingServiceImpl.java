@@ -8,14 +8,17 @@ import de.iso.apps.service.mapper.MailChangingMapper;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service public class MailChangingServiceImpl implements MailChangingService {
     
     private final Logger log = LoggerFactory.getLogger(MailChangingServiceImpl.class);
     
-    public MailChangingServiceImpl(TopicDistributor<MailChangingEventArgs> topicableMailChanging,
-                                   MailChangingMapper mailChangingMapper) {
+    public MailChangingServiceImpl(
+            @Qualifier("userProducer")
+                    TopicDistributor<MailChangingEventArgs> topicableMailChanging,
+            MailChangingMapper mailChangingMapper) {
         this.topicDistributor = topicableMailChanging;
         this.mailChangingMapper = mailChangingMapper;
     }

@@ -54,7 +54,7 @@ import java.util.Map;
         return new MailChangingObserver();
     }
     
-    @Bean
+    @Bean("userProducer")
     public TopicDistributor<MailChangingEventArgs> userProducer() {
         Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

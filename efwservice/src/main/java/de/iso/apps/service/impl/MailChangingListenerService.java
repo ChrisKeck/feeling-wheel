@@ -2,9 +2,9 @@ package de.iso.apps.service.impl;
 
 import de.iso.apps.contracts.ExternalObservailable;
 import de.iso.apps.contracts.ExternalObserver;
+import de.iso.apps.contracts.MailChangingEventArgs;
 import de.iso.apps.service.EmployeeService;
 import de.iso.apps.service.dto.EmployeeDTO;
-import de.iso.apps.service.dto.MailChangingDTO;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,22 +16,22 @@ import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
-@Service public class MailChangingListenerService implements ExternalObservailable<String, MailChangingDTO> {
+@Service public class MailChangingListenerService implements ExternalObservailable<String, MailChangingEventArgs> {
     
     private final Logger log = LoggerFactory.getLogger(MailChangingListenerService.class);
     private final EmployeeService employeeService;
-    private final ExternalObserver<String, MailChangingDTO> externalObserver;
+    private final ExternalObserver<String, MailChangingEventArgs> externalObserver;
     
     public MailChangingListenerService(EmployeeService employeeService,
                                        @Qualifier("externalObserver")
-                                           ExternalObserver<String, MailChangingDTO> externalObserver) {
+                                               ExternalObserver<String, MailChangingEventArgs> externalObserver) {
         this.employeeService = employeeService;
         externalObserver.add(this);
         this.externalObserver = externalObserver;
     }
     
     
-    private void changeEmployee(MailChangingDTO payload) {
+    private void changeEmployee(MailChangingEventArgs payload) {
         Optional<EmployeeDTO> employeeDTO = getEmployeeDTO(payload.getOldMail());
         employeeDTO.ifPresent(item -> {
             item.setEmail(payload.getNewMail());
@@ -44,7 +44,7 @@ import java.util.Optional;
         return employeeService.search("email=" + payload, Pageable.unpaged());
     }
     
-    private void deleteEmployee(MailChangingDTO payload) {
+    private void deleteEmployee(MailChangingEventArgs payload) {
         Optional<EmployeeDTO> employee = getEmployeeDTO(payload.getOldMail());
         employee.ifPresent(item -> {
             employeeService.delete(item.getId());
@@ -57,7 +57,7 @@ import java.util.Optional;
         return employees.stream().findFirst();
     }
     
-    private void createEmployee(MailChangingDTO payload) {
+    private void createEmployee(MailChangingEventArgs payload) {
         
         var repemployee = getEmployeeDTO(payload.getNewMail());
         if (!repemployee.isPresent()) {
@@ -69,7 +69,7 @@ import java.util.Optional;
     }
     
     @Override
-    public void valueChanged(String key, MailChangingDTO value) {
+    public void valueChanged(String key, MailChangingEventArgs value) {
         
         if (StringUtils.hasText(value.getNewMail()) && StringUtils.hasText(value.getOldMail())) {
             changeEmployee(value);
@@ -83,7 +83,7 @@ import java.util.Optional;
     }
     
     @Override
-    public int compareTo(ExternalObservailable<String, MailChangingDTO> externalObservailable) {
+    public int compareTo(ExternalObservailable<String, MailChangingEventArgs> externalObservailable) {
         return this.getClass().getTypeName().compareTo(externalObservailable.getClass().getTypeName());
     }
 }

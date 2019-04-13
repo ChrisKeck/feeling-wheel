@@ -7,14 +7,14 @@ import lombok.Setter;
 
 import java.util.Objects;
 
-@Builder
-@Getter @Setter public class MailChangingDTO implements MailChangingEventArgs {
-    private static final long serialVersionUID = 8708595976735931927L;
+@Getter @Setter @Builder public class MailChangingDTOEventArgs implements MailChangingEventArgs {
+    private static final long serialVersionUID = -301157037999041499L;
     private String newMail;
     private String oldMail;
     
     @Override
     public boolean hasChange() {
+        
         return !Objects.equals(getNewMail(), getOldMail());
     }
 }

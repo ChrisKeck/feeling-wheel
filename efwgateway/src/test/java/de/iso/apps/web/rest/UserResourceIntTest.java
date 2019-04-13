@@ -1,7 +1,8 @@
 package de.iso.apps.web.rest;
 
 import de.iso.apps.EfwgatewayApp;
-import de.iso.apps.contracts.Topicable;
+import de.iso.apps.contracts.MailChangingEventArgs;
+import de.iso.apps.contracts.TopicDistributor;
 import de.iso.apps.domain.Authority;
 import de.iso.apps.domain.User;
 import de.iso.apps.repository.UserRepository;
@@ -10,7 +11,6 @@ import de.iso.apps.security.AuthoritiesConstants;
 import de.iso.apps.service.MailChangingService;
 import de.iso.apps.service.MailService;
 import de.iso.apps.service.UserService;
-import de.iso.apps.service.dto.MailChangingDTO;
 import de.iso.apps.service.dto.UserDTO;
 import de.iso.apps.service.mapper.UserMapper;
 import de.iso.apps.web.rest.errors.ExceptionTranslator;
@@ -106,7 +106,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     @Mock private MailChangingService mailChangingService;
     private MockMvc restUserMockMvc;
     
-    @Mock private Topicable<MailChangingDTO> topicable;
+    @Mock
+    private TopicDistributor<MailChangingEventArgs> topicDistributor;
     
     private User user;
     

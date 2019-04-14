@@ -3,7 +3,7 @@ package de.iso.apps.service.mapper;
 import java.util.List;
 
 /**
- * Contract for a generic dto to entity mapper.
+ * Contract for a generic dto to entity de.iso.apps.contracts.mapper.
  *
  * @param <D> - DTO type parameter.
  * @param <E> - Entity type parameter.

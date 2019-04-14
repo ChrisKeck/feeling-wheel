@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
     @Override
     public void propagate(EmployeeDTO nextEmployeeDTO, EmployeeDTO prevEmployeeDTO) {
         try {
-            var mail = mailChangingMapper.employeeDTOToMailChangingDTO(nextEmployeeDTO, prevEmployeeDTO);
+            var mail = mailChangingMapper.toMailChangingDTO(nextEmployeeDTO, prevEmployeeDTO);
             if (mail.hasChange()) {
                 topicDistributor.send(mail);
             }

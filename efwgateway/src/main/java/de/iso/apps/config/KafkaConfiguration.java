@@ -54,7 +54,7 @@ import java.util.Map;
         return new MailChangingObserver();
     }
     
-    @Bean
+    @Bean("userProducer")
     public TopicDistributor<MailChangingEventArgs> userProducer() {
         Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -69,7 +69,7 @@ import java.util.Map;
     //
     // Consumer configuration
     //
-    @Bean("mailChangingListenerContainerFactory")
+    @Bean("listenerContainerFactory")
     @Primary
     public ConcurrentKafkaListenerContainerFactory<String, MailChangingEventArgs> kafkaListenerContainerFactory() {
         Map<String, Object> props = new HashMap<>(kafkaProperties.buildConsumerProperties());
@@ -93,7 +93,7 @@ import java.util.Map;
         @Async
         @KafkaListener(topics = employeeIdent,
                        clientIdPrefix = "gateway",
-                       containerFactory = "mailChangingListenerContainerFactory",
+                       containerFactory = "listenerContainerFactory",
                        groupId = "efw")
         public void listenAsObject(ConsumerRecord<String, MailChangingEventArgs> cr,
                                    @Payload

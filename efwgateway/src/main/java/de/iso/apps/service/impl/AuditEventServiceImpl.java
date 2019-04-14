@@ -43,7 +43,7 @@ import java.util.Optional;
     
     @Override
     public Optional<AuditEvent> find(Long id) {
-        return Optional.ofNullable(persistenceAuditEventRepository.findById(id)).filter(Optional::isPresent).map(
+        return Optional.of(persistenceAuditEventRepository.findById(id)).filter(Optional::isPresent).map(
             Optional::get).map(auditEventConverter::convertToAuditEvent);
     }
 }

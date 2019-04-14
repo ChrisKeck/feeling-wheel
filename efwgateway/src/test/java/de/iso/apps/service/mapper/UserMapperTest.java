@@ -43,8 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         user.setLastName("doe");
         user.setImageUrl("image_url");
         user.setLangKey("en");
-        
-        userDto = new UserDTO(user);
+        userDto = userMapper.userToUserDTO(user);
     }
     
     @Test

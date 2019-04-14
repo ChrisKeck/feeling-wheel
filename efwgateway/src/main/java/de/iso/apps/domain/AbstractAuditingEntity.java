@@ -1,6 +1,7 @@
 package de.iso.apps.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.iso.apps.contracts.TimeMeasure;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -13,7 +14,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import java.io.Serializable;
 import java.time.Instant;
 
 /**
@@ -21,7 +21,7 @@ import java.time.Instant;
  * by date.
  */
 @Getter @Setter @MappedSuperclass @Audited @EntityListeners(AuditingEntityListener.class)
-public abstract class AbstractAuditingEntity implements Serializable {
+public abstract class AbstractAuditingEntity implements TimeMeasure {
     
     
     private static final long serialVersionUID = -5222568206929805776L;

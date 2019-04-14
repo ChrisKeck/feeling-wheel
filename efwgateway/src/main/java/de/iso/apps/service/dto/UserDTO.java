@@ -1,9 +1,8 @@
 package de.iso.apps.service.dto;
 
 import de.iso.apps.config.Constants;
-import de.iso.apps.contracts.Userable;
-import de.iso.apps.domain.Authority;
-import de.iso.apps.domain.User;
+import de.iso.apps.contracts.BaseUser;
+import de.iso.apps.contracts.TimeMeasure;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,13 +16,12 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A DTO representing a user, with his authorities.
  */
 @Data @Builder @NoArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true) @AllArgsConstructor
-public class UserDTO implements Userable {
+public class UserDTO implements BaseUser, TimeMeasure {
     private static final long serialVersionUID = 5129857733638000361L;
     @Include private Long id;
     
@@ -50,23 +48,6 @@ public class UserDTO implements Userable {
     private Instant lastModifiedDate;
     
     private Set<String> authorities;
-    
-    
-    public UserDTO(User user) {
-        this.id = user.getId();
-        this.login = user.getLogin();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.activated = user.isActivated();
-        this.imageUrl = user.getImageUrl();
-        this.langKey = user.getLangKey();
-        this.createdBy = user.getCreatedBy();
-        this.createdDate = user.getCreatedDate();
-        this.lastModifiedBy = user.getLastModifiedBy();
-        this.lastModifiedDate = user.getLastModifiedDate();
-        this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
-    }
     
     protected boolean canEqual(Object other) {
         return other != null &&

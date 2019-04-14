@@ -2,7 +2,7 @@ package de.iso.apps.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.iso.apps.config.Constants;
-import de.iso.apps.contracts.Userable;
+import de.iso.apps.contracts.BaseUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +37,7 @@ import java.util.Set;
 @Data @Builder @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false) @AllArgsConstructor
 @NoArgsConstructor @Entity @Table(name = "jhi_user") @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "user") public class User
-    extends AbstractAuditingEntity implements Userable {
+        extends AbstractAuditingEntity implements BaseUser {
     
     private static final long serialVersionUID = -5024649840787748387L;
     @Include @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")

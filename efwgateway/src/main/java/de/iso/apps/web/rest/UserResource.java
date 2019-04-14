@@ -105,6 +105,7 @@ import java.util.Optional;
         
                 mailService.sendCreationEmail(newUser);
             } catch (Exception ex) {
+                log.warn("Sending an email failed!", ex);
                 newUser.setActivated(true);
                 userService.updateUser(newUser);
             }

@@ -81,6 +81,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     @Autowired private UserSearchRepository userSearchRepository;
     @Autowired private CacheManager cacheManager;
     @Mock private MailChangingService mailChangingService;
+    private UserMapper userMapper = new UserMapper();
+    
     @Before
     public void setup() {
         mockUserService = spy(new UserServiceImpl(userRepository,
@@ -387,7 +389,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         assertThat(testUser4.get().getEmail()).isEqualTo("test-register-duplicate-email@example.com");
         
         testUser4.get().setActivated(true);
-        userService.updateUser((new UserDTO(testUser4.get())));
+        userService.updateUser((userMapper.userToUserDTO(testUser4.get())));
         
         // Register 4th (already activated) user
         restMvc.perform(post("/api/register").contentType(TestUtil.APPLICATION_JSON_UTF8)

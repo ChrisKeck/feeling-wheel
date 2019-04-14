@@ -1,21 +1,26 @@
 package de.iso.apps.service.mapper;
 
+import de.iso.apps.contracts.MailChangingDTOEventArgs;
+import de.iso.apps.contracts.MailChangingEventArgs;
 import de.iso.apps.service.dto.EmployeeDTO;
-import de.iso.apps.service.dto.MailChangingDTO;
 import lombok.var;
 import org.springframework.stereotype.Component;
 
 @Component public class MailChangingMapper {
     
-    public MailChangingDTO employeeDTOToMailChangingDTO(EmployeeDTO newMailUserDTO, EmployeeDTO oldMailUserDTO) {
-        var mailBuilder = MailChangingDTO.builder();
-        
+    public MailChangingEventArgs employeeDTOToMailChangingDTO(EmployeeDTO newMailUserDTO,
+                                                              EmployeeDTO oldMailUserDTO) {
+        String newMail = null;
+        String oldMail = null;
         if (newMailUserDTO != null) {
-            mailBuilder.newMail(newMailUserDTO.getEmail());
+            newMail = newMailUserDTO.getEmail();
         }
         if (oldMailUserDTO != null) {
-            mailBuilder.oldMail(oldMailUserDTO.getEmail());
+            oldMail = oldMailUserDTO.getEmail();
         }
-        return mailBuilder.build();
+        var mail = new MailChangingDTOEventArgs();
+        mail.setNewMail(newMail);
+        mail.setOldMail(oldMail);
+        return mail;
     }
 }

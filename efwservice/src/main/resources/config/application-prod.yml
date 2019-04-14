@@ -78,9 +78,9 @@ spring:
                 enabled: true
     kafka:
         consumer:
-            group-id: efwservice
-            auto-offset-reset: earliest
-            enable-auto-commit: true
+          group-id: efw
+          auto-offset-reset: earliest
+          enable-auto-commit: true
         producer:
             retries: 2
         # change this property if you are using your own
@@ -89,9 +89,9 @@ spring:
 
 kafka-topics:
     user:
-        name: user-changed
+      name: user-changed
     employee:
-        name: employee-changed
+      name: employee-changed
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
 # keytool -genkey -alias efwservice -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650

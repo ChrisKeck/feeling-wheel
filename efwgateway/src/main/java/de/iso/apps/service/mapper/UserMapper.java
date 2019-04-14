@@ -1,12 +1,11 @@
 package de.iso.apps.service.mapper;
 
-import de.iso.apps.contracts.Userable;
+import de.iso.apps.contracts.BaseUser;
+import de.iso.apps.contracts.TimeMeasure;
 import de.iso.apps.domain.Authority;
 import de.iso.apps.domain.User;
-import de.iso.apps.service.dto.MailChangingDTO;
 import de.iso.apps.service.dto.UserDTO;
 import lombok.NonNull;
-import lombok.var;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -36,49 +35,60 @@ import java.util.stream.Collectors;
             return null;
         }
         UserDTO userDTO = new UserDTO();
-        map(user, userDTO);
-        userDTO.setCreatedBy(user.getCreatedBy());
-        userDTO.setCreatedDate(user.getCreatedDate());
-        userDTO.setLastModifiedBy(user.getLastModifiedBy());
-        userDTO.setLastModifiedDate(user.getLastModifiedDate());
+        map(userDTO, user);
+        mapTimeMeasures(userDTO, user);
         userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet()));
         return userDTO;
     }
     
-    private void map(Userable userDTO, Userable user) {
+    private void mapTimeMeasures(TimeMeasure user, TimeMeasure userDTO) {
+        user.setCreatedDate(userDTO.getCreatedDate());
+        user.setLastModifiedBy(userDTO.getLastModifiedBy());
+        user.setLastModifiedDate(userDTO.getLastModifiedDate());
+        user.setCreatedBy(userDTO.getCreatedBy());
+    }
+    
+    private void map(BaseUser user, BaseUser userDTO) {
         user.setId(userDTO.getId());
         user.setLogin(userDTO.getLogin());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
-        user.setImageUrl(userDTO.getImageUrl());
         user.setActivated(userDTO.isActivated());
         user.setLangKey(userDTO.getLangKey());
+        user.setImageUrl(userDTO.getImageUrl());
     }
     
     public List<User> userDTOsToUsers(@NonNull List<UserDTO> userDTOs) {
-        return userDTOs.stream().filter(Objects::nonNull).map(this::userDTOToUser).collect(Collectors.toList());
+        return userDTOs.stream()
+                       .filter(Objects::nonNull)
+                       .map(this::userDTOToUser)
+                       .collect(Collectors.toList());
     }
     
     public User userDTOToUser(UserDTO userDTO) {
-        if (userDTO == null) {
-            return null;
-        } else {
-            User user = new User();
-            map(userDTO, user);
-            Set<Authority> authorities = this.authoritiesFromStrings(userDTO.getAuthorities());
-            user.setAuthorities(authorities);
-            return user;
-        }
+        return userDTO != null ?
+               mapToUser(userDTO) :
+               null;
+    
+    }
+    
+    protected User mapToUser(UserDTO userDTO) {
+        User user = new User();
+        map(user, userDTO);
+        mapTimeMeasures(userDTO, user);
+        Set<Authority> authorities = this.authoritiesFromStrings(userDTO.getAuthorities());
+        user.setAuthorities(authorities);
+        return user;
     }
     
     private Set<Authority> authoritiesFromStrings(Set<String> authoritiesAsString) {
         Set<Authority> authorities = new HashSet<>();
         
         if (authoritiesAsString != null) {
-            authorities = authoritiesAsString.stream().map(string -> {
+            authorities = authoritiesAsString.stream().map(s -> {
                 Authority auth = new Authority();
-                auth.setName(string);
+                auth.setName(s);
                 return auth;
             }).collect(Collectors.toSet());
         }
@@ -95,15 +105,4 @@ import java.util.stream.Collectors;
         return user;
     }
     
-    public MailChangingDTO userDTOToMailChangingDTO(UserDTO newMailUserDTO, UserDTO oldMailUserDTO) {
-        var mailBuilder = MailChangingDTO.builder();
-        
-        if (newMailUserDTO != null) {
-            mailBuilder.newMail(newMailUserDTO.getEmail());
-        }
-        if (oldMailUserDTO != null) {
-            mailBuilder.oldMail(oldMailUserDTO.getEmail());
-        }
-        return mailBuilder.build();
-    }
 }

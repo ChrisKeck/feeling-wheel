@@ -5,7 +5,7 @@
 
     <groupId>de.iso.apps</groupId>
     <artifactId>Efw</artifactId>
-    <version>0.2.0</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>Efw</name>
     <modules>

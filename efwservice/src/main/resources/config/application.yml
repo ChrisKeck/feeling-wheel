@@ -164,7 +164,7 @@ jhipster:
         default-include-pattern: /api/.*
         title: efwservice API
         description: efwservice API documentation
-        version: 0.0.1
+        version: 1.0.0
         terms-of-service-url:
         contact-name:
         contact-url:

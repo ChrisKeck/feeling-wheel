@@ -3,7 +3,6 @@ package de.iso.apps;
 import de.iso.apps.config.ApplicationProperties;
 import de.iso.apps.config.DefaultProfileUtil;
 import io.github.jhipster.config.JHipsterConstants;
-import lombok.var;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +40,8 @@ public class EfwserviceApp {
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(EfwserviceApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
-        try (var runner = app.run(args)) {
-            Environment env = runner.getEnvironment();
-            logApplicationStartup(env);
-        }
+        Environment env = app.run(args).getEnvironment();
+        logApplicationStartup(env);
     }
     
     private static void logApplicationStartup(Environment env) {
@@ -63,9 +60,7 @@ public class EfwserviceApp {
         } catch (UnknownHostException e) {
             log.warn("The host name could not be determined, using `localhost` as fallback");
         }
-        log.info("\n" +
-                 "----------------------------------------------------------\n" +
-                 "\t" +
+        log.info("\n----------------------------------------------------------\n\t" +
                  "Application '{}' is running! Access URLs:\n\t" +
                  "Local: \t\t{}://localhost:{}{}\n\t" +
                  "External: \t{}://{}:{}{}\n\t" +

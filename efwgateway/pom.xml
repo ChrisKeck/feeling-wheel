@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.iso.apps</groupId>
         <artifactId>Efw</artifactId>
-        <version>1.0.0</version>
+        <version>0.2.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>efwgateway</artifactId>
@@ -208,7 +208,7 @@
         <dependency>
             <groupId>de.iso.apps</groupId>
             <artifactId>shared</artifactId>
-            <version>1.0.0</version>
+            <version>0.2.0</version>
             <scope>compile</scope>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
